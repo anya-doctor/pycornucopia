@@ -1,0 +1,262 @@
+2017-11-14 21:17:05,921 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:17:19,063 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 21:17:19,065 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 21:17:19,065 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 21:17:19,579 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 21:20:25,740 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:20:25,747 main.py-18 [ERROR] 'MyConsole' object has no attribute 'onLoginBtn'
+Traceback (most recent call last):
+  File "C:\Users\Administrator\PycharmProjects\laoba\main.py", line 15, in <module>
+    MainWindow()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MainWindow.py", line 24, in __init__
+    console = MyConsole(web, self)
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyConsole.py", line 85, in __init__
+    self.initUI()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyConsole.py", line 108, in initUI
+    self.connect(self.loginBtn, QtCore.SIGNAL('clicked()'), self.onLoginBtn)
+AttributeError: 'MyConsole' object has no attribute 'onLoginBtn'
+2017-11-14 21:20:58,190 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:21:01,121 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 21:21:01,122 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 21:21:01,122 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 21:21:01,627 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 21:21:30,634 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:22:26,167 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:22:52,881 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:22:56,753 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 21:22:56,753 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 21:22:56,755 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 21:22:57,267 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 21:23:04,841 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:23:17,061 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 21:23:17,061 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 21:23:17,062 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 21:23:17,563 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 21:43:41,065 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:45:34,677 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:46:53,796 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:49:21,102 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:49:23,990 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 21:49:23,996 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 21:49:23,997 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 21:49:24,500 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 21:52:26,296 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:52:34,599 MyBrowser.py-185 [INFO] def refresh
+2017-11-14 21:52:34,601 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 21:52:34,601 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 21:52:34,602 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 21:52:35,095 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 21:53:51,497 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:54:40,713 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:54:43,529 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 21:54:43,533 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 21:54:43,533 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 21:54:44,038 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 21:55:34,809 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:55:40,552 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 21:55:40,555 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 21:55:40,555 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 21:55:41,451 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 21:56:00,779 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:56:24,908 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:57:03,272 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:57:32,500 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:57:43,155 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 21:57:43,157 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 21:57:43,157 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 21:57:43,661 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 21:58:10,697 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 21:59:50,354 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:00:27,184 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:00:48,293 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:01:34,032 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:01:42,779 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:01:42,783 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:01:42,785 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:01:43,299 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:02:00,209 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:03:39,618 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:04:27,671 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:04:30,772 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:04:30,773 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:04:30,801 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:04:31,313 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:06:07,641 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:06:50,438 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:07:23,108 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:07:27,624 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:07:27,625 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:07:27,625 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:07:28,128 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:08:13,937 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:11:05,960 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:11:11,155 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:11:11,177 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:11:11,177 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:11:11,306 MyBrowser.py-185 [INFO] def refresh
+2017-11-14 22:11:11,687 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:12:56,782 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:13:52,124 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:13:55,351 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:13:55,351 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:13:55,352 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:13:55,861 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:14:13,677 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:14:47,243 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:15:10,010 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:15:13,631 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:15:13,634 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:15:13,634 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:15:14,141 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:15:37,403 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:15:40,345 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:15:40,345 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:15:40,346 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:15:40,859 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:16:23,293 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:16:51,173 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:16:53,986 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:16:53,986 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:16:53,987 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:16:54,486 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:18:00,388 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:18:43,963 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:19:05,167 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:19:09,732 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:19:09,733 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:19:09,733 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:19:10,236 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:19:55,526 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:20:00,515 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:20:00,516 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:20:00,516 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:20:01,017 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:20:59,255 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:21:55,561 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:22:59,427 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:23:02,505 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:23:02,515 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:23:02,516 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:23:03,019 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:24:02,289 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:24:05,211 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:24:05,213 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:24:05,213 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:24:05,721 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:24:52,971 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:25:07,671 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:25:10,719 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:25:10,736 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:25:10,737 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:25:11,250 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:26:16,301 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:26:50,006 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:27:28,940 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:27:31,894 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:27:31,894 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:27:31,895 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:27:32,391 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:28:10,948 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:29:13,091 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:32:16,467 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:32:20,825 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:32:20,826 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:32:20,826 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:32:21,328 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:42:15,471 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:43:32,565 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:46:59,119 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:48:59,605 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:49:07,671 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:49:07,673 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:49:07,673 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:49:08,184 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:55:19,292 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:55:42,661 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:55:42,661 main.py-18 [ERROR] super-class __init__() of type MainWindow was never called
+Traceback (most recent call last):
+  File "C:\Users\Administrator\PycharmProjects\laoba\main.py", line 15, in <module>
+    MainWindow()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MainWindow.py", line 15, in __init__
+    print self.title
+RuntimeError: super-class __init__() of type MainWindow was never called
+2017-11-14 22:55:58,470 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:55:59,078 main.py-18 [ERROR] 'MainWindow' object has no attribute 'title'
+Traceback (most recent call last):
+  File "C:\Users\Administrator\PycharmProjects\laoba\main.py", line 15, in <module>
+    MainWindow()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MainWindow.py", line 58, in __init__
+    print self.title
+AttributeError: 'MainWindow' object has no attribute 'title'
+2017-11-14 22:58:58,930 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:58:59,611 main.py-18 [ERROR] 'MainWindow' object has no attribute 'title'
+Traceback (most recent call last):
+  File "C:\Users\Administrator\PycharmProjects\laoba\main.py", line 15, in <module>
+    MainWindow()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MainWindow.py", line 58, in __init__
+    print self.title
+AttributeError: 'MainWindow' object has no attribute 'title'
+2017-11-14 22:59:10,980 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:59:14,388 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 22:59:14,390 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 22:59:14,391 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 22:59:14,891 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 22:59:56,375 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 22:59:58,907 MyLoginThread.py-130 [ERROR] 'set-cookie'
+Traceback (most recent call last):
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 123, in run
+    cookies_jar = self.login()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 84, in login
+    a = r.headers['Set-Cookie']
+  File "C:\Python27\lib\site-packages\requests\structures.py", line 54, in __getitem__
+    return self._store[key.lower()][1]
+KeyError: 'set-cookie'
+2017-11-14 23:00:18,746 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 23:00:21,214 MyLoginThread.py-130 [ERROR] 'set-cookie'
+Traceback (most recent call last):
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 123, in run
+    cookies_jar = self.login()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 84, in login
+    a = r.headers['Set-Cookie']
+  File "C:\Python27\lib\site-packages\requests\structures.py", line 54, in __getitem__
+    return self._store[key.lower()][1]
+KeyError: 'set-cookie'
+2017-11-14 23:03:08,457 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 23:03:18,832 MyLoginThread.py-132 [ERROR] 'set-cookie'
+Traceback (most recent call last):
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 123, in run
+    cookies_jar = self.login()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 84, in login
+    a = r.headers['Set-Cookie']
+  File "C:\Python27\lib\site-packages\requests\structures.py", line 54, in __getitem__
+    return self._store[key.lower()][1]
+KeyError: 'set-cookie'
+2017-11-14 23:04:46,073 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 23:04:49,483 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 23:04:49,483 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 23:04:49,484 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 23:04:49,984 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 23:04:56,430 MyLoginThread.py-132 [ERROR] 'set-cookie'
+Traceback (most recent call last):
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 123, in run
+    cookies_jar = self.login()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 84, in login
+    a = r.headers['Set-Cookie']
+  File "C:\Python27\lib\site-packages\requests\structures.py", line 54, in __getitem__
+    return self._store[key.lower()][1]
+KeyError: 'set-cookie'
+2017-11-14 23:05:36,888 MainWindow.py-14 [INFO] 创建主窗口...
+2017-11-14 23:05:39,992 MyBrowser.py-145 [INFO] Page load..星际. 
+2017-11-14 23:05:39,992 MyBrowser.py-146 [INFO] 用户名：GG238989, 密码：Aa147258.
+2017-11-14 23:05:39,993 MyBrowser.py-147 [INFO] origin_url=.
+2017-11-14 23:05:40,500 MyBrowser.py-175 [INFO] def login_password
+2017-11-14 23:05:46,250 MyLoginThread.py-134 [ERROR] 'set-cookie'
+Traceback (most recent call last):
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 123, in run
+    cookies_jar = self.login()
+  File "C:\Users\Administrator\PycharmProjects\laoba\myutil\MyLoginThread.py", line 84, in login
+    a = r.headers['Set-Cookie']
+  File "C:\Python27\lib\site-packages\requests\structures.py", line 54, in __getitem__
+    return self._store[key.lower()][1]
+KeyError: 'set-cookie'
+2017-11-14 23:06:26,977 MainWindow.py-14 [INFO] 创建主窗口...
