@@ -8,9 +8,10 @@ from PyQt4.QtCore import *
 
 
 class MyGetPreBetDataThread(QtCore.QThread):
-    def __init__(self, mainWindow, origin_url, pk_pre_bet_get_data_url, cookies_jar, headers):
+    def __init__(self, mainWindow, console, origin_url, pk_pre_bet_get_data_url, cookies_jar, headers):
         QtCore.QThread.__init__(self)
         self.mainWindow = mainWindow
+        self.console = console
         self.origin_url = origin_url
         self.pk_pre_bet_get_data_url = pk_pre_bet_get_data_url
         self.cookies_jar = cookies_jar
@@ -30,11 +31,15 @@ class MyGetPreBetDataThread(QtCore.QThread):
                 'cat': 15
             }
 
-            r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar, headers=self.headers, timeout=5)
+            r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar, headers=self.headers, timeout=10)
             real_content = r.content.split('êêê')[0]
             real_content = real_content.replace('\xef\xbb\xbf','')  # 去掉BOM开头的\xef\xbb\xbf
-
             logging.info("real_content=%s" % real_content)
+
+            # 当然在这里有可能遇到不想要的东西
+            if "/webssc/js/plugins/ValidatorAlert" in real_content:
+                # 说明应该重新登录了...
+                return None
 
             t_json = json.loads(real_content)
             if t_json and t_json['data']['success']:
@@ -67,7 +72,12 @@ class MyGetPreBetDataThread(QtCore.QThread):
     def run(self):
         try:
             json_data = self.get_pre_bet_data()
-            QMetaObject.invokeMethod(self.mainWindow, "updatePreBetData", Qt.QueuedConnection, Q_ARG(dict, json_data))
+            if not json_data:
+                logging.info("======================RELOGIN======================")
+                QMetaObject.invokeMethod(self.console, "onLoginBtn", Qt.QueuedConnection)
+            elif json_data and isinstance(json_data, dict):
+                QMetaObject.invokeMethod(self.mainWindow, "updatePreBetData", Qt.QueuedConnection, Q_ARG(dict, json_data))
+                QMetaObject.invokeMethod(self.console, "updatePreBetData", Qt.QueuedConnection, Q_ARG(dict, json_data))
         except Exception, ex:
             logging.error(ex, exc_info=1)
 

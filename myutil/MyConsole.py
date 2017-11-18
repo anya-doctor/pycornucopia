@@ -69,6 +69,7 @@ class MyConsole(QWidget):
         }
 
         self.goThread = None
+        self.getPreBetDataThread = None
         self.loginThread = None
         self.curP = '-1'
         self.is_login = False
@@ -515,14 +516,6 @@ class MyConsole(QWidget):
             self.goBtn.setText(u'开始')
             QtGui.QMessageBox.about(self, u'请注意', u"已经停止，下注列表全部清空。")
 
-    # 响应登录按钮
-    def onLoginBtn(self):
-        from myutil.MyLoginThread import MyLoginThread
-        self.loginThread = MyLoginThread(self.parent.overlay, self)
-        self.loginThread.start()
-
-        self.parent.overlay.show()
-
     def do_start(self):
         limit_seconds = MySettings.allow_bet_time
 
@@ -703,7 +696,18 @@ class MyConsole(QWidget):
         except Exception, ex:
             logging.error(ex, exc_info=1)
 
-    # 开启获取预下注数据线程！
+    # 响应登录按钮
+    @pyqtSlot()
+    def onLoginBtn(self):
+        try:
+            from myutil.MyLoginThread import MyLoginThread
+            self.loginThread = MyLoginThread(self.parent.overlay, self)
+            self.loginThread.start()
+
+            self.parent.overlay.show()
+        except Exception, ex:
+            logging.error(ex, exc_info=1)
+
     @pyqtSlot(dict)
     def startGetPreBetData(self, data_dic):
         """
@@ -711,14 +715,57 @@ class MyConsole(QWidget):
         :param data_dic:
         :return:
         """
-        from myutil.MyGetPreBetDataThread import MyGetPreBetDataThread
-        self.getPreBetDataThread = MyGetPreBetDataThread(self.parent,
-                                                         data_dic['origin_url'],
-                                                         data_dic['pk_pre_bet_get_data_url'],
-                                                         data_dic['cookies_jar'],
-                                                         data_dic['headers']
-                                                         )
-        self.getPreBetDataThread.start()
+        try:
+            self.loginSuccessData = data_dic
+            self.getPreBetDatgaTimer = QTimer()
+            self.getPreBetDatgaTimer.timeout.connect(self.do_getPreBetData)
+            self.getPreBetDatgaTimer.start(1000)
+
+            self.getPreBetDatgaTimer.setInterval(10 * 1000)
+        except Exception, ex:
+            logging.error(ex, exc_info=1)
+
+    # 开启获取预下注数据线程！
+    def do_getPreBetData(self):
+        try:
+            if self.getPreBetDataThread:
+                if self.getPreBetDataThread.isRunning():
+                    logging.info(u"老的getPreBetDataThread还在，杀死它...")
+                    self.getPreBetDataThread.quit()
+                    self.getPreBetDataThread.wait()
+
+            from myutil.MyGetPreBetDataThread import MyGetPreBetDataThread
+            self.getPreBetDataThread = MyGetPreBetDataThread(self.parent,
+                                                             self,
+                                                             self.loginSuccessData['origin_url'],
+                                                             self.loginSuccessData['pk_pre_bet_get_data_url'],
+                                                             self.loginSuccessData['cookies_jar'],
+                                                             self.loginSuccessData['headers']
+                                                             )
+            self.getPreBetDataThread.start()
+        except Exception, ex:
+            logging.error(ex, exc_info=1)
+
+    @pyqtSlot(dict)
+    def updatePreBetData(self, data_dict):
+        try:
+            logging.info("################CONSOLE START Update PreBetData################")
+            self.preBetDataDic = data_dict
+            logging.info("################CONSOLE END Update PreBetData################")
+
+            timeclose = self.preBetDataDic['data']['betnotice']['timeclose']
+            timeopen = self.preBetDataDic['data']['betnotice']['timeopen']
+
+            logging.info("timeclose=%s" % timeclose)
+            logging.info("timeopen=%s" % timeopen)
+
+            # 如果在封盘期间，则把定时器弄长一点。。。
+            if timeclose <= 0 and timeopen > 0:
+                self.getPreBetDatgaTimer.setInterval(timeopen * 1000)
+            else:
+                self.getPreBetDatgaTimer.setInterval(10 * 1000)
+        except Exception, ex:
+            logging.error(ex, exc_info=1)
 
     # 重置获取数据定时器
     @pyqtSlot(int)
@@ -946,7 +993,7 @@ class MyConsole(QWidget):
                                 amount = self.balls_bet_amount[i[2]]
                                 if int(amount) > 0:
                                     elem.evaluateJavaScript(
-                                        "var c = 0; if(this.value.length==0){c = 0+parseInt('" + amount + "');}else{c = parseInt(this.value)+parseInt('" + amount + "');}this.value = c.toString();")
+                                            "var c = 0; if(this.value.length==0){c = 0+parseInt('" + amount + "');}else{c = parseInt(this.value)+parseInt('" + amount + "');}this.value = c.toString();")
                     QMetaObject.invokeMethod(self.browser, "submit", Qt.QueuedConnection)  # 下注
                     self.betTimer.setInterval(2500)
                 elif total_amount == money1:
@@ -963,13 +1010,13 @@ class MyConsole(QWidget):
                     self.betTimer.setInterval(1000)
                 else:
                     logging.info('bet-success1 @@Re-Bet-Again@@ total_amount=%s, money1=%s, money2=%s' % (
-                    total_amount, money1, money2))
+                        total_amount, money1, money2))
                     doc = self.browser.page().mainFrame().documentElement()
                     bet_again_elems = doc.findAll('a[class="btn_m elem_btn l-c-b-t2 ft000 bet-again"]')
                     for i in range(len(bet_again_elems)):
                         logging.info('bet-success1 @@Re-Bet-Again@@ %s' % i)
                         bet_again_elems[i].evaluateJavaScript(
-                            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
                         bet_again_elems[i].evaluateJavaScript("this.click();")
 
             elif self.is_bet_success1 and not self.is_bet_success2:
@@ -1003,7 +1050,7 @@ class MyConsole(QWidget):
                                 amount = self.balls_bet_amount[i[2]]
                                 if int(amount) > 0:
                                     elem.evaluateJavaScript(
-                                        "var c = 0; if(this.value.length==0){c = 0+parseInt('" + amount + "');}else{c = parseInt(this.value)+parseInt('" + amount + "');}this.value = c.toString();")
+                                            "var c = 0; if(this.value.length==0){c = 0+parseInt('" + amount + "');}else{c = parseInt(this.value)+parseInt('" + amount + "');}this.value = c.toString();")
 
                     QMetaObject.invokeMethod(self.browser, "submit", Qt.QueuedConnection)  # 下注
                     self.betTimer.setInterval(2500)
@@ -1023,14 +1070,14 @@ class MyConsole(QWidget):
                 else:
                     logging.info('bet-success2 @@Re-Bet-Again@@')
                     logging.info('bet-success1 @@Re-Bet-Again@@ total_amount=%s, money1=%s, money2=%s' % (
-                    total_amount, money1, money2))
+                        total_amount, money1, money2))
 
                     doc = self.browser.page().mainFrame().documentElement()
                     bet_again_elems = doc.findAll('a[class="btn_m elem_btn l-c-b-t2 ft000 bet-again"]')
                     for i in range(len(bet_again_elems)):
                         logging.info('bet-success1 @@Re-Bet-Again@@ %s' % i)
                         bet_again_elems[i].evaluateJavaScript(
-                            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
         except Exception, ex:
             logging.error(ex, exc_info=1)
 

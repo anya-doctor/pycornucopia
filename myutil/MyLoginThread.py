@@ -42,14 +42,14 @@ class MyLoginThread(QtCore.QThread):
 
     def login(self):
         get_code_url1 = self.rootUrl + "/getCodeInfo/.auth?u=0.7473080656164435&systemversion=4_6&.auth"
-        r = requests.get(get_code_url1)
+        r = requests.get(get_code_url1, timeout=10)
         a = r.content
         print a
         b = a.split('_')[0]
         __VerifyValue = a.split('_')[1]
         get_code_url = self.rootUrl + "/getVcode/.auth?t=%s&systemversion=4_6&.auth" % b
 
-        r = requests.get(get_code_url)
+        r = requests.get(get_code_url, timeout=10)
         with open('./config/checkcode.png', 'wb') as f:
             f.write(r.content)
 
@@ -127,7 +127,7 @@ class MyLoginThread(QtCore.QThread):
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         }
         self.headers = headers2
-        r = requests.get(recheck_url,  cookies=cookies_jar, headers=headers2)
+        r = requests.get(recheck_url,  cookies=cookies_jar, headers=headers2, timeout=10)
 
         return cookies_jar
 
