@@ -34,10 +34,13 @@ class MyGetPreBetDataThread(QtCore.QThread):
             r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar, headers=self.headers, timeout=10)
             real_content = r.content.split('êêê')[0]
             real_content = real_content.replace('\xef\xbb\xbf','')  # 去掉BOM开头的\xef\xbb\xbf
-            logging.info("real_content=%s" % real_content)
+            logging.info("real_content_%s =%s" % (i, real_content))
 
             # 当然在这里有可能遇到不想要的东西
             if "/webssc/js/plugins/ValidatorAlert" in real_content:
+                # 说明应该重新登录了...
+                return None
+            if "window.parent.location.href =" in real_content:
                 # 说明应该重新登录了...
                 return None
 

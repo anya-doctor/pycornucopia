@@ -83,6 +83,8 @@ class MyConsole(QWidget):
         self.reslist = []
 
         self.betTimer = None
+        self.getPreBetDatgaTimer = None
+        self.loginTimer = None
 
         self.initUI()
         self.initConfig()
@@ -697,14 +699,54 @@ class MyConsole(QWidget):
             logging.error(ex, exc_info=1)
 
     # 响应登录按钮
+    def do_login(self):
+        # 先杀死老的登录进程
+        if self.loginThread:
+            if self.loginThread.isRunning():
+                logging.info(u"老的loginThread还在，杀死它...")
+                self.loginThread.quit()
+                self.loginThread.wait()
+
+        # 先把这些老的进程弄死
+        if self.getPreBetDataThread:
+            #if self.getPreBetDataThread.isRunning():
+            logging.info(u"登录中，老的getPreBetDataThread还在，杀死它...")
+            self.getPreBetDataThread.quit()
+            self.getPreBetDataThread.wait()
+
+        # 如果获取数据的定时器还开着，那么就关掉
+        if self.getPreBetDatgaTimer:
+            logging.info(u"登录中，停掉【获取预下注数据定时器】...")
+            self.getPreBetDatgaTimer.stop()
+
+        from myutil.MyLoginThread import MyLoginThread
+        self.loginThread = MyLoginThread(self.parent.overlay, self)
+        self.loginThread.start()
+
+        self.parent.overlay.show()
+
+        # 在这里才能把时间间隔调整...
+        logging.info(u"我把【登录定时器】的时间间隔调整到15秒...")
+        self.loginTimer.setInterval(15*1000)
+
     @pyqtSlot()
     def onLoginBtn(self):
         try:
-            from myutil.MyLoginThread import MyLoginThread
-            self.loginThread = MyLoginThread(self.parent.overlay, self)
-            self.loginThread.start()
+            logging.info(u"你按下了登录按钮！")
 
-            self.parent.overlay.show()
+
+            # 不管如何，一开始登录要保证这个浮层是隐藏的...
+            # QMetaObject.invokeMethod(self.parent.overlay, "myclose", Qt.QueuedConnection)
+
+            # 先把老的登录进程杀死
+            self.loginTimer = QTimer()
+            self.loginTimer.timeout.connect(self.do_login)
+            self.loginTimer.start()
+            # from myutil.MyLoginThread import MyLoginThread
+            # self.loginThread = MyLoginThread(self.parent.overlay, self)
+            # self.loginThread.start()
+            #
+            # self.parent.overlay.show()
         except Exception, ex:
             logging.error(ex, exc_info=1)
 
@@ -716,12 +758,14 @@ class MyConsole(QWidget):
         :return:
         """
         try:
+            # 因为登录成功，所以先把那个自动登录进程杀死吧。
+            logging.info(u"我停掉了【登录定时器】...")
+            self.loginTimer.stop()
+
             self.loginSuccessData = data_dic
             self.getPreBetDatgaTimer = QTimer()
             self.getPreBetDatgaTimer.timeout.connect(self.do_getPreBetData)
-            self.getPreBetDatgaTimer.start(1000)
-
-            self.getPreBetDatgaTimer.setInterval(10 * 1000)
+            self.getPreBetDatgaTimer.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
 
@@ -743,6 +787,10 @@ class MyConsole(QWidget):
                                                              self.loginSuccessData['headers']
                                                              )
             self.getPreBetDataThread.start()
+
+            # 在这里才能把时间间隔调整...
+            logging.info(u"我把【获取预下注数据定时器】的时间间隔调整到10秒...")
+            self.getPreBetDatgaTimer.setInterval(10 * 1000)
         except Exception, ex:
             logging.error(ex, exc_info=1)
 
@@ -1083,7 +1131,10 @@ class MyConsole(QWidget):
 
     @pyqtSlot(str)
     def loginFailed(self, msg):
-        QtGui.QMessageBox.about(self, u'登录失败', msg)
+        # 在这里重新把时间调整回去马上
+        logging.info(u"因为登录失败，马上开启【登录定时器】...")
+        self.loginTimer.setInterval(0)
+        # QtGui.QMessageBox.about(self, u'登录失败', msg)
 
     # 响应程序改名按钮
     def on_rename_btn(self):
