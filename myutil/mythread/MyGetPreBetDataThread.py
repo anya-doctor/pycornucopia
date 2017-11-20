@@ -47,7 +47,9 @@ class MyGetPreBetDataThread(QtCore.QThread):
             t_json = json.loads(real_content)
             if t_json and t_json['data']['success']:
                 version_number = t_json['data']['version_number']
-                print 'version_number=%s' % version_number
+                win = t_json['data']['win'] if 'win' in t_json['data'] else 'NULL'
+                logging.info('version_number=%s' % version_number)
+                logging.info('win=%s' % win)
             else:
                 version_number = -1
                 logging.error("版本号拿不到咯！！！！")

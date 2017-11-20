@@ -519,6 +519,41 @@ class MyConsole(QWidget):
             QtGui.QMessageBox.about(self, u'请注意', u"已经停止，下注列表全部清空。")
 
     def do_start(self):
+        self.cur_money = int(self.preBetDataDic['data']['win'])
+        self.timesnow = int(self.preBetDataDic['data']['betnotice']['timesnow'])
+        self.timeclose = int(self.preBetDataDic['data']['betnotice']['timeclose'])
+        self.timeopen = int(self.preBetDataDic['data']['betnotice']['timeopen'])
+        logging.info(u"当前金额=%s" % self.cur_money)
+        logging.info(u"当前期数=%s" % self.timesnow)
+        logging.info(u"当前剩余时间=%s" % self.timeclose)
+        logging.info(u"下局开始时间=%s" % self.timeopen)
+
+        # 判断止损条件
+        if not (int(self.lost_money_at) < self.cur_money < int(self.earn_money_at)):
+            self.goTimer.stop()
+            logging.info(u"已停止达到赢损条件。")
+            QtGui.QMessageBox.about(self, u'已停止', u"达到赢损条件。")
+
+        # 杀掉老的进程
+        if self.goThread and self.goThread.isRunning():
+            logging.info(u"老的goThread还在，杀死它...")
+            self.goThread.quit()
+            self.goThread.wait()
+
+        # 至少留5秒的时候来
+        if self.timeclose < 5:
+            logging.info(u"下注时间来不及了...")
+            self.goTimer.setInterval(self.timeopen * 1000)
+
+        # 一旦开始了，就开始一次就行了
+        self.goThread = MyDataGetter(self, self.browser, self.curP, self.balls_bet_flag,
+                                     self.balls_bet_amount, self.all_ball_needToBetList, self.first_n,
+                                     self.change_flag, self.is_bet_success1, self.is_bet_success2,
+                                     self.reslist)
+        self.goThread.start()
+        self.goTimer.stop()
+
+    def do_start2(self):
         limit_seconds = MySettings.allow_bet_time
 
         timeclose = self.getTimeclose()
@@ -709,7 +744,7 @@ class MyConsole(QWidget):
 
         # 先把这些老的进程弄死
         if self.getPreBetDataThread:
-            #if self.getPreBetDataThread.isRunning():
+            # if self.getPreBetDataThread.isRunning():
             logging.info(u"登录中，老的getPreBetDataThread还在，杀死它...")
             self.getPreBetDataThread.quit()
             self.getPreBetDataThread.wait()
@@ -719,7 +754,7 @@ class MyConsole(QWidget):
             logging.info(u"登录中，停掉【获取预下注数据定时器】...")
             self.getPreBetDatgaTimer.stop()
 
-        from myutil.MyLoginThread import MyLoginThread
+        from myutil.mythread.MyLoginThread import MyLoginThread
         self.loginThread = MyLoginThread(self.parent.overlay, self)
         self.loginThread.start()
 
@@ -727,13 +762,12 @@ class MyConsole(QWidget):
 
         # 在这里才能把时间间隔调整...
         logging.info(u"我把【登录定时器】的时间间隔调整到15秒...")
-        self.loginTimer.setInterval(15*1000)
+        self.loginTimer.setInterval(15 * 1000)
 
     @pyqtSlot()
     def onLoginBtn(self):
         try:
             logging.info(u"你按下了登录按钮！")
-
 
             # 不管如何，一开始登录要保证这个浮层是隐藏的...
             # QMetaObject.invokeMethod(self.parent.overlay, "myclose", Qt.QueuedConnection)
@@ -778,7 +812,7 @@ class MyConsole(QWidget):
                     self.getPreBetDataThread.quit()
                     self.getPreBetDataThread.wait()
 
-            from myutil.MyGetPreBetDataThread import MyGetPreBetDataThread
+            from myutil.mythread.MyGetPreBetDataThread import MyGetPreBetDataThread
             self.getPreBetDataThread = MyGetPreBetDataThread(self.parent,
                                                              self,
                                                              self.loginSuccessData['origin_url'],
@@ -941,9 +975,9 @@ class MyConsole(QWidget):
         self.is_bet_success1 = True
         self.is_bet_success2 = True
 
-        from myutil import MyThread
-        self.bet_thread = MyThread.MyGetPreBetDataThread(self.browser, self.all_ball_needToBetList,
-                                                         self.balls_bet_amount)
+        from myutil.mythread import MyBetThread
+        self.bet_thread = MyBetThread.MyBetDataThread(self.loginSuccessData, self.all_ball_needToBetList,
+                                                      self.balls_bet_amount, self.preBetDataDic)
         self.bet_thread.start()
 
     # 获取今天输赢
@@ -1150,3 +1184,7 @@ class MyConsole(QWidget):
             QMetaObject.invokeMethod(self.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
 
             QtGui.QMessageBox.about(self, u'重命名成功', u"祝您财源广进!")
+
+    @pyqtSlot()
+    def betFailed(self):
+        QtGui.QMessageBox.about(self, u'失败了！', u"此次下注失败，貌似是时间不够用...")

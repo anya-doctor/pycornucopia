@@ -1,13 +1,11 @@
 # #coding:utf-8
+import json
 import logging
 
+import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 from PyQt4.QtWebKit import *
-
-import MySettings
-import requests
-import json
 
 
 class MyBrowser(QWebView):
@@ -364,8 +362,8 @@ class MyBrowser(QWebView):
         return res
     
     def get_bet_str(self, bet_balls_list, bet_money_list):
-        from myutil import MyThread
-        self.get_pre_bet_thread = MyThread.MyGetPreBetDataThread(self)
+        from myutil.mythread import MyBetThread
+        self.get_pre_bet_thread = MyBetThread.MyBetDataThread(self)
         pre_bet_data = self.get_pre_bet_thread.start()
         if not pre_bet_data:
             logging.error("拿不到下注前数据？")
