@@ -82,7 +82,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
                 QMetaObject.invokeMethod(self.console, "onLoginBtn", Qt.QueuedConnection)
             elif json_data and isinstance(json_data, dict):
                 QMetaObject.invokeMethod(self.mainWindow, "updatePreBetData", Qt.QueuedConnection, Q_ARG(dict, json_data))
-                QMetaObject.invokeMethod(self.console, "updatePreBetData", Qt.QueuedConnection, Q_ARG(dict, json_data))
+                QMetaObject.invokeMethod(self.console, "onUpdatePreBetDataHideBtn", Qt.QueuedConnection, Q_ARG(dict, json_data))
         except Exception, ex:
             logging.error(ex, exc_info=1)
 

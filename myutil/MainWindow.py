@@ -22,7 +22,8 @@ class MainWindow(QtGui.QMainWindow):
         tab3 = QtGui.QWidget()
 
         web = MyBrowser()
-        console = MyConsole(web, self, tab2)
+        console = MyConsole(parent=self, browser=web)
+
         web.setConsole(console)
 
         # tab1 - web

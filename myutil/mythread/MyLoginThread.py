@@ -154,7 +154,7 @@ class MyLoginThread(QtCore.QThread):
                     "pk_post_bet_url": self.pk_post_bet_url,
                     "headers": self.headers
                 }
-                QMetaObject.invokeMethod(self.console, "startGetPreBetData", Qt.QueuedConnection, Q_ARG(dict, data_dic))
+                QMetaObject.invokeMethod(self.console, "onGetPreBetDataHideBtn", Qt.QueuedConnection, Q_ARG(dict, data_dic))
             else:
                 msg = u"获取数据异常..."
                 QMetaObject.invokeMethod(self.console, "loginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
