@@ -17,10 +17,20 @@ def getCurrentTimestamp(bit_type=13):
 
 
 def beautiful_log(func):
+    """
+    专门用来打印日志的装饰器
+    :param func:
+    :return:
+    """
     def new_func(*args, **kwargs):
         logging.info("############## START %s ##############" % func.__name__)
         ret = func(*args, **kwargs)
         logging.info("############## END %s ##############" % func.__name__)
         return ret
-
     return new_func
+
+# 获取当前时间
+def getTimeHour():
+    import time
+    times = time.localtime(time.time())
+    hour = times[3]

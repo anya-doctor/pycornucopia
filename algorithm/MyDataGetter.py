@@ -5,9 +5,9 @@ from myutil.MyBaseDataGetter import MyBaseDataGetter
 
 
 class MyDataGetter(MyBaseDataGetter):
-    def __init__(self, console, bro, curP, balls_bet_flag, balls_bet_amount, all_ball_needToBetList, first_n,
+    def __init__(self, console, curP, balls_bet_flag, balls_bet_amount, all_ball_needToBetList, first_n,
                  change_flag, is_bet_success1, is_bet_success2, reslist):
-        super(MyDataGetter, self).__init__(console, bro, curP, balls_bet_flag, balls_bet_amount, all_ball_needToBetList,
+        super(MyDataGetter, self).__init__(console, curP, balls_bet_flag, balls_bet_amount, all_ball_needToBetList,
                                          first_n, change_flag, is_bet_success1, is_bet_success2, reslist)
 
     # 处理上期数据 + 下注列表数据更新

@@ -44,28 +44,31 @@ class MyStartAction(object):
             console_instance.goTimer.stop()
             logging.info(u"已停止达到赢损条件。")
             QtGui.QMessageBox.about(console_instance, u'已停止', u"达到赢损条件。")
+        else:
+            # 触发一次就够了, 定时器关闭...
+            console_instance.goTimer.stop()
 
-        # 杀掉老的进程
-        if console_instance.goThread and console_instance.goThread.isRunning():
-            logging.info(u"老的goThread还在，杀死它...")
-            console_instance.goThread.quit()
-            console_instance.goThread.wait()
+            # 杀掉老的进程
+            if console_instance.goThread and console_instance.goThread.isRunning():
+                logging.info(u"老的goThread还在，杀死它...")
+                console_instance.goThread.quit()
+                console_instance.goThread.wait()
 
-        # 至少留5秒的时候来
-        if console_instance.timeclose < 5:
-            logging.info(u"下注时间来不及了...")
-            console_instance.goTimer.setInterval(console_instance.timeopen * 1000)
+            # 至少留5秒的时候来
+            if console_instance.timeclose < 5:
+                logging.info(u"下注时间来不及了...")
+                console_instance.goTimer.setInterval(console_instance.timeopen * 1000)
 
-        # 一旦开始了，就开始一次就行了
-        console_instance.goThread = MyDataGetter(console_instance, console_instance.browser, console_instance.curP,
-                                                 console_instance.balls_bet_flag,
-                                                 console_instance.balls_bet_amount,
-                                                 console_instance.all_ball_needToBetList, console_instance.first_n,
-                                                 console_instance.change_flag, console_instance.is_bet_success1,
-                                                 console_instance.is_bet_success2,
-                                                 console_instance.reslist)
-        console_instance.goThread.start()
-        console_instance.goTimer.stop()
+            # 一旦开始了，就开始一次就行了
+            console_instance.goThread = MyDataGetter(console_instance, console_instance.curP,
+                                                     console_instance.balls_bet_flag,
+                                                     console_instance.balls_bet_amount,
+                                                     console_instance.all_ball_needToBetList, console_instance.first_n,
+                                                     console_instance.change_flag, console_instance.is_bet_success1,
+                                                     console_instance.is_bet_success2,
+                                                     console_instance.reslist)
+            console_instance.goThread.start()
+
 
         # @staticmethod
         # def do_start2(console_instance):

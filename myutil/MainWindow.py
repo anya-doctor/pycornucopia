@@ -17,23 +17,14 @@ class MainWindow(QtGui.QMainWindow):
 
         tabs = QtGui.QTabWidget(self)
 
-        tab1 = QtGui.QWidget()
         tab2 = QtGui.QWidget()
         tab3 = QtGui.QWidget()
 
-        web = MyBrowser()
-        console = MyConsole(parent=self, browser=web)
+        console = MyConsole(parent=self)
 
-        web.setConsole(console)
-
-        # tab1 - web
-        web.settings().setAttribute(QWebSettings.PluginsEnabled, True)
-        vBoxlayout = QtGui.QVBoxLayout()
-        vBoxlayout.addWidget(web)
-        tab1.setLayout(vBoxlayout)
 
         # tab2 - console
-        console.setMinimumSize(1500, 600)
+        console.setMinimumSize(1500, 800)
         scroll = QtGui.QScrollArea()
         scroll.setWidget(console)
         scroll.setAutoFillBackground(True)
@@ -47,12 +38,11 @@ class MainWindow(QtGui.QMainWindow):
         vbox3 = QtGui.QVBoxLayout()
         vbox3.addWidget(self.text)
         tab3.setLayout(vbox3)
-        tabs.addTab(tab1, u"浏览器")
         tabs.addTab(tab2, u"控制台")
         tabs.addTab(tab3, u"数据展示")
 
-        tabs.resize(1200, 650)
-        self.resize(1200, 650)
+        tabs.resize(1200, 800)
+        self.resize(1200, 800)
         self.tabs = tabs
         self.tab2 = tab2
         self.tab3 = tab3

@@ -13,10 +13,9 @@ from myutil import MySettings
 
 
 class MyBaseDataGetter(QtCore.QThread):
-    def __init__(self, console, bro, curP, balls_bet_flag, balls_bet_amount, all_ball_needToBetList, first_n,
+    def __init__(self, console, curP, balls_bet_flag, balls_bet_amount, all_ball_needToBetList, first_n,
                  change_flag, is_bet_success1, is_bet_success2, reslist):
         QtCore.QThread.__init__(self)
-        self.browser = bro
         self.console = console
         self.all_ball_needToBetList = all_ball_needToBetList
         self.pre_all_ball_needToBetList = all_ball_needToBetList

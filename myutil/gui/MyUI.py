@@ -25,13 +25,6 @@ class MyUIUtil(object):
             console_instance.gridlayout.setColumnStretch(i, 1)
             console_instance.gridlayout.setRowStretch(i, 1)
 
-        console_instance.refreshBtn = QtGui.QPushButton(u"刷新")
-        console_instance.refreshBtn.setFixedSize(40, 20)
-        console_instance.refreshBtn.setEnabled(True)
-        console_instance.connect(console_instance.refreshBtn, QtCore.SIGNAL('clicked()'),
-                                 console_instance.onRefreshButton)
-        console_instance.gridlayout.addWidget(console_instance.refreshBtn, 1, 4, 1, 2)
-
         # 为了美观
         lb1 = QLabel(u'账户')
         lb2 = QLabel(u'密码')
@@ -191,7 +184,7 @@ class MyUIUtil(object):
                 console_instance.gridlayout.addWidget(tmp_entrys[i][j], 4 + j, 1 + 4 * i, 1, 3)
 
         console_instance.viewEntry = QTableWidget(0, 7)
-        console_instance.gridlayout.addWidget(console_instance.viewEntry, 14, 0, 20, 28)
+        console_instance.gridlayout.addWidget(console_instance.viewEntry, 14, 0, 30, 28)
         console_instance.viewEntry.setHorizontalHeaderLabels([u'期数', u'位置', u'投注号码', u'倍投', u'金额', u'下注否', u'中否'])
         console_instance.viewEntry.horizontalHeader().setStretchLastSection(True)
         console_instance.viewEntry.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
@@ -211,9 +204,6 @@ class MyUIUtil(object):
 
         for row in cursor:
             lines = row[0].replace(' ', '\n')
-            urls = row[0].split(' ')
-            if len(urls) > 0:
-                console_instance.browser.setUrl(QUrl(urls[0]))
 
             console_instance.linesEntry.setText(lines)
             console_instance.lines = row[0].split(' ')

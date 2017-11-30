@@ -1,11 +1,9 @@
 # #coding:utf-8
 import logging
-import time
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-from bs4 import BeautifulSoup
 
 from myutil.action.GetPreBetDataAction import MyGetPreBetDataAction
 from myutil.action.LoginAction import MyLoginAction
@@ -17,17 +15,15 @@ from myutil.gui.MyUI import MyUIUtil
 
 
 class MyConsole(QWidget):
-    def __init__(self, parent=None, browser=None):
+    def __init__(self, parent=None):
         """
         投注的倍数 self.balls_bet_amount
 
-        :param bro:
         :param parent:
         :return:
         """
         QWidget.__init__(self)
 
-        self.browser = browser
         self.parent = parent
         self.username = ''
         self.password = ''
@@ -37,38 +33,6 @@ class MyConsole(QWidget):
         self.balls_bet_flag = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # [0,0,0,0,0]
         self.all_ball_needToBetList = []  # [[1,2,3,4],[3,4,5,6],[2,1,3,4],[2,3,4,1],[7,8,9,0]]
         self.balls_bet_amount = []  # ['1','2','4','8']
-        self.balls_elem_dic = {
-            '1_1': 6, '2_1': 22, '3_1': 38, '4_1': 54, '5_1': 70,
-            '1_2': 7, '2_2': 23, '3_2': 39, '4_2': 55, '5_2': 71,
-            '1_3': 8, '2_3': 24, '3_3': 40, '4_3': 56, '5_3': 72,
-            '1_4': 9, '2_4': 25, '3_4': 41, '4_4': 57, '5_4': 73,
-            '1_5': 10, '2_5': 26, '3_5': 42, '4_5': 58, '5_5': 74,
-            '1_6': 11, '2_6': 27, '3_6': 43, '4_6': 59, '5_6': 75,
-            '1_7': 12, '2_7': 28, '3_7': 44, '4_7': 60, '5_7': 76,
-            '1_8': 13, '2_8': 29, '3_8': 45, '4_8': 61, '5_8': 77,
-            '1_9': 14, '2_9': 30, '3_9': 46, '4_9': 62, '5_9': 78,
-            '1_10': 15, '2_10': 31, '3_10': 47, '4_10': 63, '5_10': 79
-        }
-
-        self.balls_elem_dic2 = {
-            '1_1': 4, '2_1': 18, '3_1': 32, '4_1': 46, '5_1': 60,
-            '1_2': 5, '2_2': 19, '3_2': 33, '4_2': 47, '5_2': 61,
-            '1_3': 6, '2_3': 20, '3_3': 34, '4_3': 48, '5_3': 62,
-            '1_4': 7, '2_4': 21, '3_4': 35, '4_4': 49, '5_4': 63,
-            '1_5': 8, '2_5': 22, '3_5': 36, '4_5': 50, '5_5': 64,
-            '1_6': 9, '2_6': 23, '3_6': 37, '4_6': 51, '5_6': 65,
-            '1_7': 10, '2_7': 24, '3_7': 38, '4_7': 52, '5_7': 66,
-            '1_8': 11, '2_8': 25, '3_8': 39, '4_8': 53, '5_8': 67,
-            '1_9': 12, '2_9': 26, '3_9': 40, '4_9': 54, '5_9': 68,
-            '1_10': 13, '2_10': 27, '3_10': 41, '4_10': 55, '5_10': 69
-        }
-
-        self.balls_elem_dic3 = {
-            '3': 0, '4': 1, '5': 2, '6': 3, '7': 4,
-            '8': 5, '9': 6, '10': 7, '11': 8, '12': 9,
-            '13': 10, '14': 11, '15': 12, '16': 13, '17': 14,
-            '18': 15, '19': 16
-        }
 
         self.goThread = None
         self.getPreBetDataThread = None
@@ -110,13 +74,12 @@ class MyConsole(QWidget):
     def onGetPreBetDataHideBtn(self, data_dic):
         MyGetPreBetDataAction.run(self, data_dic)
 
+        # 登录成功后，就会开始获取数据，这个时候就可以把失败次数=0
+        self.login_fail_cnt = 0
+
     @pyqtSlot(dict)
     def onUpdatePreBetDataHideBtn(self, data_dic):
         MyUpdatePreBetDataAction.run(self, data_dic)
-
-    # 响应刷新按钮
-    def onRefreshButton(self):
-        QMetaObject.invokeMethod(self.browser, "refresh", Qt.QueuedConnection, Q_ARG(str, self.lines[self.lines_flag]))
 
     # 重置获取数据定时器
     @pyqtSlot(int)
@@ -202,36 +165,6 @@ class MyConsole(QWidget):
             for i in self.all_ball_needToBetList:
                 logging.info(i)
 
-    # 获取当前时间
-    def getTimeHour(self):
-        times = time.localtime(time.time())
-        hour = times[3]
-
-    # 获取封盘时间
-    def getTimeclose(self):
-        html = self.browser.page().currentFrame().toHtml().toUtf8()
-        content = unicode(html, 'utf-8', 'ignore')
-        soup = BeautifulSoup(content, "lxml")
-        tag = soup.find(id="timeclose")
-
-        if tag != None:
-            timeclose = tag.text
-            if ":" in timeclose:
-                a = timeclose.split(":")
-                return int(a[0]) * 60 + int(a[1])
-            else:
-                return -1
-        else:
-            return -1
-
-    def isOnBetPage(self, cnt):
-        doc = self.browser.page().currentFrame().documentElement()
-        amount_inputs = doc.findAll('input[class=amount-input]')
-        if len(amount_inputs) == cnt:
-            return True
-        else:
-            return False
-
     @pyqtSlot()
     def onBet(self):
         ##界面更新
@@ -248,29 +181,6 @@ class MyConsole(QWidget):
         self.bet_thread = MyBetThread.MyBetDataThread(self.loginSuccessData, self.all_ball_needToBetList,
                                                       self.balls_bet_amount, self.preBetDataDic)
         self.bet_thread.start()
-
-    # 获取今天输赢
-    def get_cur_money(self):
-        doc = self.browser.page().currentFrame().documentElement()
-        elem = doc.findFirst('span[id=win]')
-        money = '#'
-        if elem:
-            money = elem.toPlainText()
-            money = str(money).replace(',', '')
-        return money
-
-    def getCurBetMoney(self):
-        doc = self.browser.page().currentFrame().documentElement()
-        elem = doc.findFirst('td[id=total_amount]')
-        total_amount = elem.toPlainText()
-        try:
-            return int(total_amount)
-        except:
-            return -1
-
-    def getAmountInputs(self):
-        doc = self.browser.page().currentFrame().documentElement()
-        return doc.findAll('input[class=amount-input]')
 
     def getTheoryMoney(self):
         try:
@@ -436,8 +346,11 @@ class MyConsole(QWidget):
     def loginFailed(self, msg):
         # 在这里重新把时间调整回去马上
         logging.info(u"因为登录失败，马上开启【登录定时器】...")
-        self.loginTimer.setInterval(0)
-        # QtGui.QMessageBox.about(self, u'登录失败', msg)
+        self.loginTimer.setInterval(2000)
+        self.login_fail_cnt += 1
+        if self.login_fail_cnt == 5:
+            self.login_fail_cnt = 0
+            QtGui.QMessageBox.about(self, u'登录失败', u"请检查下线路吧。。")
 
     @pyqtSlot()
     def betFailed(self):
