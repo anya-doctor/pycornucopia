@@ -390,7 +390,7 @@ class MyUIUtil(object):
                                        row[108],
                                        row[109]]
             console_instance.balls = [console_instance.ball1, console_instance.ball2, console_instance.ball3,
-                                      console_instance.ball4, console_instance.ball5, \
+                                      console_instance.ball4, console_instance.ball5,
                                       console_instance.ball6, console_instance.ball7, console_instance.ball8,
                                       console_instance.ball9, console_instance.ball10]
 

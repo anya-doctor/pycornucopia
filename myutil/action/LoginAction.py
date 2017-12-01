@@ -14,19 +14,10 @@ class MyLoginAction(object):
     def run(console_instance):
         try:
             logging.info(u"你按下了登录按钮！")
-
-            # 不管如何，一开始登录要保证这个浮层是隐藏的...
-            # QMetaObject.invokeMethod(console_instance.parent.overlay, "myclose", Qt.QueuedConnection)
-
             # 先把老的登录进程杀死
             console_instance.loginTimer = QTimer()
             console_instance.loginTimer.timeout.connect(lambda: MyLoginAction.do_login(console_instance))
             console_instance.loginTimer.start()
-            # from myutil.MyLoginThread import MyLoginThread
-            # console_instance.loginThread = MyLoginThread(console_instance.parent.overlay, console_instance)
-            # console_instance.loginThread.start()
-            #
-            # console_instance.parent.overlay.show()
         except Exception, ex:
             logging.error(ex, exc_info=1)
 

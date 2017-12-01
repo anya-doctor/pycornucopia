@@ -1,8 +1,8 @@
 # #coding:utf-8
 import json
 import logging
-import requests
 
+import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
@@ -24,16 +24,17 @@ class MyGetPreBetDataThread(QtCore.QThread):
         t = ['ballNO15', 'ballNO60']
         res = []
         for i in t:
-            payload={
+            payload = {
                 'action': 'ajax',
                 'play': i,
                 'ball': '',
                 'cat': 15
             }
 
-            r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar, headers=self.headers, timeout=10)
+            r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
+                              headers=self.headers, timeout=10)
             real_content = r.content.split('êêê')[0]
-            real_content = real_content.replace('\xef\xbb\xbf','')  # 去掉BOM开头的\xef\xbb\xbf
+            real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
             logging.info("real_content_%s =%s" % (i, real_content))
 
             # 当然在这里有可能遇到不想要的东西
@@ -59,7 +60,8 @@ class MyGetPreBetDataThread(QtCore.QThread):
         pk_15_predata_json = res[0]
         pk_60_predata_json = res[1]
         try:
-            if isinstance(pk_15_predata_json['data']['integrate'], dict) and isinstance(pk_60_predata_json['data']['integrate'], dict):
+            if isinstance(pk_15_predata_json['data']['integrate'], dict) and isinstance(
+                    pk_60_predata_json['data']['integrate'], dict):
                 for key, value in pk_15_predata_json['data']['integrate'].iteritems():
                     pk_60_predata_json['data']['integrate'][key] = value
             else:
@@ -81,9 +83,10 @@ class MyGetPreBetDataThread(QtCore.QThread):
                 logging.info("======================RELOGIN======================")
                 QMetaObject.invokeMethod(self.console, "onLoginBtn", Qt.QueuedConnection)
             elif json_data and isinstance(json_data, dict):
-                QMetaObject.invokeMethod(self.mainWindow, "updatePreBetData", Qt.QueuedConnection, Q_ARG(dict, json_data))
-                QMetaObject.invokeMethod(self.console, "onUpdatePreBetDataHideBtn", Qt.QueuedConnection, Q_ARG(dict, json_data))
+                logging.info(u"【获取了预下注数据】控制台更新，UI更新")
+                QMetaObject.invokeMethod(self.mainWindow, "updatePreBetData", Qt.QueuedConnection,
+                                         Q_ARG(dict, json_data))
+                QMetaObject.invokeMethod(self.console, "onUpdatePreBetDataHideBtn", Qt.QueuedConnection,
+                                         Q_ARG(dict, json_data))
         except Exception, ex:
             logging.error(ex, exc_info=1)
-
-

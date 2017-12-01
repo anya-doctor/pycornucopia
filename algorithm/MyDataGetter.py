@@ -1,6 +1,7 @@
 # #coding:utf-8
-import logging
 import copy
+import logging
+
 from myutil.MyBaseDataGetter import MyBaseDataGetter
 
 
@@ -8,7 +9,7 @@ class MyDataGetter(MyBaseDataGetter):
     def __init__(self, console, curP, balls_bet_flag, balls_bet_amount, all_ball_needToBetList, first_n,
                  change_flag, is_bet_success1, is_bet_success2, reslist):
         super(MyDataGetter, self).__init__(console, curP, balls_bet_flag, balls_bet_amount, all_ball_needToBetList,
-                                         first_n, change_flag, is_bet_success1, is_bet_success2, reslist)
+                                           first_n, change_flag, is_bet_success1, is_bet_success2, reslist)
 
     # 处理上期数据 + 下注列表数据更新
     def onHandlePreBet(self, curN, lines):
@@ -18,7 +19,7 @@ class MyDataGetter(MyBaseDataGetter):
 
             cur_ball_number = curN.split(' ')[0:10]
 
-            a = [self.console.is_bet_success1,self.console.is_bet_success2]
+            a = [self.console.is_bet_success1, self.console.is_bet_success2]
             for i in self.all_ball_needToBetList:
                 index = i[0]
                 betlist = i[1]
@@ -29,7 +30,7 @@ class MyDataGetter(MyBaseDataGetter):
                 re_last_bet = i[6]
 
                 if self.console.isLoseAdd == '0':  # 输加注
-                    if cur_ball_number[index-1] in betlist:  # 中了就删了
+                    if cur_ball_number[index - 1] in betlist:  # 中了就删了
                         i[2] = 0
                         # 中了就重置[]
                         i[5] = []
@@ -48,7 +49,7 @@ class MyDataGetter(MyBaseDataGetter):
                         i[4] += 1
 
                 else:  # 赢加注
-                    if cur_ball_number[index-1] in betlist:  # 中了加注
+                    if cur_ball_number[index - 1] in betlist:  # 中了加注
                         i[2] += 1
                         i[5] = copy.deepcopy(i[1])
                         i[4] += 1
@@ -74,7 +75,7 @@ class MyDataGetter(MyBaseDataGetter):
                 logging.info(u"找不到.\config\out.txt？")
                 return -1
             else:
-                logging.info("reverse_cnt=%s, last_bet=%s, ret_last_bet=%s" % (reverse_cnt, last_bet, re_last_bet))
+                logging.info(u"【计算下注】第%s球, 不中次数=%s, 上次下注=%s, 上次不下注列表=%s" % (index, reverse_cnt, last_bet, re_last_bet))
                 # 某些号码不想要
                 dic = {
                     1: int(self.console.ball1_1_Entry.text()),
@@ -89,23 +90,27 @@ class MyDataGetter(MyBaseDataGetter):
                     10: int(self.console.ball1_10_Entry.text()),
                 }
                 if dic[index] == 0:
-                    return -1, [], []
-                    
+                    return [], []
+
                 # 舍弃N期
                 line = lines[self.first_n]
-                balls = line.split(' ')                
-                
+                balls = line.split(' ')
+
                 # 大大 - 小小 - 单单 - 双双
-                mylst = [str(self.console.ball2_1_Entry.text()).split('-'), str(self.console.ball2_2_Entry.text()).split('-'),
-                         str(self.console.ball2_3_Entry.text()).split('-'), str(self.console.ball2_4_Entry.text()).split('-'),
-                         str(self.console.ball2_5_Entry.text()).split('-'), str(self.console.ball2_6_Entry.text()).split('-'),
-                         str(self.console.ball2_7_Entry.text()).split('-'), str(self.console.ball2_8_Entry.text()).split('-'),
-                ]
-                
-                ten_balls = ['1','2','3','4','5','6','7','8','9','10']
+                mylst = [str(self.console.ball2_1_Entry.text()).split('-'),
+                         str(self.console.ball2_2_Entry.text()).split('-'),
+                         str(self.console.ball2_3_Entry.text()).split('-'),
+                         str(self.console.ball2_4_Entry.text()).split('-'),
+                         str(self.console.ball2_5_Entry.text()).split('-'),
+                         str(self.console.ball2_6_Entry.text()).split('-'),
+                         str(self.console.ball2_7_Entry.text()).split('-'),
+                         str(self.console.ball2_8_Entry.text()).split('-'),
+                         ]
+
+                ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
                 # 初始化状态
                 if not last_bet or reverse_cnt == 0:
-                    logging.info("初始化或者中了，重新来6...")
+                    logging.info(u"【初始化状态】...")
                     if balls[index] in mylst[0]:
                         bet_balls = mylst[0]
                     else:
@@ -117,12 +122,12 @@ class MyDataGetter(MyBaseDataGetter):
                     if reverse_cnt % 2 == 1:  # 说明是后面那个大
                         last_index += 1
 
-                    bet_balls =  mylst[(last_index + 1) % len(mylst)]
-                    
+                    bet_balls = mylst[(last_index + 1) % len(mylst)]
+
                     not_bet_balls = [v for v in ten_balls if v not in bet_balls]
                     ret = bet_balls, not_bet_balls
-                
-                logging.info("ret%s  %s" % (ret[0], ret[1]))
+
+                logging.info(u"【计算结果】下注=%s" % (ret[0]))
                 return ret
         except Exception, ex:
             logging.error(ex, exc_info=1)

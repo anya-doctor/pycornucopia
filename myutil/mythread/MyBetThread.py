@@ -1,9 +1,8 @@
 # coding=utf-8
-import time
 import json
-import requests
 import logging
 
+import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
@@ -11,8 +10,9 @@ from myutil.MyTool import getCurrentTimestamp
 
 
 class MyBetDataThread(QtCore.QThread):
-    def __init__(self, loginSuccessData, bet_balls_list, bet_money_list, pre_bet_data):
+    def __init__(self, console_instance, loginSuccessData, bet_balls_list, bet_money_list, pre_bet_data):
         super(MyBetDataThread, self).__init__()
+        self.console_instance = console_instance
         self.loginSuccessData = loginSuccessData
         self.bet_balls_list = bet_balls_list
         self.bet_money_list = bet_money_list
@@ -52,10 +52,16 @@ class MyBetDataThread(QtCore.QThread):
                         continue
 
                     bet_money = bet_money_list[betflag]
+
+                    # 如果拿不到赔率list，直接返回得了...
+                    if not self.pre_bet_data['data']['integrate']:
+                        return ""
+
                     peilv = self.pre_bet_data['data']['integrate'][a + str(index)]
                     bet_str += '%s|%s|%s|%s;' % (a, int(ball), peilv, bet_money)
         except Exception, ex:
             logging.error(ex, exc_info=1)
+            return ""
 
         bet_str += "&v=%s" % version_number
 
@@ -77,8 +83,8 @@ class MyBetDataThread(QtCore.QThread):
 
         bet_str = self.get_bet_str(bet_balls_list, bet_money_list)
         if not bet_str:
-            logging.error("have not bet_str....")
-            logging.error("get the pre bet data again...")
+            logging.error(u"【下注过程】生成下注str出错！")
+            logging.error(u"【下注过程】再次拿预下注数据！")
             return
 
         a = bet_str.split('&')
@@ -95,18 +101,23 @@ class MyBetDataThread(QtCore.QThread):
         real_content = r.content.split('êêê')[0]
         real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
 
-        if real_content == '''{'state':'3','data':0,errors:''}''':
-            logging.error(u"下注失败！！！！")
-            return {}
+        logging.info(u"【下注结果】 字符串=%s" % real_content)
 
-        print real_content
+        real_content = real_content.replace("u'", "'").replace("'", '"')
         t_json = json.loads(real_content)
-        print t_json
+
+        logging.info(u"【下注结果】 json=%s" % t_json)
         return t_json
 
     def run(self):
-        logging.info("=================START RUN BET=========================")
-        ret = self.bet(self.bet_balls_list, self.bet_money_list)
-        if not ret:
-            QMetaObject.invokeMethod(self.console, "betFailed", Qt.QueuedConnection)
-        logging.info("=================END RUN BET===========================")
+        ret_json = self.bet(self.bet_balls_list, self.bet_money_list)
+        bet_success_flag = True
+        if ret_json['state'] == 0:
+            bet_success_flag = False
+
+        if bet_success_flag:
+            logging.error(u"【下注结果】成功！！！")
+            QMetaObject.invokeMethod(self.console_instance, "betSuccess", Qt.QueuedConnection)
+        else:
+            logging.error(u"【下注结果】失败！！！")
+            QMetaObject.invokeMethod(self.console_instance, "betFailed", Qt.QueuedConnection)

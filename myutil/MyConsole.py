@@ -166,7 +166,7 @@ class MyConsole(QWidget):
                 logging.info(i)
 
     @pyqtSlot()
-    def onBet(self):
+    def onStartBetHideBtn(self):
         ##界面更新
         for i in range(len(self.all_ball_needToBetList)):
             row = self.viewEntry.rowCount()
@@ -174,36 +174,12 @@ class MyConsole(QWidget):
             newItem.setBackgroundColor(self.c)
             self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + i), 5, newItem)
         ##开搞
-        self.is_bet_success1 = True
-        self.is_bet_success2 = True
+        self.is_bet_success = True
 
         from myutil.mythread import MyBetThread
-        self.bet_thread = MyBetThread.MyBetDataThread(self.loginSuccessData, self.all_ball_needToBetList,
+        self.bet_thread = MyBetThread.MyBetDataThread(self, self.loginSuccessData, self.all_ball_needToBetList,
                                                       self.balls_bet_amount, self.preBetDataDic)
         self.bet_thread.start()
-
-    def getTheoryMoney(self):
-        try:
-            res = 0
-            for i in self.all_ball_needToBetList:
-                res += int(self.balls_bet_amount[int(i[2])]) * len(i[1])
-            return res
-        except Exception, ex:
-            logging.error(ex, exc_info=1)
-            for i in self.all_ball_needToBetList:
-                logging.info(i)
-
-    def getBet_1_TheoryMoney(self):
-        try:
-            res = 0
-            for i in self.all_ball_needToBetList:
-                if i[0] < 6:
-                    res += int(self.balls_bet_amount[int(i[2])]) * len(i[1])
-            return res
-        except Exception, ex:
-            logging.error(ex, exc_info=1)
-            for i in self.all_ball_needToBetList:
-                logging.info(i)
 
     # 响应下注
     @pyqtSlot()
@@ -215,143 +191,29 @@ class MyConsole(QWidget):
         else:
             logging.error(bet_result)
 
-    # 响应下注
-    @pyqtSlot()
-    def bet2(self):
-        try:
-            self.betTimer.setInterval(15000)
-
-            timeclose = self.getTimeclose()
-            total_amount = self.getCurBetMoney()
-            amount_inputs = self.getAmountInputs()
-
-            money1 = self.getBet_1_TheoryMoney()
-            money2 = self.getTheoryMoney()
-
-            logging.info("money1 = %s, money2=%s" % (money1, money2))
-
-            if not self.is_bet_success1 and timeclose >= 5:
-                if money1 == 0:
-                    cnt = 0
-                    for i in self.all_ball_needToBetList:
-                        row = self.viewEntry.rowCount()
-                        newItem = QTableWidgetItem(u'已投注')
-                        newItem.setBackgroundColor(self.c)
-                        self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
-                        cnt += 1
-                    self.is_bet_success1 = True
-                    self.betTimer.setInterval(1000)
-                    return
-
-                if total_amount <= 0 and len(amount_inputs) == self.NumOfAmountInputs1:
-                    logging.info("total_amount <= 0 and len(amount_inputs) == self.NumOfAmountInputs1")
-                    QMetaObject.invokeMethod(self.browser, "login_agree", Qt.QueuedConnection)  # 万一有公告
-                    tmp_list = ['1_', '2_', '3_', '4_', '5_']
-                    for i in self.all_ball_needToBetList:
-                        if i[0] < 6:
-                            for k in i[1]:
-                                elem = amount_inputs[self.balls_elem_dic[tmp_list[i[0] - 1] + k]]
-                                amount = self.balls_bet_amount[i[2]]
-                                if int(amount) > 0:
-                                    elem.evaluateJavaScript(
-                                            "var c = 0; if(this.value.length==0){c = 0+parseInt('" + amount + "');}else{c = parseInt(this.value)+parseInt('" + amount + "');}this.value = c.toString();")
-                    QMetaObject.invokeMethod(self.browser, "submit", Qt.QueuedConnection)  # 下注
-                    self.betTimer.setInterval(2500)
-                elif total_amount == money1:
-                    logging.info("total_amount ==  money1")
-                    cnt = 0
-                    for i in self.all_ball_needToBetList:
-                        if i[0] < 6:
-                            row = self.viewEntry.rowCount()
-                            newItem = QTableWidgetItem(u'已投注')
-                            newItem.setBackgroundColor(self.c)
-                            self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
-                        cnt += 1
-                    self.is_bet_success1 = True
-                    self.betTimer.setInterval(1000)
-                else:
-                    logging.info('bet-success1 @@Re-Bet-Again@@ total_amount=%s, money1=%s, money2=%s' % (
-                        total_amount, money1, money2))
-                    doc = self.browser.page().mainFrame().documentElement()
-                    bet_again_elems = doc.findAll('a[class="btn_m elem_btn l-c-b-t2 ft000 bet-again"]')
-                    for i in range(len(bet_again_elems)):
-                        logging.info('bet-success1 @@Re-Bet-Again@@ %s' % i)
-                        bet_again_elems[i].evaluateJavaScript(
-                                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
-                        bet_again_elems[i].evaluateJavaScript("this.click();")
-
-            elif self.is_bet_success1 and not self.is_bet_success2:
-
-                if money2 - money1 == 0:
-                    cnt = 0
-                    for i in self.all_ball_needToBetList:
-                        row = self.viewEntry.rowCount()
-                        newItem = QTableWidgetItem(u'已投注')
-                        newItem.setBackgroundColor(self.c)
-                        self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
-                        cnt += 1
-                    self.is_bet_success2 = True
-                    self.betTimer.stop()
-                    QMetaObject.invokeMethod(self.browser, "login_tab5", Qt.QueuedConnection)
-                    return
-
-                self.betTimer.setInterval(15000)
-
-                logging.info("self.is_bet_success1 and not self.is_bet_success2")
-                QMetaObject.invokeMethod(self.browser, "login_agree", Qt.QueuedConnection)  # 万一有公告
-                if not self.isOnBetPage(self.NumOfAmountInputs2):
-                    QMetaObject.invokeMethod(self.browser, "login_tab4", Qt.QueuedConnection)
-                    self.betTimer.setInterval(5000)
-                elif total_amount == money1:
-                    tmp_list = ['1_', '2_', '3_', '4_', '5_']
-                    for i in self.all_ball_needToBetList:
-                        if i[0] >= 6:
-                            for k in i[1]:
-                                elem = amount_inputs[self.balls_elem_dic2[tmp_list[i[0] - 1 - 5] + k]]
-                                amount = self.balls_bet_amount[i[2]]
-                                if int(amount) > 0:
-                                    elem.evaluateJavaScript(
-                                            "var c = 0; if(this.value.length==0){c = 0+parseInt('" + amount + "');}else{c = parseInt(this.value)+parseInt('" + amount + "');}this.value = c.toString();")
-
-                    QMetaObject.invokeMethod(self.browser, "submit", Qt.QueuedConnection)  # 下注
-                    self.betTimer.setInterval(2500)
-                elif total_amount == money2:
-                    cnt = 0
-                    for i in self.all_ball_needToBetList:
-                        if i[0] >= 6:
-                            row = self.viewEntry.rowCount()
-                            newItem = QTableWidgetItem(u'已投注')
-                            newItem.setBackgroundColor(self.c)
-                            self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
-                        cnt += 1
-
-                    self.is_bet_success2 = True
-                    self.betTimer.stop()
-                    QMetaObject.invokeMethod(self.browser, "login_tab5", Qt.QueuedConnection)
-                else:
-                    logging.info('bet-success2 @@Re-Bet-Again@@')
-                    logging.info('bet-success1 @@Re-Bet-Again@@ total_amount=%s, money1=%s, money2=%s' % (
-                        total_amount, money1, money2))
-
-                    doc = self.browser.page().mainFrame().documentElement()
-                    bet_again_elems = doc.findAll('a[class="btn_m elem_btn l-c-b-t2 ft000 bet-again"]')
-                    for i in range(len(bet_again_elems)):
-                        logging.info('bet-success1 @@Re-Bet-Again@@ %s' % i)
-                        bet_again_elems[i].evaluateJavaScript(
-                                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
-        except Exception, ex:
-            logging.error(ex, exc_info=1)
-
     @pyqtSlot(str)
     def loginFailed(self, msg):
         # 在这里重新把时间调整回去马上
         logging.info(u"因为登录失败，马上开启【登录定时器】...")
-        self.loginTimer.setInterval(2000)
+        self.loginTimer.setInterval(500)
         self.login_fail_cnt += 1
+        logging.info(u"登录失败次数=%s" % self.login_fail_cnt)
         if self.login_fail_cnt == 5:
             self.login_fail_cnt = 0
             QtGui.QMessageBox.about(self, u'登录失败', u"请检查下线路吧。。")
+            self.loginTimer.stop()
 
     @pyqtSlot()
     def betFailed(self):
         QtGui.QMessageBox.about(self, u'失败了！', u"此次下注失败，貌似是时间不够用...")
+
+    @pyqtSlot()
+    def betSuccess(self):
+        # 更新下注面板信息...
+        cnt = 0
+        for i in self.all_ball_needToBetList:
+            row = self.viewEntry.rowCount()
+            newItem = QTableWidgetItem(u'已投注')
+            newItem.setBackgroundColor(self.c)
+            self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
+            cnt += 1

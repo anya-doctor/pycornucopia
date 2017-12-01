@@ -3,9 +3,7 @@ import logging
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
-from PyQt4.QtWebKit import *
 
-from MyBrowser import MyBrowser
 from MyConsole import MyConsole
 
 
@@ -21,7 +19,6 @@ class MainWindow(QtGui.QMainWindow):
         tab3 = QtGui.QWidget()
 
         console = MyConsole(parent=self)
-
 
         # tab2 - console
         console.setMinimumSize(1500, 800)
@@ -41,8 +38,8 @@ class MainWindow(QtGui.QMainWindow):
         tabs.addTab(tab2, u"控制台")
         tabs.addTab(tab3, u"数据展示")
 
-        tabs.resize(1200, 800)
-        self.resize(1200, 800)
+        tabs.resize(1500, 800)
+        self.resize(1500, 800)
         self.tabs = tabs
         self.tab2 = tab2
         self.tab3 = tab3

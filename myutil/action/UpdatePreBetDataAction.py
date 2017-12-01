@@ -12,10 +12,8 @@ class MyUpdatePreBetDataAction(object):
     @pyqtSlot(dict)
     def run(console_instance, data_dict):
         try:
-            logging.info("################CONSOLE START Update PreBetData################")
+            logging.info(u"【控制台】更新预下注数据")
             console_instance.preBetDataDic = data_dict
-            logging.info("################CONSOLE END Update PreBetData################")
-
             timeclose = console_instance.preBetDataDic['data']['betnotice']['timeclose']
             timeopen = console_instance.preBetDataDic['data']['betnotice']['timeopen']
 
