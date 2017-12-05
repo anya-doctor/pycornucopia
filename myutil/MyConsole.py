@@ -54,6 +54,11 @@ class MyConsole(QWidget):
 
         self.login_fail_cnt = 0
 
+        # 显示的标签
+        self.qishu_label = None
+        self.timeclose_label = None
+        self.timeopen_label = None
+
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)
 

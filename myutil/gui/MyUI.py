@@ -183,8 +183,21 @@ class MyUIUtil(object):
                 console_instance.gridlayout.addWidget(label, 4 + j, 0 + 4 * i)
                 console_instance.gridlayout.addWidget(tmp_entrys[i][j], 4 + j, 1 + 4 * i, 1, 3)
 
+        console_instance.qishu_label = QLabel(u'期数：')
+        console_instance.timeclose_label = QLabel(u'封盘时间：')
+        console_instance.timeopen_label = QLabel(u'下局开始：')
+        console_instance.win_label = QLabel(u'赢钱：')
+        console_instance.gridlayout.addWidget(console_instance.qishu_label, 14, 0)
+        console_instance.gridlayout.addWidget(console_instance.timeclose_label, 14, 2)
+        console_instance.gridlayout.addWidget(console_instance.timeopen_label, 14, 4)
+        console_instance.gridlayout.addWidget(console_instance.win_label, 14, 6)
+
+        pa = QPalette()
+        pa.setColor(QPalette.WindowText, Qt.red)
+        console_instance.win_label.setPalette(pa)
+
         console_instance.viewEntry = QTableWidget(0, 7)
-        console_instance.gridlayout.addWidget(console_instance.viewEntry, 14, 0, 30, 28)
+        console_instance.gridlayout.addWidget(console_instance.viewEntry, 15, 0, 30, 28)
         console_instance.viewEntry.setHorizontalHeaderLabels([u'期数', u'位置', u'投注号码', u'倍投', u'金额', u'下注否', u'中否'])
         console_instance.viewEntry.horizontalHeader().setStretchLastSection(True)
         console_instance.viewEntry.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
