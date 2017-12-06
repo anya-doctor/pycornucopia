@@ -18,21 +18,42 @@ class MyUpdatePreBetDataAction(object):
             timesnow = console_instance.preBetDataDic['data']['betnotice']['timesnow']
             timeclose = console_instance.preBetDataDic['data']['betnotice']['timeclose']
             timeopen = console_instance.preBetDataDic['data']['betnotice']['timeopen']
-            win = console_instance.preBetDataDic['data']['win']
+            console_instance.open_balls = console_instance.preBetDataDic['data']['betnotice']['resultnum']
+
+            # 如果发现更新了期数，则开始结算..
+            if int(console_instance.timesnow) < int(timesnow):
+                # 更新期数
+                console_instance.timesnow = timesnow
+
+                # 开始结算
+                console_instance.balanceData()
+
+            if 'win' in console_instance.preBetDataDic['data']:
+                win = console_instance.preBetDataDic['data']['win']
+            else:
+                win = '???'
 
             logging.info("timesnow=%s" % timesnow)
             logging.info("timeclose=%s" % timeclose)
             logging.info("timeopen=%s" % timeopen)
             logging.info("win=%s" % win)
+            logging.info("open_balls=%s" % console_instance.open_balls)
 
             # 顺便更新下控制台的UI
-            console_instance.timeclose_label.setText(u'封盘时间：' + str(timeclose))
-            console_instance.timeopen_label.setText(u'下局时间：' + str(timeopen))
+            console_instance.timeclose_label.setText(u'封盘：' + str(timeclose))
+            console_instance.timeopen_label.setText(u'下局：' + str(timeopen))
             console_instance.qishu_label.setText(u'期数：' + str(timesnow))
+            console_instance.open_balls_label.setText(u'开奖：' + str(" ".join(console_instance.open_balls)))
+
             pa = QPalette()
             pa.setColor(QPalette.WindowText, Qt.red)
             console_instance.win_label.setPalette(pa)
-            console_instance.win_label.setText(u'赢钱：' + str(win))
+            if win == '???':
+                pass
+            else:
+                console_instance.win_label.setText(u'赢钱：' + str(win))
+
+
 
             # 如果在封盘期间，则把定时器弄长一点。。。
             if timeclose <= 0 and timeopen > 0:

@@ -5,6 +5,8 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from myutil.action.BalanceDataAction import BalanceDataAction
+from myutil.action.CreateNextBetDataAction import CreateNextBetDataAction
 from myutil.action.GetPreBetDataAction import MyGetPreBetDataAction
 from myutil.action.LoginAction import MyLoginAction
 from myutil.action.ReNameAction import MyReNameAction
@@ -58,6 +60,12 @@ class MyConsole(QWidget):
         self.qishu_label = None
         self.timeclose_label = None
         self.timeopen_label = None
+        self.win_label = None
+        self.open_balls_label = None
+
+        self.timesold = 0
+        self.timesnow = 0
+        self.open_balls = []
 
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)
@@ -185,6 +193,12 @@ class MyConsole(QWidget):
         self.bet_thread = MyBetThread.MyBetDataThread(self, self.loginSuccessData, self.all_ball_needToBetList,
                                                       self.balls_bet_amount, self.preBetDataDic)
         self.bet_thread.start()
+
+    def balanceData(self):
+        BalanceDataAction.run(self)
+
+    def updateNextBetData(self, index, lines, reverse_cnt, last_bet=[], re_last_bet=[]):
+        return CreateNextBetDataAction.run(self, index, lines, reverse_cnt, last_bet=[], re_last_bet=[])
 
     # 响应下注
     @pyqtSlot()
