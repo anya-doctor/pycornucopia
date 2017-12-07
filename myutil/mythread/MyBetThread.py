@@ -109,8 +109,15 @@ class MyBetDataThread(QtCore.QThread):
         logging.info(u"【下注结果】 json=%s" % t_json)
         return t_json
 
+    def bet_fake(self, bet_balls_list, bet_money_list):
+        return {'state': 1}
+
     def run(self):
-        ret_json = self.bet(self.bet_balls_list, self.bet_money_list)
+        if self.console_instance.fake_mode:
+            ret_json = self.bet_fake(self.bet_balls_list, self.bet_money_list)
+        else:
+            ret_json = self.bet(self.bet_balls_list, self.bet_money_list)
+
         bet_success_flag = True
         if ret_json['state'] == 0:
             bet_success_flag = False

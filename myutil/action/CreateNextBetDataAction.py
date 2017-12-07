@@ -33,7 +33,7 @@ class CreateNextBetDataAction(object):
             # line = lines[console_instance.first_n]
             # balls = line.split(' ')
 
-            balls = console_instance.open_ball
+            balls = console_instance.open_balls
 
             # 大大 - 小小 - 单单 - 双双
             mylst = [str(console_instance.ball2_1_Entry.text()).split('-'),

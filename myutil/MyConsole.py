@@ -67,6 +67,8 @@ class MyConsole(QWidget):
         self.timesnow = 0
         self.open_balls = []
 
+        self.fake_mode = True
+
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)
 

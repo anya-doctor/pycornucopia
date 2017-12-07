@@ -76,9 +76,18 @@ class MyGetPreBetDataThread(QtCore.QThread):
         logging.info("#####################end to get pre bet data...#####################")
         return pk_60_predata_json
 
+    def get_pre_bet_date_fake(self):
+        with open('config/fake_data.json', 'r') as f:
+            a = f.read()
+        return json.loads(a)
+
     def run(self):
         try:
-            json_data = self.get_pre_bet_data()
+            if self.console.fake_mode:
+                json_data = self.get_pre_bet_date_fake()
+            else:
+                json_data = self.get_pre_bet_data()
+
             if not json_data:
                 logging.info("======================RELOGIN======================")
                 QMetaObject.invokeMethod(self.console, "onLoginBtn", Qt.QueuedConnection)
