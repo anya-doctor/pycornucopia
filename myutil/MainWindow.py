@@ -3,8 +3,10 @@ import logging
 
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
+from PyQt4.QtGui import QTableWidget, QTableWidgetItem
 
 from MyConsole import MyConsole
+from myutil import MyTool
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -31,12 +33,16 @@ class MainWindow(QtGui.QMainWindow):
         tab2.setLayout(vbox)
 
         # tab3 -
-        self.text = QtGui.QTextEdit()
+        self.viewEntry = QTableWidget(0, 12)
+        self.viewEntry.setHorizontalHeaderLabels([u'期数', u'时间', u'冠军', u'亚军', u'第三名', u'第四名', u'第五名', u'第六名', u'第七名', u'第八名', u'第九名', u'第十名'])
+        self.viewEntry.horizontalHeader().setStretchLastSection(True)
+        self.viewEntry.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+
         vbox3 = QtGui.QVBoxLayout()
-        vbox3.addWidget(self.text)
+        vbox3.addWidget(self.viewEntry)
         tab3.setLayout(vbox3)
         tabs.addTab(tab2, u"控制台")
-        tabs.addTab(tab3, u"数据展示")
+        tabs.addTab(tab3, u"开奖结果")
 
         tabs.resize(1500, 800)
         self.resize(1500, 800)
@@ -58,13 +64,49 @@ class MainWindow(QtGui.QMainWindow):
     def mySetWindowTitle(self, title):
         self.setWindowTitle(title)
 
+    @pyqtSlot(str, list)
+    def appendHistoryResultData(self, timesnow, open_balls):
+        logging.info(u"【历史数据展板-追加】")
+        time_str = MyTool.getCurrentTimeStr()
+        self.viewEntry.insertRow(0)
+        # 期数
+        newItem = QTableWidgetItem(str(timesnow))
+        self.viewEntry.setItem(0, 0, newItem)
+        # 时间
+        newItem = QTableWidgetItem(time_str)
+        self.viewEntry.setItem(0, 1, newItem)
+
+        for i in range(len(open_balls)):
+            newItem = QTableWidgetItem(str(open_balls[i]))
+            self.viewEntry.setItem(0, 2+i, newItem)
+
     @pyqtSlot(dict)
-    def updatePreBetData(self, data_dict):
-        logging.info("################START Update PreBetData################")
-        self.text.clear()
-        import json
-        self.text.append(json.dumps(data_dict))
-        logging.info("################END Update PreBetData################")
+    def updateHistoryResultData(self, data_dict):
+        logging.info(u"【历史数据展板-大更新】################START HistoryResultData################")
+        if data_dict['state'] != 1:
+            logging.error(u"【历史数据展板-大更新】数据貌似不大对，结果如下：")
+            logging.error(data_dict)
+        else:
+            # 先清空...
+            self.viewEntry.clearContents()
+
+            for period in data_dict['data']['result']:
+                # 添加一行
+                row = self.viewEntry.rowCount()
+                self.viewEntry.insertRow(row)
+
+                # 期数
+                newItem = QTableWidgetItem(period[0])
+                self.viewEntry.setItem(row, 0, newItem)
+
+                # 时间
+                newItem = QTableWidgetItem(str(period[1]))
+                self.viewEntry.setItem(row, 1, newItem)
+
+                for i in range(10):
+                    newItem = QTableWidgetItem(str(period[2+i]))
+                    self.viewEntry.setItem(row, 2+i, newItem)
+        logging.info(u"【历史数据展板-大更新】################END HistoryResultData################")
 
     def closeEvent(self, event):
         reply = QtGui.QMessageBox.question(self, u'退出', u"您确定离开吗？", QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)

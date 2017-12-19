@@ -17,10 +17,6 @@ class MyGetPreBetDataAction(object):
         :return:
         """
         try:
-            # 因为登录成功，所以先把那个自动登录进程杀死吧。
-            logging.info(u"我停掉了【登录定时器】...")
-            console_instance.loginTimer.stop()
-
             console_instance.loginSuccessData = data_dic
             console_instance.getPreBetDatgaTimer = QTimer()
             console_instance.getPreBetDatgaTimer.timeout.connect(lambda: MyGetPreBetDataAction.do_getPreBetData(console_instance))

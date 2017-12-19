@@ -93,9 +93,7 @@ class MyBaseDataGetter(QtCore.QThread):
                                      (index, bet_ball, bet_flag, bet_amount, is_qqg))
 
                     # 写数据到Table 通知控制台下注
-                    QMetaObject.invokeMethod(self.console, "loadTableData", Qt.QueuedConnection, Q_ARG(str, curP),
-                                             Q_ARG(list, self.all_ball_needToBetList), Q_ARG(list, self.balls_bet_flag),
-                                             Q_ARG(list, self.change_flag))
+                    QMetaObject.invokeMethod(self.console, "loadTableData", Qt.QueuedConnection)
                     QMetaObject.invokeMethod(self.console, "onStartBetHideBtn", Qt.QueuedConnection)
         except Exception, ex:
             logging.error(ex, exc_info=1)

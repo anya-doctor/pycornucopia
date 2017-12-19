@@ -8,6 +8,8 @@ from PyQt4.QtCore import *
 
 from myutil.MyTool import getCurrentTimestamp
 
+login_session = requests.Session()
+
 
 class MyLoginThread(QtCore.QThread):
     def __init__(self, overlay, console):
@@ -44,15 +46,24 @@ class MyLoginThread(QtCore.QThread):
 
     def login(self):
         get_code_url1 = self.rootUrl + "/getCodeInfo/.auth?u=0.7473080656164435&systemversion=4_6&.auth"
-        r = requests.get(get_code_url1, timeout=10)
-        a = r.content
+
+        r1 = requests.Request('GET', get_code_url1)
+        prep1 = login_session.prepare_request(r1)
+        rr1 = login_session.send(prep1, stream=False, timeout=10)
+
+        # r = requests.get(get_code_url1, timeout=10)
+        a = rr1.content
         b = a.split('_')[0]
         __VerifyValue = a.split('_')[1]
-        get_code_url = self.rootUrl + "/getVcode/.auth?t=%s&systemversion=4_6&.auth" % b
+        get_code_url2 = self.rootUrl + "/getVcode/.auth?t=%s&systemversion=4_6&.auth" % b
 
-        r = requests.get(get_code_url, timeout=10)
+        r2 = requests.Request('GET', get_code_url2)
+        prep2 = login_session.prepare_request(r2)
+        rr2 = login_session.send(prep2, stream=False, timeout=10)
+
+        # r = requests.get(get_code_url2, timeout=10)
         with open('./config/checkcode.png', 'wb') as f:
-            f.write(r.content)
+            f.write(rr2.content)
 
         code = self.getCheckcode()
         logging.info(u"【登录】验证码=%s" % code)
@@ -79,20 +90,21 @@ class MyLoginThread(QtCore.QThread):
             'cname': '星际',
             'systemversion': '4_6'
         }
-        r = requests.post(self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers, timeout=5)
-        real_content = r.content.split('êêê')[0]
+
+        r3 = requests.Request('POST', self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers)
+        prep3 = login_session.prepare_request(r3)
+        rr3 = login_session.send(prep3, stream=False, timeout=5)
+
+        # r = requests.post(self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers, timeout=5)
+        real_content = rr3.content.split('êêê')[0]
         real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
         a = real_content.split('\n')
         logging.info(u"【登录】登录body=%s" % a)
-        logging.info(u"【登录】登录header=%s" % r.headers)
-
-        # 好的，拿到了path
-        global path
-        path = a[0]
+        logging.info(u"【登录】登录header=%s" % r3.headers)
 
         recheck_url = a[1].replace('host', self.host)
         cookies_jar = requests.cookies.RequestsCookieJar()
-        a = r.headers['Set-Cookie']
+        a = rr3.headers['Set-Cookie']
         b = a.split('/,')
         ddd = "mobiLogin=0; sysinfo=ssc%7C1%7Cb%7Cuc%7Cbeishu100; navNum=0; "
         for i in b:
@@ -125,13 +137,20 @@ class MyLoginThread(QtCore.QThread):
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         }
         self.headers = headers2
-        r = requests.get(recheck_url, cookies=cookies_jar, headers=headers2, timeout=10)
+        logging.info(u"【登录中】再次校验URL=%s" % recheck_url)
 
+        r4 = requests.Request('GET', recheck_url, cookies=cookies_jar, headers=headers2)
+        prep4 = login_session.prepare_request(r4)
+        login_session.send(prep4, stream=False, timeout=10)
+
+        # r = requests.get(recheck_url, cookies=cookies_jar, headers=headers2, timeout=10)
+        # r.close()
         return cookies_jar
 
     def run(self):
         try:
-            if self.console.fake_mode:
+            if False:
+                # if self.console.fake_mode:
                 cookies_jar = {'AC': 1}
             else:
                 cookies_jar = self.login()
@@ -158,17 +177,23 @@ class MyLoginThread(QtCore.QThread):
                     "pk_post_bet_url": self.pk_post_bet_url,
                     "headers": self.headers
                 }
+
+                # 一旦登录成功，这开始获取两个数据：预下注数据 + 历史数据
                 QMetaObject.invokeMethod(self.console, "onGetPreBetDataHideBtn", Qt.QueuedConnection,
                                          Q_ARG(dict, data_dic))
+                QMetaObject.invokeMethod(self.console, "onGetHistoryResultDataHideBtn", Qt.QueuedConnection,
+                                         Q_ARG(dict, data_dic))
+                QMetaObject.invokeMethod(self.console, "onLoginSuccess", Qt.QueuedConnection)
+
             else:
                 msg = u"获取数据异常..."
-                QMetaObject.invokeMethod(self.console, "loginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
+                QMetaObject.invokeMethod(self.console, "onLoginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
                 name = self.console.nameEntry.text()
                 QMetaObject.invokeMethod(self.console.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
         except Exception, ex:
             logging.error(ex, exc_info=1)
             msg = u"登录失败，可能是动态获取验证码出问题，请重试！"
-            QMetaObject.invokeMethod(self.console, "loginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
+            QMetaObject.invokeMethod(self.console, "onLoginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
             name = self.console.nameEntry.text()
             QMetaObject.invokeMethod(self.console.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
         finally:

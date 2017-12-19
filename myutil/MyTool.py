@@ -29,8 +29,8 @@ def beautiful_log(func):
         return ret
     return new_func
 
-# 获取当前时间
-def getTimeHour():
+# 获取当前时间-str
+def getCurrentTimeStr():
     import time
     times = time.localtime(time.time())
-    hour = times[3]
+    return "%s-%s - %s:%s" % (times[1], times[2], times[3], times[4])

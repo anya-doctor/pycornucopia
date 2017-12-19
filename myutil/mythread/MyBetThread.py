@@ -123,7 +123,7 @@ class MyBetDataThread(QtCore.QThread):
             bet_success_flag = False
 
         if bet_success_flag:
-            logging.error(u"【下注结果】成功！！！")
+            logging.info(u"【下注结果】成功！！！")
             QMetaObject.invokeMethod(self.console_instance, "betSuccess", Qt.QueuedConnection)
         else:
             logging.error(u"【下注结果】失败！！！")
