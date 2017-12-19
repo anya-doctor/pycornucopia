@@ -5,13 +5,13 @@ import sqlite3
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from myaction.LoginAction import MyLoginAction
+from myaction.ReNameAction import MyReNameAction
+from myaction.SaveConfigAction import MySaveConfigAction
 
+from myaction.StartAction import MyStartAction
 from myutil import MySettings
 from myutil.MyTool import beautiful_log
-from myutil.action.LoginAction import MyLoginAction
-from myutil.action.ReNameAction import MyReNameAction
-from myutil.action.SaveConfigAction import MySaveConfigAction
-from myutil.action.StartAction import MyStartAction
 from myutil.db.MyDB import MyDBUtil
 
 

@@ -4,17 +4,17 @@ import logging
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from myaction.BalanceDataAction import BalanceDataAction
+from myaction.CreateNextBetDataAction import CreateNextBetDataAction
+from myaction.GetHistoryResultDataAction import MyGetHistoryResultDataAction
+from myaction.GetPreBetDataAction import MyGetPreBetDataAction
+from myaction.LoginAction import MyLoginAction
+from myaction.ReNameAction import MyReNameAction
+from myaction.SaveConfigAction import MySaveConfigAction
+from myaction.StartAction import MyStartAction
+from myaction.UpdateHistoryResultDataAction import MyUpdateHistoryResultDataAction
 
-from myutil.action.BalanceDataAction import BalanceDataAction
-from myutil.action.CreateNextBetDataAction import CreateNextBetDataAction
-from myutil.action.GetHistoryResultDataAction import MyGetHistoryResultDataAction
-from myutil.action.GetPreBetDataAction import MyGetPreBetDataAction
-from myutil.action.LoginAction import MyLoginAction
-from myutil.action.ReNameAction import MyReNameAction
-from myutil.action.SaveConfigAction import MySaveConfigAction
-from myutil.action.StartAction import MyStartAction
-from myutil.action.UpdateHistoryResultDataAction import MyUpdateHistoryResultDataAction
-from myutil.action.UpdatePreBetDataAction import MyUpdatePreBetDataAction
+from myaction.UpdatePreBetDataAction import MyUpdatePreBetDataAction
 from myutil.gui.MyUI import MyUIUtil
 
 
@@ -206,7 +206,7 @@ class MyConsole(QWidget):
         ##开搞
         self.is_bet_success = True
 
-        from myutil.mythread import MyBetThread
+        from mythread import MyBetThread
         self.bet_thread = MyBetThread.MyBetDataThread(self, self.loginSuccessData, self.all_ball_needToBetList,
                                                       self.balls_bet_amount, self.preBetDataDic)
         self.bet_thread.start()

@@ -337,7 +337,7 @@ class MyBrowser(QWebView):
         res = []
         for i in t:
             payload={
-                'action': 'ajax',
+                'myaction': 'ajax',
                 'play': i,
                 'ball': '',
                 'cat': 15
@@ -362,7 +362,7 @@ class MyBrowser(QWebView):
         return res
     
     def get_bet_str(self, bet_balls_list, bet_money_list):
-        from myutil.mythread import MyBetThread
+        from mythread import MyBetThread
         self.get_pre_bet_thread = MyBetThread.MyBetDataThread(self)
         pre_bet_data = self.get_pre_bet_thread.start()
         if not pre_bet_data:

@@ -6,6 +6,8 @@ import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
+from common.common import req_session
+
 
 class MyGetPreBetDataThread(QtCore.QThread):
     def __init__(self, mainWindow, console, origin_url, pk_pre_bet_get_data_url, cookies_jar, headers):
@@ -25,15 +27,20 @@ class MyGetPreBetDataThread(QtCore.QThread):
         res = []
         for i in t:
             payload = {
-                'action': 'ajax',
+                'myaction': 'ajax',
                 'play': i,
                 'ball': '',
                 'cat': 15
             }
 
-            r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
-                              headers=self.headers, timeout=10)
-            real_content = r.content.split('êêê')[0]
+            r1 = requests.Request('POST', self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
+                              headers=self.headers)
+            prep1 = req_session.prepare_request(r1)
+            rr1 = req_session.send(prep1, stream=False, timeout=10)
+
+            # r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
+            #                   headers=self.headers, timeout=10)
+            real_content = rr1.content.split('êêê')[0]
             real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
             logging.info("real_content_%s =%s" % (i, real_content))
 

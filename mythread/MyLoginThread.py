@@ -6,9 +6,8 @@ import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
+from common.common import req_session
 from myutil.MyTool import getCurrentTimestamp
-
-login_session = requests.Session()
 
 
 class MyLoginThread(QtCore.QThread):
@@ -48,8 +47,8 @@ class MyLoginThread(QtCore.QThread):
         get_code_url1 = self.rootUrl + "/getCodeInfo/.auth?u=0.7473080656164435&systemversion=4_6&.auth"
 
         r1 = requests.Request('GET', get_code_url1)
-        prep1 = login_session.prepare_request(r1)
-        rr1 = login_session.send(prep1, stream=False, timeout=10)
+        prep1 = req_session.prepare_request(r1)
+        rr1 = req_session.send(prep1, stream=False, timeout=10)
 
         # r = requests.get(get_code_url1, timeout=10)
         a = rr1.content
@@ -58,8 +57,8 @@ class MyLoginThread(QtCore.QThread):
         get_code_url2 = self.rootUrl + "/getVcode/.auth?t=%s&systemversion=4_6&.auth" % b
 
         r2 = requests.Request('GET', get_code_url2)
-        prep2 = login_session.prepare_request(r2)
-        rr2 = login_session.send(prep2, stream=False, timeout=10)
+        prep2 = req_session.prepare_request(r2)
+        rr2 = req_session.send(prep2, stream=False, timeout=10)
 
         # r = requests.get(get_code_url2, timeout=10)
         with open('./config/checkcode.png', 'wb') as f:
@@ -92,8 +91,8 @@ class MyLoginThread(QtCore.QThread):
         }
 
         r3 = requests.Request('POST', self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers)
-        prep3 = login_session.prepare_request(r3)
-        rr3 = login_session.send(prep3, stream=False, timeout=5)
+        prep3 = req_session.prepare_request(r3)
+        rr3 = req_session.send(prep3, stream=False, timeout=5)
 
         # r = requests.post(self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers, timeout=5)
         real_content = rr3.content.split('êêê')[0]
@@ -140,8 +139,8 @@ class MyLoginThread(QtCore.QThread):
         logging.info(u"【登录中】再次校验URL=%s" % recheck_url)
 
         r4 = requests.Request('GET', recheck_url, cookies=cookies_jar, headers=headers2)
-        prep4 = login_session.prepare_request(r4)
-        login_session.send(prep4, stream=False, timeout=10)
+        prep4 = req_session.prepare_request(r4)
+        req_session.send(prep4, stream=False, timeout=10)
 
         # r = requests.get(recheck_url, cookies=cookies_jar, headers=headers2, timeout=10)
         # r.close()

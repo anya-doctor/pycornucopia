@@ -3,6 +3,7 @@ import logging
 
 from PyQt4.QtCore import *
 
+from mythread.MyLoginThread import MyLoginThread
 from myutil.MyTool import beautiful_log
 
 
@@ -43,7 +44,6 @@ class MyLoginAction(object):
             logging.info(u"登录中，停掉【获取预下注数据定时器】...")
             console_instance.getPreBetDatgaTimer.stop()
 
-        from myutil.mythread.MyLoginThread import MyLoginThread
         console_instance.loginThread = MyLoginThread(console_instance.parent.overlay, console_instance)
         console_instance.loginThread.start()
 

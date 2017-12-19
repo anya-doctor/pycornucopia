@@ -35,7 +35,7 @@ class MyGetHistoryResultDataAction(object):
                     console_instance.getHistoryResultDataThread.quit()
                     console_instance.getHistoryResultDataThread.wait()
 
-            from myutil.mythread.MyGetHistoryResultDataThread import MyGetHistoryResultDataThread
+            from mythread.MyGetHistoryResultDataThread import MyGetHistoryResultDataThread
             console_instance.getHistoryResultDataThread = MyGetHistoryResultDataThread(console_instance.parent,
                                                                                        console_instance,
                                                                                        loging_success_data_dic)

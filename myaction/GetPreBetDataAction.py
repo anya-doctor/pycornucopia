@@ -3,6 +3,7 @@ import logging
 
 from PyQt4.QtCore import *
 
+from mythread.MyGetPreBetDataThread import MyGetPreBetDataThread
 from myutil.MyTool import beautiful_log
 
 
@@ -19,7 +20,8 @@ class MyGetPreBetDataAction(object):
         try:
             console_instance.loginSuccessData = data_dic
             console_instance.getPreBetDatgaTimer = QTimer()
-            console_instance.getPreBetDatgaTimer.timeout.connect(lambda: MyGetPreBetDataAction.do_getPreBetData(console_instance))
+            console_instance.getPreBetDatgaTimer.timeout.connect(
+                lambda: MyGetPreBetDataAction.do_getPreBetData(console_instance))
             console_instance.getPreBetDatgaTimer.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
@@ -34,7 +36,6 @@ class MyGetPreBetDataAction(object):
                     console_instance.getPreBetDataThread.quit()
                     console_instance.getPreBetDataThread.wait()
 
-            from myutil.mythread.MyGetPreBetDataThread import MyGetPreBetDataThread
             console_instance.getPreBetDataThread = MyGetPreBetDataThread(console_instance.parent,
                                                                          console_instance,
                                                                          console_instance.loginSuccessData[
