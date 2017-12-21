@@ -34,7 +34,7 @@ class MyLoginThread(QtCore.QThread):
     # 从antivc获取验证码错误返回error
     def getCheckcode(self):
         dll = ctypes.windll.LoadLibrary('./config/AntiVC.dll')
-        a = dll.LoadCdsFromFile('./config/tr.cds', '123qwe')
+        a = dll.LoadCdsFromFile('./config/laobapro.cds', '123qwe')
         yzm = '99999'
         file = './config/checkcode.png'
         if a != -1:
@@ -82,8 +82,8 @@ class MyLoginThread(QtCore.QThread):
         payload = {
             'VerifyCode': code,
             '__VerifyValue': __VerifyValue,
-            '__name': 'GG238989',
-            'password': 'Aa147258',
+            '__name': str(self.console.userEntry.text()),
+            'password': str(self.console.passEntry.text()),
             'isSec': 0,
             'cid': 1229,
             'cname': '星际',

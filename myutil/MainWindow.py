@@ -111,7 +111,12 @@ class MainWindow(QtGui.QMainWindow):
     def closeEvent(self, event):
         reply = QtGui.QMessageBox.question(self, u'退出', u"您确定离开吗？", QtGui.QMessageBox.Yes, QtGui.QMessageBox.No)
         if reply == QtGui.QMessageBox.Yes:
+            # 关闭http连接...
+            from common.common import req_session
+            req_session.close()
+
             event.accept()
+
         else:
             event.ignore()
 

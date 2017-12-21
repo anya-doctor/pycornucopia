@@ -28,21 +28,27 @@ class MyLoginAction(object):
         # 先杀死老的登录进程
         if console_instance.loginThread:
             if console_instance.loginThread.isRunning():
-                logging.info(u"老的loginThread还在，杀死它...")
+                logging.info(u"【登录】老的loginThread还在，杀死它...")
                 console_instance.loginThread.quit()
                 console_instance.loginThread.wait()
 
         # 先把这些老的进程弄死
         if console_instance.getPreBetDataThread:
-            # if console_instance.getPreBetDataThread.isRunning():
-            logging.info(u"登录中，老的getPreBetDataThread还在，杀死它...")
+            logging.info(u"【登录】老的获取预下注数据线程还在，杀死它...")
             console_instance.getPreBetDataThread.quit()
             console_instance.getPreBetDataThread.wait()
+        if console_instance.getHistoryResultDataThread:
+            logging.info(u"【登录】老的获取开奖数据线程，杀死它...")
+            console_instance.getHistoryResultDataThread.quit()
+            console_instance.getHistoryResultDataThread.wait()
 
         # 如果获取数据的定时器还开着，那么就关掉
         if console_instance.getPreBetDatgaTimer:
-            logging.info(u"登录中，停掉【获取预下注数据定时器】...")
+            logging.info(u"【登录】，停掉【获取预下注数据定时器】...")
             console_instance.getPreBetDatgaTimer.stop()
+        if console_instance.getHistoryResultDataTimer:
+            logging.info(u"【登录】，停掉【获取开奖数据定时器】...")
+            console_instance.getHistoryResultDataTimer.stop()
 
         console_instance.loginThread = MyLoginThread(console_instance.parent.overlay, console_instance)
         console_instance.loginThread.start()
