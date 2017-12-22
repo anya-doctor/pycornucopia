@@ -1,6 +1,6 @@
 # #coding:utf-8
-import sys
 import logging
+import sys
 
 from PyQt4 import QtGui
 

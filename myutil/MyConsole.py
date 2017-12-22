@@ -4,6 +4,7 @@ import logging
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+
 from myaction.BalanceDataAction import BalanceDataAction
 from myaction.CreateNextBetDataAction import CreateNextBetDataAction
 from myaction.GetHistoryResultDataAction import MyGetHistoryResultDataAction
@@ -13,7 +14,6 @@ from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
 from myaction.StartAction import MyStartAction
 from myaction.UpdateHistoryResultDataAction import MyUpdateHistoryResultDataAction
-
 from myaction.UpdatePreBetDataAction import MyUpdatePreBetDataAction
 from myutil.gui.MyUI import MyUIUtil
 
@@ -71,8 +71,10 @@ class MyConsole(QWidget):
         self.timesold = 0
         self.timesnow = 0
         self.open_balls = []
+        self.history_data = {}
 
         self.fake_mode = False
+        self.fake_mode_getPreBetData = False
 
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)

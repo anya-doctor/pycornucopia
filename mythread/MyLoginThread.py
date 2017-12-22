@@ -25,11 +25,11 @@ class MyLoginThread(QtCore.QThread):
         self.origin_url = ""
         self.headers = {}
 
-        logging.info("INIT_MyLoginThread: lineText=%s" % lines)
-        logging.info("INIT_MyLoginThread: loginUrl=%s" % self.loginUrl)
-        logging.info("INIT_MyLoginThread: host=%s" % self.host)
-        logging.info("INIT_MyLoginThread: rootUrl=%s" % self.rootUrl)
-        logging.info("INIT_MyLoginThread: path=%s" % self.path)
+        logging.info(u"【登录线程】: lineText=%s" % lines)
+        logging.info(u"【登录线程】: loginUrl=%s" % self.loginUrl)
+        logging.info(u"【登录线程】: host=%s" % self.host)
+        logging.info(u"【登录线程】: rootUrl=%s" % self.rootUrl)
+        logging.info(u"【登录线程】: path=%s" % self.path)
 
     # 从antivc获取验证码错误返回error
     def getCheckcode(self):
@@ -98,8 +98,8 @@ class MyLoginThread(QtCore.QThread):
         real_content = rr3.content.split('êêê')[0]
         real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
         a = real_content.split('\n')
-        logging.info(u"【登录】登录body=%s" % a)
-        logging.info(u"【登录】登录header=%s" % r3.headers)
+        logging.info(u"【登录线程】登录body=%s" % a)
+        logging.info(u"【登录线程】登录header=%s" % r3.headers)
 
         recheck_url = a[1].replace('host', self.host)
         cookies_jar = requests.cookies.RequestsCookieJar()
@@ -136,7 +136,7 @@ class MyLoginThread(QtCore.QThread):
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         }
         self.headers = headers2
-        logging.info(u"【登录中】再次校验URL=%s" % recheck_url)
+        logging.info(u"【登录线程】再次校验URL=%s" % recheck_url)
 
         r4 = requests.Request('GET', recheck_url, cookies=cookies_jar, headers=headers2)
         prep4 = req_session.prepare_request(r4)

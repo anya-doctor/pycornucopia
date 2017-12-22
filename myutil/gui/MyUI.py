@@ -5,10 +5,10 @@ import sqlite3
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+
 from myaction.LoginAction import MyLoginAction
 from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
-
 from myaction.StartAction import MyStartAction
 from myutil import MySettings
 from myutil.MyTool import beautiful_log
@@ -189,10 +189,10 @@ class MyUIUtil(object):
         console_instance.win_label = QLabel(u'赢钱: ')
         console_instance.open_balls_label = QLabel(u'开奖: ')
         console_instance.gridlayout.addWidget(console_instance.qishu_label, 14, 0, 1, 2)
-        console_instance.gridlayout.addWidget(console_instance.timeclose_label, 14, 2, 1,2)
-        console_instance.gridlayout.addWidget(console_instance.timeopen_label, 14, 4,1,2)
-        console_instance.gridlayout.addWidget(console_instance.win_label, 14, 6,1,2)
-        console_instance.gridlayout.addWidget(console_instance.open_balls_label, 14, 8, 1,6)
+        console_instance.gridlayout.addWidget(console_instance.timeclose_label, 14, 2, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.timeopen_label, 14, 4, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.win_label, 14, 6, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.open_balls_label, 14, 8, 1, 6)
 
         pa = QPalette()
         pa.setColor(QPalette.WindowText, Qt.red)

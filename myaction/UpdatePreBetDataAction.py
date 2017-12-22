@@ -5,6 +5,7 @@ import logging
 from PyQt4.QtCore import *
 from PyQt4.QtGui import QPalette
 
+from myutil import MyTool
 from myutil.MyTool import beautiful_log
 
 
@@ -35,14 +36,32 @@ class MyUpdatePreBetDataAction(object):
                     console_instance.timesnow = timesnow
             else:
                 # 更新期数，顺便结算...
-                if int(console_instance.timesnow) > 0 and int(console_instance.timesnow) < int(timesnow):
+                if int(console_instance.timesnow) == int(timesnow):
+                    # 虽然期数相同，但是可以看看是否需要填充开奖结果，有些开奖结果很傻逼，最近一期是空的。。
+                    if console_instance.history_data and console_instance.history_data['data']['result'][0][2] == "":
+                        logging.info(u"【更新历史数据Action】虽然期数没更新，但开奖数据最近一期为空，填充之...")
+                        # 更新数据
+                        now_history_data = [int(v) for v in console_instance.open_balls]
+                        now_history_data.insert(0, console_instance.history_data['data']['result'][0][1])
+                        now_history_data.insert(0, console_instance.history_data['data']['result'][0][0])
+                        console_instance.history_data['data']['result'][0] = now_history_data
+                        # 更新UI
+                        QMetaObject.invokeMethod(console_instance.parent, "completeHistoryResultData",
+                                                 Qt.QueuedConnection,
+                                                 Q_ARG(str, str(timesnow)), Q_ARG(list, console_instance.open_balls))
+
+                elif int(console_instance.timesnow) < int(timesnow):
                     # 更新期数
                     console_instance.timesnow = timesnow
                     # 更新历史数据
 
                     logging.info(u"【更新历史数据】###########")
                     if console_instance.history_data and 'data' in console_instance.history_data:
-                        console_instance.history_data['data']['result'].insert(0,console_instance.open_balls)
+                        now_history_data = [int(v) for v in console_instance.open_balls]
+                        now_history_data.insert(0, MyTool.getCurrentTimeStr())
+                        now_history_data.insert(0, str(int(console_instance.timesnow) - 1))
+
+                        console_instance.history_data['data']['result'].insert(0, now_history_data)
                         with open('config/history.json', 'wb') as f:
                             f.write(json.dumps(console_instance.history_data['data']['result']))
 

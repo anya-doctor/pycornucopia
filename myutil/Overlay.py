@@ -1,7 +1,9 @@
 # coding=utf-8
-import math, sys
+import math
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+
 
 class Overlay(QWidget):
     def __init__(self, parent=None):
@@ -31,7 +33,7 @@ class Overlay(QWidget):
         painter.end()
 
     def showEvent(self, event):
-        #self.timer = self.startTimer(10000)
+        # self.timer = self.startTimer(10000)
         self.counter = 0
 
     @pyqtSlot()

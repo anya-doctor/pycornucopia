@@ -11,11 +11,11 @@ from PyQt4.QtWebKit import *
 class MyBrowser(QWebView):
     def __init__(self):
         QWebView.__init__(self)
-        
+
         # 增加cookie
         self.cookies = {}
         self.cookies_jar = requests.cookies.RequestsCookieJar()
-        
+
         # url
         self.host_url = ""
         self.origin_url = ""
@@ -23,9 +23,9 @@ class MyBrowser(QWebView):
         self.pk_post_bet_url = "http://pc10.sss66.us/scowa1414556f_50383/pk/order/leftInfo/?post_submit&&_=1510466638396__ajax"
         # headers
         self.headers = {}
-        
+
         # 初始化一些必要的参数
-        #t=010|0|1.9829|2; 000|1|9.9112|2; 011|1|1.9829|3;&v=37
+        # t=010|0|1.9829|2; 000|1|9.9112|2; 011|1|1.9829|3;&v=37
         # 冠军大 - 2
         # 亚军小 - 3   011|1|1.9829|3
         # 冠军 1 - 2   000|1|9.9112|2
@@ -109,7 +109,8 @@ class MyBrowser(QWebView):
             "036": "14",
             "037": "15"
         }
-    def setConsole(self,con):
+
+    def setConsole(self, con):
         self.webpage = QWebPage()
         self.console = con
         self.setPage(self.webpage)
@@ -118,12 +119,12 @@ class MyBrowser(QWebView):
         else:
             self.line_url = 'http://www.baidu.com'
 
-        # if not MySettings.browser_js_alert:
+            # if not MySettings.browser_js_alert:
             # self.webpage.javaScriptAlert = self._javascript_alert  # 重载 alert函数
 
         self.load(QtCore.QUrl(self.line_url))
         QtCore.QObject.connect(self, QtCore.SIGNAL('loadFinished(bool)'), self.do_loadFinished)
-        #QtCore.QObject.connect(self, QtCore.SIGNAL('load(bool)'), self.do_loadFinished)
+        # QtCore.QObject.connect(self, QtCore.SIGNAL('load(bool)'), self.do_loadFinished)
         QtCore.QObject.connect(self, QtCore.SIGNAL('urlChanged(bool)'), self.urlChanged)
 
     # 重写js alert，让它自动确定
@@ -143,16 +144,15 @@ class MyBrowser(QWebView):
         logging.info(u'Page load..%s. ' % frame.title())
         logging.info(u"用户名：%s, 密码：%s." % (self.console.username, self.console.password))
         logging.info(u"origin_url=%s." % (self.origin_url))
-        
+
         if not self.origin_url or 'login.htm' in self.origin_url:
             self.login_user()
-        
+
         self.param_init()
-        
+
         if 'index.htm' in self.origin_url:
             logging.info("start login_agree1...")
             QMetaObject.invokeMethod(self, "login_agree1", Qt.QueuedConnection)
-
 
     # 响应登录-用户名
     @pyqtSlot()
@@ -164,7 +164,7 @@ class MyBrowser(QWebView):
 
         # 输入用户名
         user_elem = doc.findFirst('input[name=__name]')
-        user_elem.evaluateJavaScript("this.value='"+self.console.username+"';")
+        user_elem.evaluateJavaScript("this.value='" + self.console.username + "';")
 
         QTimer.singleShot(500, self.login_password)
 
@@ -176,7 +176,7 @@ class MyBrowser(QWebView):
         pass_elem = doc.findFirst('input[name=password]')
         pass_elem.evaluateJavaScript("this.focus();")
         pass_elem.evaluateJavaScript("this.type='password';")
-        pass_elem.evaluateJavaScript("this.value='"+self.console.password+"';")
+        pass_elem.evaluateJavaScript("this.value='" + self.console.password + "';")
 
     @pyqtSlot(str)
     def refresh(self, line_url):
@@ -190,19 +190,22 @@ class MyBrowser(QWebView):
         logging.info("def login_agree")
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('span[class="yellow-btn btn_m elem_btn"]')
-        agree1_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        agree1_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         agree2_elem = doc.findFirst("a[id=agree]")
-        agree2_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        agree2_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
     @pyqtSlot()
     def login_agree1(self):
         logging.info("def login_agree1")
-        
+
         doc = self.page().currentFrame().documentElement()
         agree1_elems = doc.findAll('span[class="yellow-btn btn_m elem_btn"]')
         for elem in agree1_elems:
-            elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+            elem.evaluateJavaScript(
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
         QTimer.singleShot(500, self.login_agree2)
 
     @pyqtSlot()
@@ -210,7 +213,8 @@ class MyBrowser(QWebView):
         logging.info("def login_agree2")
         doc = self.page().currentFrame().documentElement()
         agree2_elem = doc.findFirst("a[id=agree]")
-        agree2_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        agree2_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
         QTimer.singleShot(500, self.login_tab1)
 
     # 响应登录-Tab
@@ -219,28 +223,32 @@ class MyBrowser(QWebView):
         logging.info("def login_tab1")
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('a[id=pk10_sys]')
-        agree1_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        agree1_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         QTimer.singleShot(1500, self.login_tab2)
-        
+
     @pyqtSlot()
     def login_tab2(self):
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('a[subnav=ballNO15]')
-        agree1_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        agree1_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
         QTimer.singleShot(1500, self.login_tab3)
 
     @pyqtSlot()
     def login_tab3(self):
         doc = self.page().currentFrame().documentElement()
         agree2_elem = doc.findFirst("a[nav=general]")
-        agree2_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        agree2_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
     @pyqtSlot()
     def login_tab4(self):
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('a[subnav=ballNO60]')
-        agree1_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        agree1_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         QThread.sleep(2)
 
@@ -248,7 +256,8 @@ class MyBrowser(QWebView):
     def login_tab5(self):
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('a[subnav=ballNO15]')
-        agree1_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        agree1_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
     @pyqtSlot()
     def submit(self):
@@ -256,52 +265,56 @@ class MyBrowser(QWebView):
         elem = doc.findFirst('a[id=submit_top]')
         if not elem:
             elem = doc.findFirst('a[id=submit]')
-        elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         QTimer.singleShot(3000, self.determine)
-    
+
     @pyqtSlot()
     def determine(self):
         doc = self.page().currentFrame().documentElement()
         elems = doc.findAll('span[name=determine]')
         for elem in elems:
-            elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+            elem.evaluateJavaScript(
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         agree1_elem = doc.findFirst('span[class="yellow-btn btn_m elem_btn"]')
-        agree1_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+        agree1_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         agree2_elem = doc.findFirst("a[id=agree]")
-        agree2_elem.evaluateJavaScript("var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
-        
-    
+        agree2_elem.evaluateJavaScript(
+            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+
     def param_init(self):
         print "================Cookie================"
         listCookies = self.page().networkAccessManager().cookieJar().allCookies()
-        for cookie in  listCookies:
+        for cookie in listCookies:
             # PHPSESSID=f8059a223a_1229_50383; domain=pc10.sss66.us; path=/scowa1414556f_50383/      
             t = cookie.toRawForm().split(";")
             t = [str(v) for v in t]
-            
+
             key = t[0].split('=')[0]
             value = t[0].split('=')[1]
             domain = t[1].split('=')[1]
             path = t[2].split('=')[1]
-            
+
             self.cookies[key] = value
-            print "=================>>>>>>>",key,value,domain,path
+            print "=================>>>>>>>", key, value, domain, path
             self.cookies_jar.set(key, value, domain=domain, path=path)
-        
+
         print "================GET URL================"
         self.origin_url = str(self.url().toString())
         now = self.getCurrentTimestamp()
         self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[0] + 'pk/order/list?&_=%s__autorefresh' % now
-        self.pk_post_bet_url = self.origin_url.split("index.htm")[0] + 'pk/order/leftInfo/?post_submit&&_=%s__ajax' % now
-        self.host_url = self.origin_url.replace('http://','').split('/')[0]
+        self.pk_post_bet_url = self.origin_url.split("index.htm")[
+                                   0] + 'pk/order/leftInfo/?post_submit&&_=%s__ajax' % now
+        self.host_url = self.origin_url.replace('http://', '').split('/')[0]
         print "host_url=%s" % self.host_url
         print "origin_url=%s" % self.origin_url
         print "pk_pre_bet_get_data_url = %s" % self.pk_pre_bet_get_data_url
         print "pk_post_bet_url = %s" % self.pk_post_bet_url
-        
+
         print "================Header=================="
         self.headers = {
             'Host': self.host_url,
@@ -316,7 +329,7 @@ class MyBrowser(QWebView):
             'Origin': 'http://' + self.host_url,
         }
         print self.headers
-        
+
     def getCurrentTimestamp(bit_type=13):
         """
         :param bit_type: bit_type=10. 10位时间戳，bit_type=13，13位时间戳
@@ -329,38 +342,38 @@ class MyBrowser(QWebView):
         elif bit_type == 10:
             return int(round(time.time()))
         return -1
-    
+
     def get_pre_bet_data(self):
         if not self.origin_url:
             return -1
         t = ['ballNO15', 'ballNO60']
         res = []
         for i in t:
-            payload={
+            payload = {
                 'myaction': 'ajax',
                 'play': i,
                 'ball': '',
                 'cat': 15
             }
-            
-            r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar, headers=self.headers, timeout=5)
+
+            r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
+                              headers=self.headers, timeout=5)
             real_content = r.content.split('êêê')[0]
-            real_content = real_content.replace('\xef\xbb\xbf','')  # 去掉BOM开头的\xef\xbb\xbf
-            
+            real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
+
             print real_content
-            
-            
+
             t_json = json.loads(real_content)
             if t_json and t_json['data']['success']:
                 version_number = t_json['data']['version_number']
                 print 'version_number=%s' % version_number
             else:
-                version_number = -1 
+                version_number = -1
                 logging.error("版本号拿不到咯！！！！")
                 t_json = {}
             res.append(t_json)
         return res
-    
+
     def get_bet_str(self, bet_balls_list, bet_money_list):
         from mythread import MyBetThread
         self.get_pre_bet_thread = MyBetThread.MyBetDataThread(self)
@@ -368,22 +381,22 @@ class MyBrowser(QWebView):
         if not pre_bet_data:
             logging.error("拿不到下注前数据？")
             return ""
-            
+
         t15 = pre_bet_data[0]
         t60 = pre_bet_data[1]
         version_number = t15['data']['version_number']
         # t=010|0|1.9829|2;000|1|9.9112|2;011|1|1.9829|3;&v=37
         dic1 = {
-            1:"000",
-            2:"001",
-            3:"002",
-            4:"003",
-            5:"004",
-            6:"005",
-            7:"006",
-            8:"007",
-            9:"008",
-            10:"009",
+            1: "000",
+            2: "001",
+            3: "002",
+            4: "003",
+            5: "004",
+            6: "005",
+            7: "006",
+            8: "007",
+            9: "008",
+            10: "009",
         }
         bet_str = "t="
         try:
@@ -396,17 +409,17 @@ class MyBrowser(QWebView):
                 for ball in betlist:
                     bet_money = bet_money_list[betflag]
                     if index < 6:
-                        peilv = t15['data']['integrate'][a+str(index)]
+                        peilv = t15['data']['integrate'][a + str(index)]
                     else:
-                        peilv = t60['data']['integrate'][a+str(index)]
-                    bet_str += '%s|%s|%s|%s;'  % (a, int(ball), peilv, bet_money)
+                        peilv = t60['data']['integrate'][a + str(index)]
+                    bet_str += '%s|%s|%s|%s;' % (a, int(ball), peilv, bet_money)
         except Exception, ex:
             logging.error(ex, exc_info=1)
             logging.info(t15['data']['integrate'])
             logging.info(t60['data']['integrate'])
-            
-        bet_str += "&v=%s" % version_number  
-        
+
+        bet_str += "&v=%s" % version_number
+
         logging.info("bet_str=%s" % bet_str)
         return bet_str
 
@@ -417,8 +430,9 @@ class MyBrowser(QWebView):
 
         now = self.getCurrentTimestamp()
         self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[0] + 'pk/order/list?&_=%s__autorefresh' % now
-        self.pk_post_bet_url = self.origin_url.split("index.htm")[0] + 'pk/order/leftInfo/?post_submit&&_=%s__ajax' % now
-        
+        self.pk_post_bet_url = self.origin_url.split("index.htm")[
+                                   0] + 'pk/order/leftInfo/?post_submit&&_=%s__ajax' % now
+
         bet_str = self.get_bet_str(bet_balls_list, bet_money_list)
         if not bet_str:
             logging.error("have not bet_str....")
@@ -426,21 +440,21 @@ class MyBrowser(QWebView):
             return
 
         a = bet_str.split('&')
-        
-        payload={
+
+        payload = {
             't': a[0].split('=')[1],
             'v': int(a[1].split('=')[1])
         }
-        
+
         logging.info("payload=%s" % payload)
-        
-        r = requests.post(self.pk_post_bet_url, params=payload, cookies=self.cookies_jar, headers=self.headers, timeout=5)
+
+        r = requests.post(self.pk_post_bet_url, params=payload, cookies=self.cookies_jar, headers=self.headers,
+                          timeout=5)
         real_content = r.content.split('êêê')[0]
-        real_content = real_content.replace('\xef\xbb\xbf','')  # 去掉BOM开头的\xef\xbb\xbf
-        
+        real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
+
         print real_content
 
         t_json = json.loads(real_content)
         print t_json
         return t_json
-        

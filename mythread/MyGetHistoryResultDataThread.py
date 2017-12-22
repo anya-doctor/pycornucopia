@@ -19,12 +19,12 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
 
     def run(self):
         try:
-            logging.info(u"【获取历史数据】线程run()中...")
+            logging.info(u"【获取历史数据线程】线程run()中...")
             now = MyTool.getCurrentTimestamp()
             url = self.loging_success_data_dic['origin_url'] + "pk/result/index?&_=%s__ajax" % now
 
             r1 = requests.Request('GET', url, headers=self.loging_success_data_dic['headers'],
-                             cookies=self.loging_success_data_dic['cookies_jar'])
+                                  cookies=self.loging_success_data_dic['cookies_jar'])
             prep1 = req_session.prepare_request(r1)
             rr1 = req_session.send(prep1, stream=False, timeout=10)
 
@@ -33,12 +33,15 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
 
             real_content = rr1.content.split('êêê')[0]
             real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
-            logging.info(u"【获取历史数据】结果如下")
+            logging.info(u"【获取历史数据线程】结果如下")
             logging.info(real_content)
 
             json_data = json.loads(real_content)
             if json_data and isinstance(json_data, dict):
-                QMetaObject.invokeMethod(self.console, "onUpdateHistoryResultDataHideBtn", Qt.QueuedConnection,
-                                         Q_ARG(dict, json_data))
+                # 如果确切拿到了数据，那么就更新一次即可..
+                if 'result' in json_data['data']:
+                    # 判断是否最近一期为空...
+                    QMetaObject.invokeMethod(self.console, "onUpdateHistoryResultDataHideBtn", Qt.QueuedConnection,
+                                             Q_ARG(dict, json_data))
         except Exception, ex:
             logging.error(ex, exc_info=1)

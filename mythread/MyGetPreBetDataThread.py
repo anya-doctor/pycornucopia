@@ -34,7 +34,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
             }
 
             r1 = requests.Request('POST', self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
-                              headers=self.headers)
+                                  headers=self.headers)
             prep1 = req_session.prepare_request(r1)
             rr1 = req_session.send(prep1, stream=False, timeout=10)
 
@@ -90,7 +90,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
 
     def run(self):
         try:
-            if self.console.fake_mode:
+            if self.console.fake_mode_getPreBetData:
                 json_data = self.get_pre_bet_date_fake()
             else:
                 json_data = self.get_pre_bet_data()

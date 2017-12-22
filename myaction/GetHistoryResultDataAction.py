@@ -18,9 +18,14 @@ class MyGetHistoryResultDataAction(object):
         """
         try:
             logging.info(u"【获取历史数据】开启定时器...")
+            # 开始定时器之前先销毁一波...
+            if console_instance.getHistoryResultDataTimer:
+                del console_instance.getHistoryResultDataTimer
+
             console_instance.getHistoryResultDataTimer = QTimer()
             console_instance.getHistoryResultDataTimer.timeout.connect(
-                lambda: MyGetHistoryResultDataAction.do_getHistoryResultData(console_instance, loging_success_data_dic))
+                    lambda: MyGetHistoryResultDataAction.do_getHistoryResultData(console_instance,
+                                                                                 loging_success_data_dic))
             console_instance.getHistoryResultDataTimer.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
