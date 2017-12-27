@@ -9,7 +9,7 @@ from PyQt4.QtGui import *
 from myaction.LoginAction import MyLoginAction
 from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
-from myaction.StartAction import MyStartAction
+from myaction.StartBetAction import MyStartBetAction
 from myutil import MySettings
 from myutil.MyTool import beautiful_log
 from myutil.db.MyDB import MyDBUtil
@@ -86,7 +86,7 @@ class MyUIUtil(object):
 
         console_instance.goBtn = QtGui.QPushButton(u"开始")
         console_instance.connect(console_instance.goBtn, QtCore.SIGNAL('clicked()'),
-                                 lambda: MyStartAction.run(console_instance))
+                                 lambda: MyStartBetAction.run(console_instance))
         console_instance.gridlayout.addWidget(console_instance.goBtn, 2, 26, 1, 2)
 
         lb0 = QLabel(u'线路')

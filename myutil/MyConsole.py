@@ -12,7 +12,7 @@ from myaction.GetPreBetDataAction import MyGetPreBetDataAction
 from myaction.LoginAction import MyLoginAction
 from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
-from myaction.StartAction import MyStartAction
+from myaction.StartBetAction import MyStartBetAction
 from myaction.UpdateHistoryResultDataAction import MyUpdateHistoryResultDataAction
 from myaction.UpdatePreBetDataAction import MyUpdatePreBetDataAction
 from myutil.gui.MyUI import MyUIUtil
@@ -39,6 +39,7 @@ class MyConsole(QWidget):
         self.balls_bet_amount = []  # ['1','2','4','8']
 
         self.goThread = None
+        self.betThread = None
         self.getPreBetDataThread = None
         self.loginThread = None
         self.getHistoryResultDataThread = None
@@ -90,7 +91,7 @@ class MyConsole(QWidget):
         MySaveConfigAction.run(self)
 
     def onStartBtn(self):
-        MyStartAction.run(self)
+        MyStartBetAction.run(self)
 
     @pyqtSlot(dict)
     def onGetPreBetDataHideBtn(self, loging_success_data_dic):
