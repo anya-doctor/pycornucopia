@@ -1,3 +1,4 @@
+# coding=utf-8
 import requests
 
 req_session = requests.Session()

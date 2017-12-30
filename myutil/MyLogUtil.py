@@ -1,4 +1,5 @@
 # coding=utf-8
+import os
 import logging
 import logging.handlers
 from logging.handlers import TimedRotatingFileHandler
@@ -28,11 +29,16 @@ class MyLogUtil(object):
         root = logging.getLogger()
         level = logging.INFO
 
-        filename = MySettings.log_file_path
+        # 如果文件夹 and 文件不存在则创建之。。。
+        if not os.path.exists(MySettings.log_dir_path):
+            os.mkdir(MySettings.log_dir_path)
+
+        if not os.path.exists(MySettings.log_file_path):
+            with open(MySettings.log_file_path, 'w+') as f:
+                pass
 
         formatter = logging.Formatter(fmt)
-
-        hdlr = TimedRotatingFileHandler(filename, "D", 1, 100)
+        hdlr = TimedRotatingFileHandler(MySettings.log_file_path, "D", 1, 100)
         hdlr.setFormatter(formatter)
         root.addHandler(hdlr)
         root.setLevel(level)

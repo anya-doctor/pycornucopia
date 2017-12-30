@@ -7,6 +7,7 @@ from PyQt4.QtCore import *
 
 from algorithm.MyDataGetter import MyDataGetter
 from common.common import BET_MODE_VERTICAL
+from common import common
 from myutil.MyTool import beautiful_log
 
 
@@ -35,7 +36,7 @@ class MyStartBetAction(object):
     @staticmethod
     def do_bet(console_instance):
         try:
-            console_instance.cur_money = int(console_instance.preBetDataDic['data']['win'])
+            console_instance.cur_money = int(console_instance.preBetDataDic['data']['win'].replace(',',''))
             console_instance.timesnow = int(console_instance.preBetDataDic['data']['betnotice']['timesnow'])
             console_instance.timeclose = int(console_instance.preBetDataDic['data']['betnotice']['timeclose'])
             console_instance.timeopen = int(console_instance.preBetDataDic['data']['betnotice']['timeopen'])
@@ -49,7 +50,7 @@ class MyStartBetAction(object):
                 int(console_instance.lost_money_at), int(console_instance.earn_money_at), console_instance.cur_money))
             if not (int(console_instance.lost_money_at) < console_instance.cur_money < int(
                     console_instance.earn_money_at)):
-                console_instance.goTimer.stop()
+                console_instance.betTimer.stop()
                 logging.info(u"已停止达到赢损条件。")
                 QtGui.QMessageBox.about(console_instance, u'已停止', u"达到赢损条件。")
                 # 重新设置按钮文字...
@@ -91,19 +92,17 @@ class MyStartBetAction(object):
                     console_instance.betThread.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
-            console_instance.goTimer.start(3000)
+            console_instance.betTimer.start(3000)
 
     @staticmethod
     def do_balance(console_instance):
         """
         做好结算工作
-            index = i[0]
-            betlist = i[1]
-            betflag = i[2]
-
-            reverse_cnt = i[4]
-            last_bet = i[5]
-            re_last_bet = i[6]
+        all_ball_needToBetList = [
+                    [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
+                    [],
+                    ...
+                ]
         :param console_instance:
         :return:
         """
@@ -112,30 +111,19 @@ class MyStartBetAction(object):
             return
 
         open_balls = console_instance.open_balls
-        cur_ball_number = open_balls
 
-        for i in console_instance.all_ball_needToBetList:
-            index = i[0]
-            betlist = i[1]
+        for item in console_instance.all_ball_needToBetList:
             if console_instance.console.isLoseAdd == '0':  # 输加注
-                if cur_ball_number[index - 1] in betlist:  # 中了就删了
-                    i[2] = 0
-                    # 中了就重置[]
-                    i[5] = []
-                    i[4] = 0
+                win_flag = False
+                for inner_item in item[3]:
+                    if int(open_balls[inner_item[0]]) == int(inner_item[1]):
+                        win_flag = True
+                        break
+
+                if win_flag:
+                    item[2] = 0
                 else:
-                    i[2] += 1
-                    i[5] = copy.deepcopy(i[1])
-                    i[4] += 1  # 根据reverse_flag，判断转不转
-            else:  # 赢加注
-                if cur_ball_number[index - 1] in betlist:  # 中了加注
-                    i[2] += 1
-                    i[5] = copy.deepcopy(i[1])
-                    i[4] += 1
-                else:
-                    i[2] = 0
-                    i[5] = []
-                    i[4] = 0
+                    item[2] += 1
 
         # 通知控制台中或不中
         b = copy.deepcopy(console_instance.all_ball_needToBetList)
@@ -150,31 +138,20 @@ class MyStartBetAction(object):
             for i in console_instance.all_ball_needToBetList:
                 if i[2] == len(console_instance.balls_bet_amount):
                     i[2] = 0  # 倍投
-                    i[4] = 0  # reverse_cnt
 
     @staticmethod
     def do_calculate(console_instance):
         """
         all_ball_needToBetList = [
-            [timestart, timesnow, betflag, [[point, ball, peilv, money],[point, ball, peilv, money],...]],
+            [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
             [],
             ...
         ]
-
-                index = i[0]
-                betlist = i[1]
-                betflag = i[2]
-
-                reverse_cnt = i[4]
-                last_bet = i[5]
-                re_last_bet = i[6]
-
         :param console_instance:
         :return:
         """
-        if not console_instance.all_ball_needToBetList:
-            logging.info(u'列表为空...')
-            MyStartBetAction.do_calculate_helper(console_instance, BET_MODE_VERTICAL)
+        # 先不考虑期期滚
+        MyStartBetAction.do_calculate_helper(console_instance, BET_MODE_VERTICAL)
 
     @staticmethod
     def do_calculate_helper(console_instance, bet_mode=BET_MODE_VERTICAL):
@@ -188,8 +165,10 @@ class MyStartBetAction(object):
             for i in range(1, 11):
                 a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
                 if a:
+                    # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
+                    c = [[i, v] for v in a]
                     console_instance.all_ball_needToBetList.append(
-                            [console_instance.timesnow, console_instance.timesnow, 0, a])
+                            [console_instance.timesnow, console_instance.timesnow, 0, c])
         else:
             pass
 

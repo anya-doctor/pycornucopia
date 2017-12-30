@@ -170,11 +170,7 @@ class MyConsole(QWidget):
             b = all_ball_needToBetList
             row = self.viewEntry.rowCount()
             for k in range(len(b)):
-                if (b[k][0] < 6 and not self.is_bet_success1) or (b[k][0] >= 6 and not self.is_bet_success2):
-                    newItem = QTableWidgetItem(u'无效')
-                    newItem.setBackgroundColor(self.c)
-                    newItem.setTextColor(QColor("black"))
-                elif self.isLoseAdd == '0':  # 输追加
+                if self.isLoseAdd == '0':  # 输追加
                     if b[k][2] == 0:
                         newItem = QTableWidgetItem(u'中')
                         newItem.setBackgroundColor(self.c)
@@ -182,15 +178,6 @@ class MyConsole(QWidget):
                     else:
                         newItem = QTableWidgetItem(u'不中')
                         newItem.setBackgroundColor(self.c)
-                elif self.isLoseAdd == '1':  # 赢追加
-                    if b[k][2] == 0:
-                        newItem = QTableWidgetItem(u'不中')
-                        newItem.setBackgroundColor(self.c)
-                    else:
-                        newItem = QTableWidgetItem(u'中')
-                        newItem.setBackgroundColor(self.c)
-                        newItem.setTextColor(QColor(255, 0, 0, 127))
-
                 self.viewEntry.setItem(row - len(b) + k, 6, newItem)
             logging.info(u"load data2 finish 结算完毕。。。")
         except Exception, ex:

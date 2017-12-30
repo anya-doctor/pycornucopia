@@ -21,11 +21,13 @@ def resource_path(relative_path):
 
 
 log_file_path = resource_path("log\gamble.log")  # 'E://projects//EasyGamble//log//gamble.log'
+log_dir_path = resource_path("log")  # 'E://projects//EasyGamble//log//gamble.log'
 db_file_path = resource_path("config\cqssc.db")  # 'E://projects//EasyGamble//config//cqssc.db'
 period_data_file_path = resource_path("config\out.txt")
 
 # sqlite  不能带中文路径
 log_file_path = unicode(log_file_path, 'gbk')
+log_dir_path = unicode(log_dir_path, 'gbk')
 db_file_path = unicode(db_file_path, 'gbk')
 period_data_file_path = unicode(period_data_file_path, 'gbk')
 
