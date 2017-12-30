@@ -6,6 +6,7 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import *
 
 from algorithm.MyDataGetter import MyDataGetter
+from common.common import BET_MODE_VERTICAL
 from myutil.MyTool import beautiful_log
 
 
@@ -70,16 +71,23 @@ class MyStartBetAction(object):
                 else:
                     logging.info(u"【下注中】计算下注列表...")
 
+                    # 先清算上局数据，如果有的话...
+                    MyStartBetAction.do_balance(console_instance)
+
+                    # 计算需要下注的..
+                    MyStartBetAction.do_calculate(console_instance)
+
                     logging.info(u"【下注中】开启下注线程...")
                     # 一旦开始了，就开始一次就行了
                     console_instance.betThread = MyDataGetter(console_instance, console_instance.curP,
-                                                             console_instance.balls_bet_flag,
-                                                             console_instance.balls_bet_amount,
-                                                             console_instance.all_ball_needToBetList,
-                                                             console_instance.first_n,
-                                                             console_instance.change_flag, console_instance.is_bet_success1,
-                                                             console_instance.is_bet_success2,
-                                                             console_instance.reslist)
+                                                              console_instance.balls_bet_flag,
+                                                              console_instance.balls_bet_amount,
+                                                              console_instance.all_ball_needToBetList,
+                                                              console_instance.first_n,
+                                                              console_instance.change_flag,
+                                                              console_instance.is_bet_success1,
+                                                              console_instance.is_bet_success2,
+                                                              console_instance.reslist)
                     console_instance.betThread.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
@@ -146,26 +154,74 @@ class MyStartBetAction(object):
 
     @staticmethod
     def do_calculate(console_instance):
-        # 先清算上局数据，如果有的话...
-        if console_instance.all_ball_needToBetList:
-            MyStartBetAction.do_balance(console_instance)
+        """
+        all_ball_needToBetList = [
+            [timestart, timesnow, betflag, [[point, ball, peilv, money],[point, ball, peilv, money],...]],
+            [],
+            ...
+        ]
 
+                index = i[0]
+                betlist = i[1]
+                betflag = i[2]
+
+                reverse_cnt = i[4]
+                last_bet = i[5]
+                re_last_bet = i[6]
+
+        :param console_instance:
+        :return:
+        """
         if not console_instance.all_ball_needToBetList:
             logging.info(u'列表为空...')
-            for i in range(1, 11):
-                a, b = self.getDataForBall(i, lines, 0, [])
-                if a:
-                    self.all_ball_needToBetList.append([i, a, 0, int(self.console.isQQG), 0, [], b])
-        elif self.console.isQQG == '0':
-            logging.info(u'期期滚的节奏')
-            for i in range(1, 11):
-                a, b = self.getDataForBall(i, lines, 0, [])
-                if a:
-                    self.all_ball_needToBetList.append([i, a, 0, int(self.console.isQQG), 0, [], b])
-        elif self.console.isQQG == '1' and self.isQQG():
-            logging.info(u'虽然不是期期滚，但第一次嘛')
-            for i in range(1, 11):
-                a, b = self.getDataForBall(i, lines, 0, [])
-                if a:
-                    self.all_ball_needToBetList.append([i, a, 0, int(self.console.isQQG), 0, [], b])
+            MyStartBetAction.do_calculate_helper(console_instance, BET_MODE_VERTICAL)
 
+    @staticmethod
+    def do_calculate_helper(console_instance, bet_mode=BET_MODE_VERTICAL):
+        """
+        目前只会垂直模式的下注，水平模式没灵感啊...
+        :param console_instance:
+        :param bet_mode:
+        :return:
+        """
+        if bet_mode == BET_MODE_VERTICAL:
+            for i in range(1, 11):
+                a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
+                if a:
+                    console_instance.all_ball_needToBetList.append(
+                            [console_instance.timesnow, console_instance.timesnow, 0, a])
+        else:
+            pass
+
+    @staticmethod
+    def verical_get_bet_list(console_instance, bet_index):
+        try:
+            logging.info(u"【下注中】垂直模式：位置=%s" % bet_index)
+            # 某些号码不想要
+            dic = {
+                1: int(console_instance.ball1_1_Entry.text()),
+                2: int(console_instance.ball1_2_Entry.text()),
+                3: int(console_instance.ball1_3_Entry.text()),
+                4: int(console_instance.ball1_4_Entry.text()),
+                5: int(console_instance.ball1_5_Entry.text()),
+                6: int(console_instance.ball1_6_Entry.text()),
+                7: int(console_instance.ball1_7_Entry.text()),
+                8: int(console_instance.ball1_8_Entry.text()),
+                9: int(console_instance.ball1_9_Entry.text()),
+                10: int(console_instance.ball1_10_Entry.text()),
+            }
+            if dic[bet_index] == 0:
+                return [], []
+
+            # 舍弃N期
+            lines = console_instance.history_data
+            line = lines[int(console_instance.first_n)]
+
+            bet_balls = [str(line[2]),str(line[3])]
+            ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+            not_bet_balls = [v for v in ten_balls if v not in bet_balls]
+            ret = bet_balls, not_bet_balls
+            logging.info(u"【计算结果】下注=%s" % (ret[0]))
+            return ret
+        except Exception, ex:
+            logging.error(ex, exc_info=1)

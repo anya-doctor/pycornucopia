@@ -14,11 +14,11 @@ class MyUpdateHistoryResultDataAction(object):
     def run(console_instance, data_dict):
         try:
             logging.info(u"【控制台】更新历史结果数据")
-            console_instance.history_data = data_dict
+            console_instance.history_data = data_dict['data']['result']
             QMetaObject.invokeMethod(console_instance.parent, "updateHistoryResultData", Qt.QueuedConnection,
-                                     Q_ARG(dict, data_dict))
+                                     Q_ARG(list, console_instance.history_data))
             logging.info(u"【更新历史结果数据】写到文件config/history.json")
             with open('config/history.json', 'wb') as f:
-                f.write(json.dumps(console_instance.history_data['data']['result']))
+                f.write(json.dumps(console_instance.history_data))
         except Exception, ex:
             logging.error(ex, exc_info=1)

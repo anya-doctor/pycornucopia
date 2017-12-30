@@ -90,32 +90,28 @@ class MainWindow(QtGui.QMainWindow):
             self.viewEntry.setItem(0, 2 + i, newItem)
         logging.info(u"【主窗口-历史数据展板-追加完毕】")
 
-    @pyqtSlot(dict)
-    def updateHistoryResultData(self, data_dict):
+    @pyqtSlot(list)
+    def updateHistoryResultData(self, data_list):
         logging.info(u"【主窗口-历史数据展板-大更新】################START HistoryResultData################")
-        if data_dict['state'] != 1:
-            logging.error(u"【主窗口-历史数据展板-大更新】数据貌似不大对，结果如下：")
-            logging.error(data_dict)
-        else:
-            # 先清空...
-            self.viewEntry.clearContents()
+        # 先清空...
+        self.viewEntry.clearContents()
 
-            for period in data_dict['data']['result']:
-                # 添加一行
-                row = self.viewEntry.rowCount()
-                self.viewEntry.insertRow(row)
+        for period in data_list:
+            # 添加一行
+            row = self.viewEntry.rowCount()
+            self.viewEntry.insertRow(row)
 
-                # 期数
-                newItem = QTableWidgetItem(period[0])
-                self.viewEntry.setItem(row, 0, newItem)
+            # 期数
+            newItem = QTableWidgetItem(period[0])
+            self.viewEntry.setItem(row, 0, newItem)
 
-                # 时间
-                newItem = QTableWidgetItem(str(period[1]))
-                self.viewEntry.setItem(row, 1, newItem)
+            # 时间
+            newItem = QTableWidgetItem(str(period[1]))
+            self.viewEntry.setItem(row, 1, newItem)
 
-                for i in range(10):
-                    newItem = QTableWidgetItem(str(period[2 + i]))
-                    self.viewEntry.setItem(row, 2 + i, newItem)
+            for i in range(10):
+                newItem = QTableWidgetItem(str(period[2 + i]))
+                self.viewEntry.setItem(row, 2 + i, newItem)
         logging.info(u"【主窗口-历史数据展板-大更新】################END HistoryResultData################")
 
     def closeEvent(self, event):
