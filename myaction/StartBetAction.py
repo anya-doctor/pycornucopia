@@ -7,7 +7,7 @@ from PyQt4.QtCore import *
 
 from common.common import BET_MODE_VERTICAL
 from mythread import MyBetThread
-from myutil.MyTool import beautiful_log
+from myutil.tool.MyTool import beautiful_log
 
 
 class MyStartBetAction(object):
@@ -108,8 +108,11 @@ class MyStartBetAction(object):
         :param console_instance:
         :return:
         """
+        logging.info(u"【下注中】当前模式，console_instance.isQQG=%s" % console_instance.isQQG)
+        logging.info(u"【下注中】当前模式，console_instance.isLoseAdd=%s" % console_instance.isLoseAdd)
 
         if not console_instance.all_ball_needToBetList:  # 说明上期有数据
+            logging.info(u"【下注中】結算發現無下注列表，跳過結算環節...")
             return
 
         open_balls = console_instance.open_balls
@@ -118,10 +121,14 @@ class MyStartBetAction(object):
             # 更新期数
             item[1] = console_instance.timesnow
 
-            if console_instance.isLoseAdd == '0':  # 输加注
+            if console_instance.isLoseAdd:  # 输加注
+                logging.info(u"【下注中】结算進入輸追加模式...")
                 win_flag = False
                 for inner_item in item[3]:
+                    logging.info(
+                        u"【下注中】结算对比位置%s开奖%s == 下注球%s " % (inner_item[0], open_balls[inner_item[0]], inner_item[1]))
                     if int(open_balls[inner_item[0]]) == int(inner_item[1]):
+                        logging.info(u"【下注中】结算发现中！！！")
                         win_flag = True
                         break
 
@@ -129,12 +136,16 @@ class MyStartBetAction(object):
                     item[2] = 0
                 else:
                     item[2] += 1
+            else:
+                logging.info(u"【下注中】進入赢追加模式...")
+                pass
 
         # 通知控制台中或不中
+        logging.info(u"【下注中】结算通知UI-2...")
         b = copy.deepcopy(console_instance.all_ball_needToBetList)
         QMetaObject.invokeMethod(console_instance, "loadTableData2", Q_ARG(list, b))
 
-        if console_instance.isQQG == '0':
+        if console_instance.isQQG:
             # 期期滚- 过滤掉期期滚中了或者爆了的数据项
             console_instance.all_ball_needToBetList = filter(
                     lambda x: x[2] != 0 and x[2] != len(console_instance.balls_bet_amount), b)
@@ -167,13 +178,38 @@ class MyStartBetAction(object):
         :return:
         """
         if bet_mode == BET_MODE_VERTICAL:
-            for i in range(1, 11):
-                a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
-                if a:
-                    # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
-                    c = [[i, v] for v in a]
-                    console_instance.all_ball_needToBetList.append(
-                            [console_instance.timesnow, console_instance.timesnow, 0, c])
+            # 如果下注列表為空則初始化
+            logging.info(u"【下注中】下注列表為空，初始化...")
+            if not console_instance.all_ball_needToBetList:
+                for i in range(1, 11):
+                    a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
+                    if a:
+                        # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
+                        c = [[i, v] for v in a]
+                        console_instance.all_ball_needToBetList.append(
+                                [console_instance.timesnow, console_instance.timesnow, 0, c])
+            # 如果不為空
+            else:
+                # 如果是期期滾
+                if console_instance.isQQG:
+                    logging.info(u"【下注中】下注列表不為空，進入期期滾模式...")
+                    for i in range(1, 11):
+                        a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
+                        if a:
+                            # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
+                            c = [[i, v] for v in a]
+                            console_instance.all_ball_needToBetList.append(
+                                    [console_instance.timesnow, console_instance.timesnow, 0, c])
+                # 如果是常規模式
+                else:
+                    logging.info(u"【下注中】下注列表不為空，進入常規模式...")
+                    for item in console_instance.all_ball_needToBetList:
+                        # 替換新的下注列表
+                        index = item[3][0][0]
+                        a, b = MyStartBetAction.verical_get_bet_list(console_instance, index)
+                        if a:
+                            c = [[index, v] for v in a]
+                            item[3] = c
         else:
             pass
 
@@ -201,7 +237,7 @@ class MyStartBetAction(object):
             lines = console_instance.history_data
             line = lines[int(console_instance.first_n)]
 
-            bet_balls = [str(line[2]), str(line[3])]
+            bet_balls = [str(line[2])]
             ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
             not_bet_balls = [v for v in ten_balls if v not in bet_balls]
             ret = bet_balls, not_bet_balls

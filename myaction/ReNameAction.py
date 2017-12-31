@@ -4,8 +4,8 @@ import sqlite3
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 
-from myutil import MySettings
-from myutil.MyTool import beautiful_log
+from common import MySettings
+from myutil.tool.MyTool import beautiful_log
 
 
 class MyReNameAction(object):

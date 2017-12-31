@@ -1,4 +1,5 @@
 # #coding:utf-8
+import logging
 import os
 import sqlite3
 
@@ -6,13 +7,13 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from common import MySettings
 from myaction.LoginAction import MyLoginAction
 from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
 from myaction.StartBetAction import MyStartBetAction
-from myutil import MySettings
-from myutil.MyTool import beautiful_log
 from myutil.db.MyDB import MyDBUtil
+from myutil.tool.MyTool import beautiful_log
 
 
 class MyUIUtil(object):
@@ -258,10 +259,14 @@ class MyUIUtil(object):
             # 期期滚
             console_instance.isQQG = row[110]
             console_instance.isQQG_combobox.setCurrentIndex(int(console_instance.isQQG))
+            console_instance.isQQG = True if int(row[110]) == 0 else False
+            logging.info(u"【初始化界面】模式期期滚|常规, console_instance.isQQG=%s" % console_instance.isQQG)
 
             # 输追加
             console_instance.isLoseAdd = row[111]
             console_instance.isLoseAdd_combobox.setCurrentIndex(int(console_instance.isLoseAdd))
+            console_instance.isLoseAdd = True if int(row[111]) == 0 else False
+            logging.info(u"【初始化界面】模式输追加|赢追加, console_instance.isLoseAdd=%s" % console_instance.isLoseAdd)
 
             # ball 1
             console_instance.ball1_1_Entry.setText(row[10])

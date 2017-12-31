@@ -1,7 +1,7 @@
 # coding=utf-8
 import sqlite3
 
-from myutil import MySettings
+from common import MySettings
 
 
 # 创建数据库文件

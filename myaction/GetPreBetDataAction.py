@@ -4,7 +4,7 @@ import logging
 from PyQt4.QtCore import *
 
 from mythread.MyGetPreBetDataThread import MyGetPreBetDataThread
-from myutil.MyTool import beautiful_log
+from myutil.tool.MyTool import beautiful_log
 
 
 class MyGetPreBetDataAction(object):

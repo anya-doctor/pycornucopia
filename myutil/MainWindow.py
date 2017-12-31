@@ -6,7 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import QTableWidget, QTableWidgetItem
 
 from MyConsole import MyConsole
-from myutil import MyTool
+from myutil.tool import MyTool
 
 
 class MainWindow(QtGui.QMainWindow):
@@ -54,7 +54,7 @@ class MainWindow(QtGui.QMainWindow):
         # 禁止最大化
         self.setWindowFlags(QtCore.Qt.WindowMinimizeButtonHint)
 
-        from myutil.Overlay import Overlay
+        from myutil.tool.Overlay import Overlay
         self.setCentralWidget(self.tabs)
         self.overlay = Overlay(self.centralWidget())
         self.overlay.hide()

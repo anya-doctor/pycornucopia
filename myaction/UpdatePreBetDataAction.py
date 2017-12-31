@@ -6,8 +6,8 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import QPalette
 
 from myaction.StartBetAction import MyStartBetAction
-from myutil import MyTool
-from myutil.MyTool import beautiful_log
+from myutil.tool import MyTool
+from myutil.tool.MyTool import beautiful_log
 
 
 class MyUpdatePreBetDataAction(object):
@@ -63,10 +63,12 @@ class MyUpdatePreBetDataAction(object):
                     else:
                         # 更新期数
                         console_instance.timesnow = timesnow
-                        # 更新历史数据
 
+                        # 更新历史数据
                         logging.info(u"【更新历史数据】###########")
-                        if console_instance.history_data and 'data' in console_instance.history_data:
+                        if not console_instance.history_data:
+                            logging.error(u"【更新历史数据】控制台对象竟然没有历史数据！！！")
+                        else:
                             now_history_data = [int(v) for v in console_instance.open_balls]
                             now_history_data.insert(0, MyTool.getCurrentTimeStr())
                             now_history_data.insert(0, str(int(console_instance.timesnow) - 1))
@@ -75,13 +77,14 @@ class MyUpdatePreBetDataAction(object):
                             with open('config/history.json', 'wb') as f:
                                 f.write(json.dumps(console_instance.history_data))
 
-                        QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData",
-                                                 Qt.QueuedConnection,
-                                                 Q_ARG(str, str(timesnow)), Q_ARG(list, console_instance.open_balls))
+                            QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData",
+                                                     Qt.QueuedConnection,
+                                                     Q_ARG(str, str(timesnow)),
+                                                     Q_ARG(list, console_instance.open_balls))
 
-                        # 开始下一局 写数据到Table 通知控制台下注
-                        if console_instance.all_ball_needToBetList:
-                            MyStartBetAction.for_start(console_instance)
+                            # 开始下一局 写数据到Table 通知控制台下注
+                            if console_instance.all_ball_needToBetList:
+                                MyStartBetAction.for_start(console_instance)
 
             if 'win' in console_instance.preBetDataDic['data']:
                 win = console_instance.preBetDataDic['data']['win']

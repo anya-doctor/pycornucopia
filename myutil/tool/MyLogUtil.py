@@ -4,7 +4,7 @@ import logging.handlers
 import os
 from logging.handlers import TimedRotatingFileHandler
 
-from myutil import MySettings
+from common import MySettings
 
 
 class MyLogUtil(object):

@@ -5,7 +5,7 @@ import sys
 from PyQt4 import QtGui
 
 from myutil.MainWindow import MainWindow
-from myutil.MyLogUtil import MyLogUtil
+from myutil.tool.MyLogUtil import MyLogUtil
 
 if __name__ == '__main__':
     MyLogUtil.init_logging()

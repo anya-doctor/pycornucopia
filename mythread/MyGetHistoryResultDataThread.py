@@ -7,7 +7,7 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
 from common.common import req_session
-from myutil import MyTool
+from myutil.tool import MyTool
 
 
 class MyGetHistoryResultDataThread(QtCore.QThread):
@@ -30,7 +30,7 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
             real_content = rr1.content.split('êêê')[0]
             real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
             logging.info(u"【获取历史数据线程】结果如下")
-            logging.info(real_content)
+            # logging.info(real_content)
 
             json_data = json.loads(real_content)
             if json_data and isinstance(json_data, dict):

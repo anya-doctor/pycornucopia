@@ -5,8 +5,6 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-from myaction.BalanceDataAction import BalanceDataAction
-from myaction.CreateNextBetDataAction import CreateNextBetDataAction
 from myaction.GetHistoryResultDataAction import MyGetHistoryResultDataAction
 from myaction.GetPreBetDataAction import MyGetPreBetDataAction
 from myaction.LoginAction import MyLoginAction
@@ -83,6 +81,9 @@ class MyConsole(QWidget):
 
         # 登录成功会填充这个dict
         self.loginSuccessData = {}
+
+        self.isQQG = False
+        self.isLoseAdd = True
 
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)
@@ -177,14 +178,13 @@ class MyConsole(QWidget):
             b = all_ball_needToBetList
             row = self.viewEntry.rowCount()
             for k in range(len(b)):
-                if self.isLoseAdd == '0':  # 输追加
-                    if b[k][2] == 0:
-                        newItem = QTableWidgetItem(u'中')
-                        newItem.setBackgroundColor(self.c)
-                        newItem.setTextColor(QColor(255, 0, 0, 127))
-                    else:
-                        newItem = QTableWidgetItem(u'不中')
-                        newItem.setBackgroundColor(self.c)
+                if b[k][2] == 0:
+                    newItem = QTableWidgetItem(u'中')
+                    newItem.setBackgroundColor(self.c)
+                    newItem.setTextColor(QColor(255, 0, 0, 127))
+                else:
+                    newItem = QTableWidgetItem(u'不中')
+                    newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row - len(b) + k, 6, newItem)
             logging.info(u"【控制台】UI界面-2更新，结算完毕...")
         except Exception, ex:
@@ -206,12 +206,6 @@ class MyConsole(QWidget):
         from mythread import MyBetThread
         self.bet_thread = MyBetThread.MyBetDataThread(self)
         self.bet_thread.start()
-
-    def balanceData(self):
-        BalanceDataAction.run(self)
-
-    def updateNextBetData(self, index, lines, reverse_cnt, last_bet=[], re_last_bet=[]):
-        return CreateNextBetDataAction.run(self, index, lines, reverse_cnt, last_bet=[], re_last_bet=[])
 
     # 响应下注
     @pyqtSlot()

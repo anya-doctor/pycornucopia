@@ -6,8 +6,8 @@ import sqlite3
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 
-from myutil import MySettings
-from myutil.MyTool import beautiful_log
+from common import MySettings
+from myutil.tool.MyTool import beautiful_log
 
 
 class MySaveConfigAction(object):
@@ -30,8 +30,8 @@ class MySaveConfigAction(object):
             lost_money_at = console_instance.lostMoneyAtEntry.text()
             register_code = console_instance.nameEntry.text()
             first_n = console_instance.first_n_Entry.text()
-            isQQG = str(console_instance.isQQG_combobox.currentIndex())
-            isLoseAdd = str(console_instance.isLoseAdd_combobox.currentIndex())
+            isQQG = True if int(console_instance.isQQG_combobox.currentIndex()) == 0 else False
+            isLoseAdd = True if int(console_instance.isLoseAdd_combobox.currentIndex()) == 0 else False
 
             # 实时更改
             console_instance.balls_bet_amount = betAmount.split('-')
@@ -43,12 +43,6 @@ class MySaveConfigAction(object):
             console_instance.lines = lines.split(' ')
             console_instance.isQQG = isQQG
             console_instance.isLoseAdd = isLoseAdd
-            if console_instance.isQQG == '1':
-                QtGui.QMessageBox.about(console_instance, u'请注意', u"设置常规后，未赌完的期期滚会赌完为止。")
-            elif console_instance.isQQG == '0':
-                QtGui.QMessageBox.about(console_instance, u'请注意', u"设置期期滚后，常规下注转成期期滚。")
-                for i in console_instance.all_ball_needToBetList:
-                    i[3] = 0
 
             if not os.path.exists('./config/cqssc.db'):
                 QtGui.QMessageBox.about(console_instance, u'错误', u"数据库文件不存在...请重新打开软件.")
@@ -77,7 +71,8 @@ class MySaveConfigAction(object):
                 ball9_6='" + console_instance.ball9_6_Entry.text() + "',ball9_7='" + console_instance.ball9_7_Entry.text() + "',ball9_8='" + console_instance.ball9_8_Entry.text() + "',ball9_9='" + console_instance.ball9_9_Entry.text() + "',ball9_10='" + console_instance.ball9_10_Entry.text() + "',\
                 ball10_1='" + console_instance.ball10_1_Entry.text() + "',ball10_2='" + console_instance.ball10_2_Entry.text() + "',ball10_3='" + console_instance.ball10_3_Entry.text() + "',ball10_4='" + console_instance.ball10_4_Entry.text() + "',ball10_5='" + console_instance.ball10_5_Entry.text() + "',\
                 ball10_6='" + console_instance.ball10_6_Entry.text() + "',ball10_7='" + console_instance.ball10_7_Entry.text() + "',ball10_8='" + console_instance.ball10_8_Entry.text() + "',ball10_9='" + console_instance.ball10_9_Entry.text() + "',ball10_10='" + console_instance.ball10_10_Entry.text() + "',\
-                isQQG = '" + console_instance.isQQG + "',isLoseAdd = '" + console_instance.isLoseAdd + "';"
+                isQQG = '" + ('0' if console_instance.isQQG else '1') + "',isLoseAdd = '" + (
+            '0' if console_instance.isLoseAdd else '1') + "';"
 
             cqssc_db.execute(unicode(sql))
             cqssc_db.commit()

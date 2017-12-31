@@ -4,7 +4,7 @@ import logging
 from PyQt4.QtCore import *
 
 from mythread.MyLoginThread import MyLoginThread
-from myutil.MyTool import beautiful_log
+from myutil.tool.MyTool import beautiful_log
 
 
 class MyLoginAction(object):

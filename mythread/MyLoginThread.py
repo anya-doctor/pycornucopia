@@ -7,7 +7,7 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
 from common.common import req_session
-from myutil.MyTool import getCurrentTimestamp
+from myutil.tool.MyTool import getCurrentTimestamp
 
 
 class MyLoginThread(QtCore.QThread):
