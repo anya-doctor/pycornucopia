@@ -9,6 +9,7 @@ from algorithm.MyDataGetter import MyDataGetter
 from common.common import BET_MODE_VERTICAL
 from common import common
 from myutil.MyTool import beautiful_log
+from mythread import MyBetThread
 
 
 class MyStartBetAction(object):
@@ -36,7 +37,7 @@ class MyStartBetAction(object):
     @staticmethod
     def do_bet(console_instance):
         try:
-            console_instance.cur_money = int(console_instance.preBetDataDic['data']['win'].replace(',',''))
+            console_instance.cur_money = int(console_instance.preBetDataDic['data']['win'].replace(',', ''))
             console_instance.timesnow = int(console_instance.preBetDataDic['data']['betnotice']['timesnow'])
             console_instance.timeclose = int(console_instance.preBetDataDic['data']['betnotice']['timeclose'])
             console_instance.timeopen = int(console_instance.preBetDataDic['data']['betnotice']['timeopen'])
@@ -46,7 +47,7 @@ class MyStartBetAction(object):
             logging.info(u"下局开始时间=%s" % console_instance.timeopen)
 
             # 判断止损条件
-            logging.info(u"【赢损】损=%s,盈=%s,当前=%s" % (
+            logging.info(u"【赢损】设置损=%s,设置盈=%s,当前=%s" % (
                 int(console_instance.lost_money_at), int(console_instance.earn_money_at), console_instance.cur_money))
             if not (int(console_instance.lost_money_at) < console_instance.cur_money < int(
                     console_instance.earn_money_at)):
@@ -68,27 +69,21 @@ class MyStartBetAction(object):
                 # 至少留5秒的时候来
                 if console_instance.timeclose < 5:
                     logging.info(u"【下注中】下注时间=%s,来不及了，重启下注定时器..." % console_instance.timeclose)
-                    console_instance.betTimer.setInterval(console_instance.timeopen * 1000)
+                    console_instance.betTimer.start(console_instance.timeopen * 1000)
                 else:
                     logging.info(u"【下注中】计算下注列表...")
-
                     # 先清算上局数据，如果有的话...
                     MyStartBetAction.do_balance(console_instance)
 
                     # 计算需要下注的..
                     MyStartBetAction.do_calculate(console_instance)
 
+                    # 先弄界面
+                    console_instance.loadTableData()
+
                     logging.info(u"【下注中】开启下注线程...")
                     # 一旦开始了，就开始一次就行了
-                    console_instance.betThread = MyDataGetter(console_instance, console_instance.curP,
-                                                              console_instance.balls_bet_flag,
-                                                              console_instance.balls_bet_amount,
-                                                              console_instance.all_ball_needToBetList,
-                                                              console_instance.first_n,
-                                                              console_instance.change_flag,
-                                                              console_instance.is_bet_success1,
-                                                              console_instance.is_bet_success2,
-                                                              console_instance.reslist)
+                    console_instance.betThread = MyBetThread.MyBetDataThread(console_instance)
                     console_instance.betThread.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
@@ -196,7 +191,7 @@ class MyStartBetAction(object):
             lines = console_instance.history_data
             line = lines[int(console_instance.first_n)]
 
-            bet_balls = [str(line[2]),str(line[3])]
+            bet_balls = [str(line[2]), str(line[3])]
             ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
             not_bet_balls = [v for v in ten_balls if v not in bet_balls]
             ret = bet_balls, not_bet_balls

@@ -68,14 +68,21 @@ class MyConsole(QWidget):
         self.timeopen_label = None
         self.win_label = None
         self.open_balls_label = None
+        self.limit_label = None
+        self.remain_label = None
+        self.already_bet_label = None
 
         self.timesold = 0
         self.timesnow = 0
         self.open_balls = []
         self.history_data = {}
+        self.preBetDataDic = {}
 
         self.fake_mode = False
         self.fake_mode_getPreBetData = False
+
+        # 登录成功会填充这个dict
+        self.loginSuccessData = {}
 
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)
@@ -131,33 +138,33 @@ class MyConsole(QWidget):
             self.colorflag += 1
             self.c = QColor("darkgray") if self.colorflag % 2 == 0 else QColor("gray")
 
-            for i in range(len(self.all_ball_needToBetList)):
+            for index, item in enumerate(self.all_ball_needToBetList):
                 # 添加一行
                 row = self.viewEntry.rowCount()
                 self.viewEntry.insertRow(row)
 
-                newItem = QTableWidgetItem(str(int(self.timesnow) + 1))
+                newItem = QTableWidgetItem(str(item[0]))
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 0, newItem)
 
-                newItem = QTableWidgetItem(u'位置' + str(self.all_ball_needToBetList[i][0]))
+                newItem = QTableWidgetItem(str(item[1]))
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 1, newItem)
 
-                newItem = QTableWidgetItem(' '.join(self.all_ball_needToBetList[i][1]))
+                newItem = QTableWidgetItem(u','.join([u"位置%s,球%s" % (v[0],v[1]) for v in item[3]]))
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 2, newItem)
 
                 # 当前倍投
-                newItem = QTableWidgetItem(str(self.all_ball_needToBetList[i][2]))
+                newItem = QTableWidgetItem(str(item[2]))
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 3, newItem)
 
                 # 当前金额
-                newItem = QTableWidgetItem(str(self.balls_bet_amount[int(self.all_ball_needToBetList[i][2])]))
+                newItem = QTableWidgetItem(str(self.balls_bet_amount[int(item[2])]))
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 4, newItem)
-            logging.info('load data1 finish')
+            logging.info(u'【控制台】UI界面-1更新...')
         except Exception, ex:
             logging.error(ex, exc_info=1)
             for i in self.all_ball_needToBetList:
@@ -179,7 +186,7 @@ class MyConsole(QWidget):
                         newItem = QTableWidgetItem(u'不中')
                         newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row - len(b) + k, 6, newItem)
-            logging.info(u"load data2 finish 结算完毕。。。")
+            logging.info(u"【控制台】UI界面-2更新，结算完毕...")
         except Exception, ex:
             logging.error(ex, exc_info=1)
             for i in self.all_ball_needToBetList:
@@ -197,8 +204,7 @@ class MyConsole(QWidget):
         self.is_bet_success = True
 
         from mythread import MyBetThread
-        self.bet_thread = MyBetThread.MyBetDataThread(self, self.loginSuccessData, self.all_ball_needToBetList,
-                                                      self.balls_bet_amount, self.preBetDataDic)
+        self.bet_thread = MyBetThread.MyBetDataThread(self)
         self.bet_thread.start()
 
     def balanceData(self):
@@ -257,7 +263,7 @@ class MyConsole(QWidget):
         cnt = 0
         logging.info(u"【下注结果界面】bet_list=%s" % self.all_ball_needToBetList)
 
-        for i in self.all_ball_needToBetList:
+        for item in self.all_ball_needToBetList:
             row = self.viewEntry.rowCount()
             logging.info(u"【下注结果界面】row_count=%s" % row)
             newItem = QTableWidgetItem(u'已投注')

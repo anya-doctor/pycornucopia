@@ -19,6 +19,16 @@ class MyGetPreBetDataThread(QtCore.QThread):
         self.cookies_jar = cookies_jar
         self.headers = headers
 
+    def get_header_data(self):
+        """
+            http://pc10.sss44.us/scowa14889f_39473/ssc/header/index?&_=1514696130757__autorefresh
+        """
+        r1 = requests.Request('POST', self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
+                              headers=self.headers)
+        prep1 = req_session.prepare_request(r1)
+        rr1 = req_session.send(prep1, stream=False, timeout=10)
+
+
     def get_pre_bet_data(self):
         logging.info("#####################start to get pre bet data...#####################")
         if not self.origin_url:

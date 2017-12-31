@@ -18,7 +18,6 @@ class MyGetPreBetDataAction(object):
         :return:
         """
         try:
-            console_instance.loginSuccessData = data_dic
             console_instance.getPreBetDatgaTimer = QTimer()
             console_instance.getPreBetDatgaTimer.timeout.connect(
                     lambda: MyGetPreBetDataAction.do_getPreBetData(console_instance))
