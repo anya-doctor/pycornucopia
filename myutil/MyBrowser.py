@@ -191,11 +191,11 @@ class MyBrowser(QWebView):
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('span[class="yellow-btn btn_m elem_btn"]')
         agree1_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         agree2_elem = doc.findFirst("a[id=agree]")
         agree2_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
     @pyqtSlot()
     def login_agree1(self):
@@ -205,7 +205,7 @@ class MyBrowser(QWebView):
         agree1_elems = doc.findAll('span[class="yellow-btn btn_m elem_btn"]')
         for elem in agree1_elems:
             elem.evaluateJavaScript(
-                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                    "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
         QTimer.singleShot(500, self.login_agree2)
 
     @pyqtSlot()
@@ -214,7 +214,7 @@ class MyBrowser(QWebView):
         doc = self.page().currentFrame().documentElement()
         agree2_elem = doc.findFirst("a[id=agree]")
         agree2_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
         QTimer.singleShot(500, self.login_tab1)
 
     # 响应登录-Tab
@@ -224,7 +224,7 @@ class MyBrowser(QWebView):
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('a[id=pk10_sys]')
         agree1_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         QTimer.singleShot(1500, self.login_tab2)
 
@@ -233,7 +233,7 @@ class MyBrowser(QWebView):
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('a[subnav=ballNO15]')
         agree1_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
         QTimer.singleShot(1500, self.login_tab3)
 
     @pyqtSlot()
@@ -241,14 +241,14 @@ class MyBrowser(QWebView):
         doc = self.page().currentFrame().documentElement()
         agree2_elem = doc.findFirst("a[nav=general]")
         agree2_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
     @pyqtSlot()
     def login_tab4(self):
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('a[subnav=ballNO60]')
         agree1_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         QThread.sleep(2)
 
@@ -257,7 +257,7 @@ class MyBrowser(QWebView):
         doc = self.page().currentFrame().documentElement()
         agree1_elem = doc.findFirst('a[subnav=ballNO15]')
         agree1_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
     @pyqtSlot()
     def submit(self):
@@ -266,7 +266,7 @@ class MyBrowser(QWebView):
         if not elem:
             elem = doc.findFirst('a[id=submit]')
         elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         QTimer.singleShot(3000, self.determine)
 
@@ -276,15 +276,15 @@ class MyBrowser(QWebView):
         elems = doc.findAll('span[name=determine]')
         for elem in elems:
             elem.evaluateJavaScript(
-                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                    "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         agree1_elem = doc.findFirst('span[class="yellow-btn btn_m elem_btn"]')
         agree1_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
         agree2_elem = doc.findFirst("a[id=agree]")
         agree2_elem.evaluateJavaScript(
-            "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
+                "var evObj = document.createEvent('MouseEvents');evObj.initEvent( 'click', true, true );this.dispatchEvent(evObj);")
 
     def param_init(self):
         print "================Cookie================"

@@ -194,19 +194,12 @@ class MyUIUtil(object):
         console_instance.gridlayout.addWidget(console_instance.win_label, 14, 6, 1, 2)
         console_instance.gridlayout.addWidget(console_instance.open_balls_label, 14, 8, 1, 6)
 
-        console_instance.limit_label = QLabel(u'额度: ')
-        console_instance.remain_label = QLabel(u'余额: ')
-        console_instance.already_bet_label = QLabel(u'已下: ')
-        console_instance.gridlayout.addWidget(console_instance.limit_label, 15, 0, 1, 2)
-        console_instance.gridlayout.addWidget(console_instance.remain_label, 15, 2, 1, 2)
-        console_instance.gridlayout.addWidget(console_instance.already_bet_label, 15, 4, 1, 2)
-
         pa = QPalette()
         pa.setColor(QPalette.WindowText, Qt.red)
         console_instance.win_label.setPalette(pa)
 
         console_instance.viewEntry = QTableWidget(0, 7)
-        console_instance.gridlayout.addWidget(console_instance.viewEntry, 16, 0, 30, 28)
+        console_instance.gridlayout.addWidget(console_instance.viewEntry, 15, 0, 30, 28)
         console_instance.viewEntry.setHorizontalHeaderLabels([u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否'])
         console_instance.viewEntry.horizontalHeader().setStretchLastSection(True)
         console_instance.viewEntry.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)

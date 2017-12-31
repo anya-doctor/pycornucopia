@@ -5,6 +5,7 @@ import logging
 from PyQt4.QtCore import *
 from PyQt4.QtGui import QPalette
 
+from myaction.StartBetAction import MyStartBetAction
 from myutil import MyTool
 from myutil.MyTool import beautiful_log
 
@@ -51,29 +52,36 @@ class MyUpdatePreBetDataAction(object):
                                                  Q_ARG(str, str(timesnow)), Q_ARG(list, console_instance.open_balls))
 
                 elif int(console_instance.timesnow) < int(timesnow):
-                    # 更新期数
-                    console_instance.timesnow = timesnow
-                    # 更新历史数据
+                    same_flag = True
+                    for index, ball in enumerate(console_instance.history_data[0][2:12]):
+                        if int(console_instance.open_balls[index]) != int(ball):
+                            same_flag = False
+                            break
+                    if same_flag:
+                        logging.info(u"【更新历史数据Action】虽然期数更新了，但數據還在結算中，等待...")
+                        pass
+                    else:
+                        # 更新期数
+                        console_instance.timesnow = timesnow
+                        # 更新历史数据
 
-                    logging.info(u"【更新历史数据】###########")
-                    if console_instance.history_data and 'data' in console_instance.history_data:
-                        now_history_data = [int(v) for v in console_instance.open_balls]
-                        now_history_data.insert(0, MyTool.getCurrentTimeStr())
-                        now_history_data.insert(0, str(int(console_instance.timesnow) - 1))
+                        logging.info(u"【更新历史数据】###########")
+                        if console_instance.history_data and 'data' in console_instance.history_data:
+                            now_history_data = [int(v) for v in console_instance.open_balls]
+                            now_history_data.insert(0, MyTool.getCurrentTimeStr())
+                            now_history_data.insert(0, str(int(console_instance.timesnow) - 1))
 
-                        console_instance.history_data.insert(0, now_history_data)
-                        with open('config/history.json', 'wb') as f:
-                            f.write(json.dumps(console_instance.history_data))
+                            console_instance.history_data.insert(0, now_history_data)
+                            with open('config/history.json', 'wb') as f:
+                                f.write(json.dumps(console_instance.history_data))
 
-                    QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData", Qt.QueuedConnection,
-                                             Q_ARG(str, str(timesnow)), Q_ARG(list, console_instance.open_balls))
-                    # 开始结算
-                    if console_instance.all_ball_needToBetList:
-                        console_instance.balanceData()
-                    # 开始下一局 写数据到Table 通知控制台下注
-                    if console_instance.all_ball_needToBetList:
-                        console_instance.loadTableData()
-                        console_instance.onStartBetHideBtn()
+                        QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData",
+                                                 Qt.QueuedConnection,
+                                                 Q_ARG(str, str(timesnow)), Q_ARG(list, console_instance.open_balls))
+
+                        # 开始下一局 写数据到Table 通知控制台下注
+                        if console_instance.all_ball_needToBetList:
+                            MyStartBetAction.for_start(console_instance)
 
             if 'win' in console_instance.preBetDataDic['data']:
                 win = console_instance.preBetDataDic['data']['win']
@@ -96,7 +104,7 @@ class MyUpdatePreBetDataAction(object):
             pa.setColor(QPalette.WindowText, Qt.red)
             console_instance.win_label.setPalette(pa)
             if win == '???':
-                pass
+                console_instance.win_label.setText(u'赢钱：结算中')
             else:
                 console_instance.win_label.setText(u'赢钱：' + str(win))
 

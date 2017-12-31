@@ -178,11 +178,10 @@ class MyLoginThread(QtCore.QThread):
                 }
 
                 # 一旦登录成功，这开始获取两个数据：预下注数据 + 历史数据
-                QMetaObject.invokeMethod(self.console, "onGetPreBetDataHideBtn", Qt.QueuedConnection,
-                                         Q_ARG(dict, data_dic))
-                QMetaObject.invokeMethod(self.console, "onGetHistoryResultDataHideBtn", Qt.QueuedConnection,
-                                         Q_ARG(dict, data_dic))
-                QMetaObject.invokeMethod(self.console, "onLoginSuccess", Qt.QueuedConnection)
+                QMetaObject.invokeMethod(self.console, "onLoginSuccess", Qt.QueuedConnection, Q_ARG(dict, data_dic))
+
+                QMetaObject.invokeMethod(self.console, "onGetPreBetDataHideBtn", Qt.QueuedConnection)
+                QMetaObject.invokeMethod(self.console, "onGetHistoryResultDataHideBtn", Qt.QueuedConnection)
 
             else:
                 msg = u"获取数据异常..."

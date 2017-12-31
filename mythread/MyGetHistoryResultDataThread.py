@@ -11,25 +11,21 @@ from myutil import MyTool
 
 
 class MyGetHistoryResultDataThread(QtCore.QThread):
-    def __init__(self, mainWindow, console, loging_success_data_dic):
+    def __init__(self, mainWindow, console):
         QtCore.QThread.__init__(self)
         self.mainWindow = mainWindow
         self.console = console
-        self.loging_success_data_dic = loging_success_data_dic
 
     def run(self):
         try:
             logging.info(u"【获取历史数据线程】线程run()中...")
             now = MyTool.getCurrentTimestamp()
-            url = self.loging_success_data_dic['origin_url'] + "pk/result/index?&_=%s__ajax" % now
+            url = self.console.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now
 
-            r1 = requests.Request('GET', url, headers=self.loging_success_data_dic['headers'],
-                                  cookies=self.loging_success_data_dic['cookies_jar'])
+            r1 = requests.Request('GET', url, headers=self.console.loginSuccessData['headers'],
+                                  cookies=self.console.loginSuccessData['cookies_jar'])
             prep1 = req_session.prepare_request(r1)
             rr1 = req_session.send(prep1, stream=False, timeout=10)
-
-            # r = requests.get(url, headers=self.loging_success_data_dic['headers'],
-            #                  cookies=self.loging_success_data_dic['cookies_jar'], timeout=10)
 
             real_content = rr1.content.split('êêê')[0]
             real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf

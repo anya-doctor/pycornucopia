@@ -17,6 +17,6 @@ pk_ball_dic = {
     10: "009",
 }
 
-#下注模式
-BET_MODE_VERTICAL = 1 #垂直下注
-BET_MODE_HORIZONTAL = 2 #水平下注
+# 下注模式
+BET_MODE_VERTICAL = 1  # 垂直下注
+BET_MODE_HORIZONTAL = 2  # 水平下注

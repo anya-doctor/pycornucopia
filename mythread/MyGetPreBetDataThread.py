@@ -28,7 +28,6 @@ class MyGetPreBetDataThread(QtCore.QThread):
         prep1 = req_session.prepare_request(r1)
         rr1 = req_session.send(prep1, stream=False, timeout=10)
 
-
     def get_pre_bet_data(self):
         logging.info("#####################start to get pre bet data...#####################")
         if not self.origin_url:

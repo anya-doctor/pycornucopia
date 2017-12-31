@@ -10,7 +10,7 @@ class MyGetHistoryResultDataAction(object):
     @staticmethod
     @beautiful_log
     @pyqtSlot(dict)
-    def run(console_instance, loging_success_data_dic):
+    def run(console_instance):
         """
         如果登录成功，则会回调这个函数，则开启获取历史数据！
         :param data_dic:
@@ -24,15 +24,14 @@ class MyGetHistoryResultDataAction(object):
 
             console_instance.getHistoryResultDataTimer = QTimer()
             console_instance.getHistoryResultDataTimer.timeout.connect(
-                    lambda: MyGetHistoryResultDataAction.do_getHistoryResultData(console_instance,
-                                                                                 loging_success_data_dic))
+                    lambda: MyGetHistoryResultDataAction.do_getHistoryResultData(console_instance))
             console_instance.getHistoryResultDataTimer.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
 
     # 开启获取预下注数据线程！
     @staticmethod
-    def do_getHistoryResultData(console_instance, loging_success_data_dic):
+    def do_getHistoryResultData(console_instance):
         try:
             if console_instance.getHistoryResultDataThread:
                 if console_instance.getHistoryResultDataThread.isRunning():
@@ -42,8 +41,7 @@ class MyGetHistoryResultDataAction(object):
 
             from mythread.MyGetHistoryResultDataThread import MyGetHistoryResultDataThread
             console_instance.getHistoryResultDataThread = MyGetHistoryResultDataThread(console_instance.parent,
-                                                                                       console_instance,
-                                                                                       loging_success_data_dic)
+                                                                                       console_instance)
             console_instance.getHistoryResultDataThread.start()
 
             # 在这里才能把时间间隔调整...

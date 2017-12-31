@@ -75,7 +75,7 @@ class MyConsole(QWidget):
         self.timesold = 0
         self.timesnow = 0
         self.open_balls = []
-        self.history_data = {}
+        self.history_data = []
         self.preBetDataDic = {}
 
         self.fake_mode = False
@@ -100,10 +100,10 @@ class MyConsole(QWidget):
     def onStartBtn(self):
         MyStartBetAction.run(self)
 
-    @pyqtSlot(dict)
-    def onGetPreBetDataHideBtn(self, loging_success_data_dic):
+    @pyqtSlot()
+    def onGetPreBetDataHideBtn(self):
         # 获取预下注数据
-        MyGetPreBetDataAction.run(self, loging_success_data_dic)
+        MyGetPreBetDataAction.run(self)
 
         # 登录成功后，就会开始获取数据，这个时候就可以把失败次数=0
         self.login_fail_cnt = 0
@@ -112,11 +112,11 @@ class MyConsole(QWidget):
     def onUpdatePreBetDataHideBtn(self, data_dic):
         MyUpdatePreBetDataAction.run(self, data_dic)
 
-    @pyqtSlot(dict)
-    def onGetHistoryResultDataHideBtn(self, loging_success_data_dic):
+    @pyqtSlot()
+    def onGetHistoryResultDataHideBtn(self):
         # 获取历史数据
         logging.info(u"【获取历史数据】...")
-        MyGetHistoryResultDataAction.run(self, loging_success_data_dic)
+        MyGetHistoryResultDataAction.run(self)
 
     @pyqtSlot(dict)
     def onUpdateHistoryResultDataHideBtn(self, data_dic):
@@ -151,7 +151,7 @@ class MyConsole(QWidget):
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 1, newItem)
 
-                newItem = QTableWidgetItem(u','.join([u"位置%s,球%s" % (v[0],v[1]) for v in item[3]]))
+                newItem = QTableWidgetItem(u','.join([u"位置%s,球%s" % (v[0], v[1]) for v in item[3]]))
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 2, newItem)
 
@@ -223,8 +223,11 @@ class MyConsole(QWidget):
         else:
             logging.error(bet_result)
 
-    @pyqtSlot()
-    def onLoginSuccess(self):
+    @pyqtSlot(dict)
+    def onLoginSuccess(self, loginSuccessData):
+        # 登录成功
+        self.loginSuccessData = loginSuccessData
+
         # 因为登录成功，所以先把那个自动登录进程杀死吧。
         if self.loginTimer:
             logging.info(u"【登录成功】我停掉了定时器...")
@@ -255,7 +258,7 @@ class MyConsole(QWidget):
 
     @pyqtSlot()
     def betFailed(self):
-        QtGui.QMessageBox.about(self, u'失败了！', u"此次下注失败，貌似是时间不够用...")
+        QtGui.QMessageBox.about(self, u'失败了！', u"此次下注失败，建議查看日誌...")
 
     @pyqtSlot()
     def betSuccess(self):

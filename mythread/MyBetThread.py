@@ -6,8 +6,8 @@ import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
-from myutil.MyTool import getCurrentTimestamp
 from common import common
+from myutil.MyTool import getCurrentTimestamp
 
 
 class MyBetDataThread(QtCore.QThread):
@@ -96,13 +96,20 @@ class MyBetDataThread(QtCore.QThread):
         else:
             ret_json = self.bet()
 
+        # 先判斷是否下注成功。。。
         bet_success_flag = True
-        if ret_json['state'] == 0:
+        if int(ret_json['state']) != 1:
             bet_success_flag = False
+        if "errors" in ret_json and ret_json["errors"]:
+            if len(ret_json['errors']) > 0:
+                bet_success_flag = False
+                for err in ret_json['errors']:
+                    logging.error(u"【下注結果】錯誤=%s" % err['note'])
 
         if bet_success_flag:
             logging.info(u"【下注结果】成功！！！")
             QMetaObject.invokeMethod(self.console_instance, "betSuccess", Qt.QueuedConnection)
         else:
             logging.error(u"【下注结果】失败！！！")
+            logging.error(u"【下注結果】 %s" % json.dumps(ret_json))
             QMetaObject.invokeMethod(self.console_instance, "betFailed", Qt.QueuedConnection)

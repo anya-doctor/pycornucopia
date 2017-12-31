@@ -11,7 +11,7 @@ class MyGetPreBetDataAction(object):
     @staticmethod
     @beautiful_log
     @pyqtSlot(dict)
-    def run(console_instance, data_dic):
+    def run(console_instance):
         """
         如果登录成功，则会回调这个函数，则开启获取预下注数据！
         :param data_dic:

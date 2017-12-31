@@ -1,7 +1,7 @@
 # coding=utf-8
-import os
 import logging
 import logging.handlers
+import os
 from logging.handlers import TimedRotatingFileHandler
 
 from myutil import MySettings
