@@ -39,8 +39,16 @@ class MyStartSimulateBetAction(object):
                 else:
                     MyStartSimulateBetAction.for_start(console_instance)
                 console_instance.simulateBtn.setText(u'停止模拟')
+
+                if console_instance.getPreBetDatgaTimer:
+                    logging.info(u"【模拟下注中】停掉获取预下注数据定时器...")
+                    console_instance.getPreBetDatgaTimer.stop()
             else:
                 console_instance.simulateBtn.setText(u'开始模拟')
+                if console_instance.getPreBetDatgaTimer:
+                    logging.info(u"【模拟下注中】开启获取预下注数据定时器...")
+                    console_instance.getPreBetDatgaTimer.start(1000)
+                    console_instance.getPreBetDatgaTimer.setinterval(10 * 1000)
 
     @staticmethod
     def for_start(console_instance):
