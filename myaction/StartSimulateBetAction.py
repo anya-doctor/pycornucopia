@@ -4,37 +4,47 @@ import logging
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
+from PyQt4.QtGui import QComboBox
 
 from common.common import BET_MODE_VERTICAL
 from mythread import MyBetThread
 from myutil.tool.MyTool import beautiful_log
 
 
-class MyStartBetAction(object):
+class MyStartSimulateBetAction(object):
     @staticmethod
     @beautiful_log
     # 响应开始按钮
     def run(console_instance):
-        if console_instance.goBtn.text() == u'开始':
-            MyStartBetAction.for_start(console_instance)
-            console_instance.goBtn.setText(u'停止')
+        if not console_instance.loginSuccessData:
+            msgtitle = u"失败了"
+            msg = u"请先登录，才能获取数据..."
+            QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
+                                     Q_ARG(str, msg))
+        elif not console_instance.simulate_data:
+            msgtitle = u"失败了"
+            msg = u"请先载入历史数据，才能开始模拟..."
+            QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
+                                     Q_ARG(str, msg))
         else:
-            if console_instance.betTimer != None:
-                console_instance.betTimer.stop()
-            console_instance.curP = '-1'
-            console_instance.all_ball_needToBetList = []
-            console_instance.goBtn.setText(u'开始')
-            QtGui.QMessageBox.about(console_instance, u'请注意', u"已经停止，下注列表全部清空。")
+            if console_instance.simulateBtn.text() == u'开始模拟':
+                assert isinstance(console_instance.up_limit_combobox, QComboBox)
+                up_limit = str(console_instance.up_limit_combobox.currentText())
+                down_limit = str(console_instance.down_limit_combobox.currentText())
+                if up_limit < down_limit:
+                    msgtitle = u"操作错误"
+                    msg = u"上限期数必须大于等于下限期数"
+                    QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
+                                             Q_ARG(str, msg))
+                else:
+                    MyStartSimulateBetAction.for_start(console_instance)
+                console_instance.simulateBtn.setText(u'停止模拟')
+            else:
+                console_instance.simulateBtn.setText(u'开始模拟')
 
     @staticmethod
     def for_start(console_instance):
-        # 删除定时器，清空资源...
-        if console_instance.betTimer:
-            del console_instance.betTimer
-
-        console_instance.betTimer = QTimer()
-        console_instance.betTimer.timeout.connect(lambda: MyStartBetAction.do_bet(console_instance))
-        console_instance.betTimer.start(1000)
+        pass
 
     @staticmethod
     def do_bet(console_instance):
@@ -80,10 +90,10 @@ class MyStartBetAction(object):
                     else:
                         logging.info(u"【下注中】计算下注列表...")
                         # 先清算上局数据，如果有的话...
-                        MyStartBetAction.do_balance(console_instance)
+                        MyStartSimulateBetAction.do_balance(console_instance)
 
                         # 计算需要下注的..
-                        MyStartBetAction.do_calculate(console_instance)
+                        MyStartSimulateBetAction.do_calculate(console_instance)
 
                         # 先弄界面
                         console_instance.loadTableData()
@@ -167,7 +177,7 @@ class MyStartBetAction(object):
         :return:
         """
         # 先不考虑期期滚
-        MyStartBetAction.do_calculate_helper(console_instance, BET_MODE_VERTICAL)
+        MyStartSimulateBetAction.do_calculate_helper(console_instance, BET_MODE_VERTICAL)
 
     @staticmethod
     def do_calculate_helper(console_instance, bet_mode=BET_MODE_VERTICAL):
@@ -182,7 +192,7 @@ class MyStartBetAction(object):
             logging.info(u"【下注中】下注列表為空，初始化...")
             if not console_instance.all_ball_needToBetList:
                 for i in range(1, 11):
-                    a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
+                    a, b = MyStartSimulateBetAction.verical_get_bet_list(console_instance, i)
                     if a:
                         # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
                         c = [[i, v] for v in a]
@@ -194,7 +204,7 @@ class MyStartBetAction(object):
                 if console_instance.isQQG:
                     logging.info(u"【下注中】下注列表不為空，進入期期滾模式...")
                     for i in range(1, 11):
-                        a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
+                        a, b = MyStartSimulateBetAction.verical_get_bet_list(console_instance, i)
                         if a:
                             # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
                             c = [[i, v] for v in a]
@@ -206,7 +216,7 @@ class MyStartBetAction(object):
                     for item in console_instance.all_ball_needToBetList:
                         # 替換新的下注列表
                         index = item[3][0][0]
-                        a, b = MyStartBetAction.verical_get_bet_list(console_instance, index)
+                        a, b = MyStartSimulateBetAction.verical_get_bet_list(console_instance, index)
                         if a:
                             c = [[index, v] for v in a]
                             item[3] = c

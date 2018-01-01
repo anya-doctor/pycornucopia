@@ -8,10 +8,12 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from common import MySettings
+from myaction.GetSimulateHistoryResultDataAction import MyGetSimulateHistoryResultDataAction
 from myaction.LoginAction import MyLoginAction
 from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
 from myaction.StartBetAction import MyStartBetAction
+from myaction.StartSimulateBetAction import MyStartSimulateBetAction
 from myutil.db.MyDB import MyDBUtil
 from myutil.tool.MyTool import beautiful_log
 
@@ -94,6 +96,25 @@ class MyUIUtil(object):
         console_instance.linesEntry = QTextEdit()
         console_instance.gridlayout.addWidget(lb0, 0, 12)
         console_instance.gridlayout.addWidget(console_instance.linesEntry, 0, 13, 3, 12)
+
+        # 加入模拟功能
+        console_instance.loadHistoryBtn = QtGui.QPushButton(u"载入历史数据")
+        console_instance.connect(console_instance.loadHistoryBtn, QtCore.SIGNAL('clicked()'),
+                                 lambda: MyGetSimulateHistoryResultDataAction.run(console_instance))
+        console_instance.gridlayout.addWidget(console_instance.loadHistoryBtn, 1, 29, 1, 3)
+
+        console_instance.up_limit_combobox = QComboBox()
+        console_instance.up_limit_combobox.addItem(u'上限期数')
+        console_instance.gridlayout.addWidget(console_instance.up_limit_combobox, 1, 32, 1, 2)
+
+        console_instance.down_limit_combobox = QComboBox()
+        console_instance.down_limit_combobox.addItem(u'下限期数')
+        console_instance.gridlayout.addWidget(console_instance.down_limit_combobox, 2, 32, 1, 2)
+
+        console_instance.simulateBtn = QtGui.QPushButton(u"开始模拟")
+        console_instance.connect(console_instance.simulateBtn, QtCore.SIGNAL('clicked()'),
+                                 lambda: MyStartSimulateBetAction.run(console_instance))
+        console_instance.gridlayout.addWidget(console_instance.simulateBtn, 1, 34, 1, 2)
 
         # 1
         console_instance.ball1_1_Entry, console_instance.ball2_1_Entry, console_instance.ball3_1_Entry, console_instance.ball4_1_Entry, console_instance.ball5_1_Entry, \

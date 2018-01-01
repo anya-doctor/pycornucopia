@@ -13,6 +13,7 @@ from myaction.SaveConfigAction import MySaveConfigAction
 from myaction.StartBetAction import MyStartBetAction
 from myaction.UpdateHistoryResultDataAction import MyUpdateHistoryResultDataAction
 from myaction.UpdatePreBetDataAction import MyUpdatePreBetDataAction
+from myaction.UpdateSimulateHistoryResultDataAction import MyUpdateSimulateHistoryResultDataAction
 from myutil.gui.MyUI import MyUIUtil
 
 
@@ -41,6 +42,13 @@ class MyConsole(QWidget):
         self.getPreBetDataThread = None
         self.loginThread = None
         self.getHistoryResultDataThread = None
+        self.getSimulateHistoryResultDataThread = None
+
+        self.betTimer = None
+        self.getPreBetDatgaTimer = None
+        self.loginTimer = None
+        self.getHistoryResultDataTimer = None
+        self.getSimulateHistoryResultDataTimer = None
 
         self.curP = '-1'
         self.is_login = False
@@ -53,12 +61,7 @@ class MyConsole(QWidget):
         self.NumOfAmountInputs2 = 70
         self.reslist = []
 
-        self.betTimer = None
-        self.getPreBetDatgaTimer = None
-        self.loginTimer = None
-        self.getHistoryResultDataTimer = None
-
-        self.login_fail_cnt = 0
+        self.login_fail_cnt = 0  # 登录失败次数
 
         # 显示的标签
         self.qishu_label = None
@@ -75,6 +78,7 @@ class MyConsole(QWidget):
         self.open_balls = []
         self.history_data = []
         self.preBetDataDic = {}
+        self.simulate_data = []  # 模拟用的历史数据
 
         self.fake_mode = False
         self.fake_mode_getPreBetData = False
@@ -126,6 +130,14 @@ class MyConsole(QWidget):
         self.getHistoryResultDataTimer.stop()
 
         MyUpdateHistoryResultDataAction.run(self, data_dic)
+
+    @pyqtSlot(dict)
+    def onUpdateSimulateHistoryResultDataHideBtn(self, data_dic):
+        # 定时器关闭
+        logging.info(u"【控制台】关闭获取模拟用的开奖结果定时器")
+        self.getSimulateHistoryResultDataTimer.stop()
+
+        MyUpdateSimulateHistoryResultDataAction.run(self, data_dic)
 
     # 重置获取数据定时器
     @pyqtSlot(int)
@@ -253,6 +265,10 @@ class MyConsole(QWidget):
     @pyqtSlot()
     def betFailed(self):
         QtGui.QMessageBox.about(self, u'失败了！', u"此次下注失败，建議查看日誌...")
+
+    @pyqtSlot(str, str)
+    def alert(self, msgtitle, msg):
+        QtGui.QMessageBox.about(self, msgtitle, msg)
 
     @pyqtSlot()
     def betSuccess(self):
