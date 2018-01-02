@@ -122,7 +122,6 @@ class MainWindow(QtGui.QMainWindow):
             req_session.close()
 
             event.accept()
-
         else:
             event.ignore()
 

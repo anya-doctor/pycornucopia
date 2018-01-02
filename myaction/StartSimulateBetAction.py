@@ -4,7 +4,7 @@ import logging
 
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
-from PyQt4.QtGui import QComboBox
+from PyQt4.QtGui import QComboBox, QTableWidgetItem
 
 from common.common import BET_MODE_VERTICAL
 from mythread import MyBetThread
@@ -31,88 +31,44 @@ class MyStartSimulateBetAction(object):
                 assert isinstance(console_instance.up_limit_combobox, QComboBox)
                 up_limit = str(console_instance.up_limit_combobox.currentText())
                 down_limit = str(console_instance.down_limit_combobox.currentText())
-                if up_limit < down_limit:
+                if int(up_limit) - int(down_limit) <= 50:
                     msgtitle = u"操作错误"
-                    msg = u"上限期数必须大于等于下限期数"
+                    msg = u"请满足：上限期数-下限期数>50"
                     QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                              Q_ARG(str, msg))
                 else:
                     MyStartSimulateBetAction.for_start(console_instance)
-                console_instance.simulateBtn.setText(u'停止模拟')
-
-                if console_instance.getPreBetDatgaTimer:
-                    logging.info(u"【模拟下注中】停掉获取预下注数据定时器...")
-                    console_instance.getPreBetDatgaTimer.stop()
+                    console_instance.simulateBtn.setText(u'停止模拟')
+                    if console_instance.getPreBetDatgaTimer:
+                        logging.info(u"【模拟下注中】停掉获取预下注数据定时器...")
+                        console_instance.getPreBetDatgaTimer.stop()
             else:
                 console_instance.simulateBtn.setText(u'开始模拟')
                 if console_instance.getPreBetDatgaTimer:
                     logging.info(u"【模拟下注中】开启获取预下注数据定时器...")
-                    console_instance.getPreBetDatgaTimer.start(1000)
-                    console_instance.getPreBetDatgaTimer.setinterval(10 * 1000)
+                    console_instance.getPreBetDatgaTimer.start()
 
     @staticmethod
     def for_start(console_instance):
-        pass
+        for item in reversed(console_instance.simulate_data[0:-50]):
+            MyStartSimulateBetAction.do_balance(console_instance)
+            MyStartSimulateBetAction.do_calculate(console_instance, simulate_mode=True)
+            MyStartSimulateBetAction.simulate_bet(console_instance)
+            console_instance.loadTableData()
 
     @staticmethod
-    def do_bet(console_instance):
-        try:
-            if 'win' not in console_instance.preBetDataDic['data']:
-                logging.info(u"【下注中】還在結算階段，拿不到最新數據，等待之...")
-                console_instance.betTimer.setInterval(5 * 1000)
-            else:
-                console_instance.cur_money = int(console_instance.preBetDataDic['data']['win'].replace(',', ''))
-                console_instance.timesnow = int(console_instance.preBetDataDic['data']['betnotice']['timesnow'])
-                console_instance.timeclose = int(console_instance.preBetDataDic['data']['betnotice']['timeclose'])
-                console_instance.timeopen = int(console_instance.preBetDataDic['data']['betnotice']['timeopen'])
-                logging.info(u"当前金额=%s" % console_instance.cur_money)
-                logging.info(u"当前期数=%s" % console_instance.timesnow)
-                logging.info(u"当前剩余时间=%s" % console_instance.timeclose)
-                logging.info(u"下局开始时间=%s" % console_instance.timeopen)
+    def simulate_bet(console_instance):
+        # 更新下注面板信息...
+        cnt = 0
+        logging.info(u"【下注结果界面】bet_list=%s" % console_instance.all_ball_needToBetList)
 
-                # 判断止损条件
-                logging.info(u"【赢损】设置损=%s,设置盈=%s,当前=%s" % (
-                    int(console_instance.lost_money_at), int(console_instance.earn_money_at),
-                    console_instance.cur_money))
-                if not (int(console_instance.lost_money_at) < console_instance.cur_money < int(
-                        console_instance.earn_money_at)):
-                    console_instance.betTimer.stop()
-                    logging.info(u"已停止达到赢损条件。")
-                    QtGui.QMessageBox.about(console_instance, u'已停止', u"达到赢损条件。")
-                    # 重新设置按钮文字...
-                    console_instance.goBtn.setText(u'开始')
-                else:
-                    # 理论上触发一次就够了, 定时器关闭...
-                    console_instance.betTimer.stop()
-
-                    # 杀掉老的进程
-                    if console_instance.betThread and console_instance.betThread.isRunning():
-                        logging.info(u"【下注中】老的betThread还在，杀死它...")
-                        console_instance.betThread.quit()
-                        console_instance.betThread.wait()
-
-                    # 至少留5秒的时候来
-                    if console_instance.timeclose < 5:
-                        logging.info(u"【下注中】下注时间=%s,来不及了，重启下注定时器..." % console_instance.timeclose)
-                        console_instance.betTimer.start(console_instance.timeopen * 1000)
-                    else:
-                        logging.info(u"【下注中】计算下注列表...")
-                        # 先清算上局数据，如果有的话...
-                        MyStartSimulateBetAction.do_balance(console_instance)
-
-                        # 计算需要下注的..
-                        MyStartSimulateBetAction.do_calculate(console_instance)
-
-                        # 先弄界面
-                        console_instance.loadTableData()
-
-                        logging.info(u"【下注中】开启下注线程...")
-                        # 一旦开始了，就开始一次就行了
-                        console_instance.betThread = MyBetThread.MyBetDataThread(console_instance)
-                        console_instance.betThread.start()
-        except Exception, ex:
-            logging.error(ex, exc_info=1)
-            console_instance.betTimer.start(3000)
+        for item in console_instance.all_ball_needToBetList:
+            row = console_instance.viewEntry.rowCount()
+            logging.info(u"【下注结果界面】row_count=%s" % row)
+            newItem = QTableWidgetItem(u'已投注')
+            newItem.setBackgroundColor(console_instance.c)
+            console_instance.viewEntry.setItem((row - len(console_instance.all_ball_needToBetList) + cnt), 5, newItem)
+            cnt += 1
 
     @staticmethod
     def do_balance(console_instance):
@@ -174,7 +130,7 @@ class MyStartSimulateBetAction(object):
                     i[2] = 0  # 倍投
 
     @staticmethod
-    def do_calculate(console_instance):
+    def do_calculate(console_instance, simulate_mode=False):
         """
         all_ball_needToBetList = [
             [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
@@ -184,6 +140,10 @@ class MyStartSimulateBetAction(object):
         :param console_instance:
         :return:
         """
+        # 如果是模拟模式，则用最后50期作为历史数据吧...
+        if simulate_mode:
+            console_instance.history_data = console_instance.simulate_data[-50:]
+
         # 先不考虑期期滚
         MyStartSimulateBetAction.do_calculate_helper(console_instance, BET_MODE_VERTICAL)
 

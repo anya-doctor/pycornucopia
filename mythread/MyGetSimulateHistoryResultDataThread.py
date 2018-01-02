@@ -63,3 +63,7 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
 
         except Exception, ex:
             logging.error(ex, exc_info=1)
+            msgtitle = u"失败了"
+            msg = u"获取模拟用的历史数据失败，请重试..."
+            QMetaObject.invokeMethod(self.console, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
+                                     Q_ARG(str, msg))
