@@ -14,6 +14,7 @@ from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
 from myaction.StartBetAction import MyStartBetAction
 from myaction.StartSimulateBetAction import MyStartSimulateBetAction
+from myaction.UpdateSimulateLabelAction import MyUpdateSimulateLabelAction
 from myutil.db.MyDB import MyDBUtil
 from myutil.tool.MyTool import beautiful_log
 
@@ -98,6 +99,15 @@ class MyUIUtil(object):
         console_instance.gridlayout.addWidget(console_instance.linesEntry, 0, 13, 3, 12)
 
         # 加入模拟功能
+        console_instance.simulate_lb = QLabel(u'模拟赢钱：')
+        console_instance.gridlayout.addWidget(console_instance.simulate_lb, 0, 29,1, 3)
+        pa = QPalette()
+        pa.setColor(QPalette.WindowText, Qt.darkCyan)
+        console_instance.simulate_lb.setPalette(pa)
+
+        console_instance.simulate_qishu_lb = QLabel(u'选中期数：')
+        console_instance.gridlayout.addWidget(console_instance.simulate_qishu_lb, 0, 32,1, 8)
+
         console_instance.loadHistoryBtn = QtGui.QPushButton(u"载入历史数据")
         console_instance.connect(console_instance.loadHistoryBtn, QtCore.SIGNAL('clicked()'),
                                  lambda: MyGetSimulateHistoryResultDataAction.run(console_instance))
@@ -106,10 +116,12 @@ class MyUIUtil(object):
         console_instance.up_limit_combobox = QComboBox()
         console_instance.up_limit_combobox.addItem(u'上限期数')
         console_instance.gridlayout.addWidget(console_instance.up_limit_combobox, 1, 32, 1, 2)
+        console_instance.connect(console_instance.up_limit_combobox, QtCore.SIGNAL("currentIndexChanged(int)"), lambda: MyUpdateSimulateLabelAction.run(console_instance))
 
         console_instance.down_limit_combobox = QComboBox()
         console_instance.down_limit_combobox.addItem(u'下限期数')
         console_instance.gridlayout.addWidget(console_instance.down_limit_combobox, 2, 32, 1, 2)
+        console_instance.connect(console_instance.down_limit_combobox, QtCore.SIGNAL("currentIndexChanged(int)"), lambda: MyUpdateSimulateLabelAction.run(console_instance))
 
         console_instance.simulateBtn = QtGui.QPushButton(u"开始模拟")
         console_instance.connect(console_instance.simulateBtn, QtCore.SIGNAL('clicked()'),

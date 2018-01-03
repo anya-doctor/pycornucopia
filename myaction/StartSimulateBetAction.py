@@ -50,11 +50,20 @@ class MyStartSimulateBetAction(object):
 
     @staticmethod
     def for_start(console_instance):
+        console_instance.simulate_money = 0
         for item in reversed(console_instance.simulate_data[0:-50]):
+            # 结算
             MyStartSimulateBetAction.do_balance(console_instance)
+            console_instance.simulate_lb.setText(u"模拟赢钱：" + str(console_instance.simulate_money))
+
             MyStartSimulateBetAction.do_calculate(console_instance, simulate_mode=True)
             MyStartSimulateBetAction.simulate_bet(console_instance)
             console_instance.loadTableData()
+
+            # 把新的一期附带到history_data
+            logging.info(u"【模拟下注中】附带%s->history_data" % item)
+            assert isinstance(console_instance.history_data, list)
+            console_instance.history_data.insert(0, item)
 
     @staticmethod
     def simulate_bet(console_instance):
