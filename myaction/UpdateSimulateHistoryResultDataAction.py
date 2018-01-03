@@ -23,11 +23,11 @@ class MyUpdateSimulateHistoryResultDataAction(object):
 
             # 存放文件
             with open('config/simulate.json', 'wb') as f:
-                f.write(json.dumps(console_instance.history_data))
+                f.write(json.dumps(console_instance.simulate_data))
 
             console_instance.up_limit_combobox.clear()
             console_instance.down_limit_combobox.clear()
-            for i in console_instance.simulate_data:
+            for i in console_instance.simulate_data[0:-50]:
                 console_instance.up_limit_combobox.addItem(i[0])
                 console_instance.down_limit_combobox.addItem(i[0])
         except Exception, ex:

@@ -29,14 +29,20 @@ class MyStartSimulateBetAction(object):
         else:
             if console_instance.simulateBtn.text() == u'开始模拟':
                 assert isinstance(console_instance.up_limit_combobox, QComboBox)
-                up_limit = str(console_instance.up_limit_combobox.currentText())
-                down_limit = str(console_instance.down_limit_combobox.currentText())
-                if int(up_limit) - int(down_limit) <= 50:
+                up_limit = int(console_instance.up_limit_combobox.currentText())
+                down_limit = int(console_instance.down_limit_combobox.currentText())
+                if up_limit - down_limit + 1 <= 50:
                     msgtitle = u"操作错误"
                     msg = u"请满足：上限期数-下限期数>50"
                     QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                              Q_ARG(str, msg))
                 else:
+                    # 截断模拟数据
+                    console_instance.simulate_data = filter(lambda x: down_limit <= int(x[0]) <= up_limit, console_instance.simulate_data)
+                    logging.info(u"【模拟下注中】，截断数据后len=%s" % (len(console_instance.simulate_data)))
+                    logging.info(u"【模拟下注中】，第一个=%s" % (console_instance.simulate_data[0]))
+                    logging.info(u"【模拟下注中】，最后一个=%s" % (console_instance.simulate_data[-1]))
+
                     MyStartSimulateBetAction.for_start(console_instance)
                     console_instance.simulateBtn.setText(u'停止模拟')
                     if console_instance.getPreBetDatgaTimer:
