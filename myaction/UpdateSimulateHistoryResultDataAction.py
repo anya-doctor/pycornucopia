@@ -21,7 +21,6 @@ class MyUpdateSimulateHistoryResultDataAction(object):
             # 存到控制台
             console_instance.simulate_data = data_list
             console_instance.history_data = data_list[-50:]
-            logging.info("#######len=%s" % len(console_instance.history_data))
 
             # 存放文件
             with open('config/simulate.json', 'wb') as f:
@@ -29,6 +28,7 @@ class MyUpdateSimulateHistoryResultDataAction(object):
             with open('config/simulate_history.json', 'wb') as f:
                 f.write(json.dumps(console_instance.history_data))
 
+            # 载入到下拉combobox
             console_instance.up_limit_combobox.clear()
             console_instance.down_limit_combobox.clear()
             for i in console_instance.simulate_data[0:-50]:

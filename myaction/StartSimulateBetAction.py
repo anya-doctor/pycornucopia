@@ -29,25 +29,11 @@ class MyStartSimulateBetAction(object):
         else:
             if console_instance.simulateBtn.text() == u'开始模拟':
                 assert isinstance(console_instance.up_limit_combobox, QComboBox)
-                up_limit = int(console_instance.up_limit_combobox.currentText())
-                down_limit = int(console_instance.down_limit_combobox.currentText())
-                if up_limit - down_limit + 1 <= 50:
-                    msgtitle = u"操作错误"
-                    msg = u"请满足：上限期数-下限期数>50"
-                    QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
-                                             Q_ARG(str, msg))
-                else:
-                    # 截断模拟数据
-                    console_instance.simulate_data = filter(lambda x: down_limit <= int(x[0]) <= up_limit, console_instance.simulate_data)
-                    logging.info(u"【模拟下注中】，截断数据后len=%s" % (len(console_instance.simulate_data)))
-                    logging.info(u"【模拟下注中】，第一个=%s" % (console_instance.simulate_data[0]))
-                    logging.info(u"【模拟下注中】，最后一个=%s" % (console_instance.simulate_data[-1]))
-
-                    MyStartSimulateBetAction.for_start(console_instance)
-                    console_instance.simulateBtn.setText(u'停止模拟')
-                    if console_instance.getPreBetDatgaTimer:
-                        logging.info(u"【模拟下注中】停掉获取预下注数据定时器...")
-                        console_instance.getPreBetDatgaTimer.stop()
+                MyStartSimulateBetAction.for_start(console_instance)
+                console_instance.simulateBtn.setText(u'停止模拟')
+                if console_instance.getPreBetDatgaTimer:
+                    logging.info(u"【模拟下注中】停掉获取预下注数据定时器...")
+                    console_instance.getPreBetDatgaTimer.stop()
             else:
                 console_instance.simulateBtn.setText(u'开始模拟')
                 if console_instance.getPreBetDatgaTimer:
@@ -56,13 +42,26 @@ class MyStartSimulateBetAction(object):
 
     @staticmethod
     def for_start(console_instance):
+        up_limit = int(console_instance.up_limit_combobox.currentText())
+        down_limit = int(console_instance.down_limit_combobox.currentText())
+
+        # 截断模拟数据
+        tmp_simulate_data = filter(lambda x: down_limit <= int(x[0]) <= up_limit, console_instance.simulate_data)
+        logging.info(u"【模拟下注中】，截断数据后len=%s" % (len(tmp_simulate_data)))
+        logging.info(u"【模拟下注中】，第一个=%s" % (tmp_simulate_data[0]))
+        logging.info(u"【模拟下注中】，最后一个=%s" % (tmp_simulate_data[-1]))
+
+        # 模拟当前timesnow + open_balls
+        console_instance.timesnow = int(console_instance.history_data[0][0]) + 1
+        console_instance.open_balls = console_instance.history_data[0][2:12]
+
         console_instance.simulate_money = 0
-        for item in reversed(console_instance.simulate_data[0:-50]):
+        for item in reversed(tmp_simulate_data):
             # 结算
             MyStartSimulateBetAction.do_balance(console_instance)
             console_instance.simulate_lb.setText(u"模拟赢钱：" + str(console_instance.simulate_money))
 
-            MyStartSimulateBetAction.do_calculate(console_instance, simulate_mode=True)
+            MyStartSimulateBetAction.do_calculate(console_instance)
             MyStartSimulateBetAction.simulate_bet(console_instance)
             console_instance.loadTableData()
 
@@ -70,6 +69,8 @@ class MyStartSimulateBetAction(object):
             logging.info(u"【模拟下注中】附带%s->history_data" % item)
             assert isinstance(console_instance.history_data, list)
             console_instance.history_data.insert(0, item)
+            console_instance.timesnow = int(item[0])+1
+            console_instance.open_balls = item[2:12]
 
     @staticmethod
     def simulate_bet(console_instance):
@@ -145,7 +146,7 @@ class MyStartSimulateBetAction(object):
                     i[2] = 0  # 倍投
 
     @staticmethod
-    def do_calculate(console_instance, simulate_mode=False):
+    def do_calculate(console_instance):
         """
         all_ball_needToBetList = [
             [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
@@ -155,10 +156,6 @@ class MyStartSimulateBetAction(object):
         :param console_instance:
         :return:
         """
-        # 如果是模拟模式，则用最后50期作为历史数据吧...
-        if simulate_mode:
-            console_instance.history_data = console_instance.simulate_data[-50:]
-
         # 先不考虑期期滚
         MyStartSimulateBetAction.do_calculate_helper(console_instance, BET_MODE_VERTICAL)
 

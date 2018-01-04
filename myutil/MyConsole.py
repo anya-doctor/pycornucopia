@@ -198,6 +198,11 @@ class MyConsole(QWidget):
                     newItem = QTableWidgetItem(u'不中')
                     newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row - len(b) + k, 6, newItem)
+
+                result_item = QTableWidgetItem(', '.join([str(v) for v in self.open_balls]))
+                result_item.setBackgroundColor(self.c)
+                self.viewEntry.setItem(row - len(b) + k, 7, result_item)
+
             logging.info(u"【控制台】UI界面-2更新，结算完毕...")
         except Exception, ex:
             logging.error(ex, exc_info=1)

@@ -8,6 +8,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from common import MySettings
+from myaction.ClearKaijiangInfoAction import MyClearKaijiangInfoAction
 from myaction.GetSimulateHistoryResultDataAction import MyGetSimulateHistoryResultDataAction
 from myaction.LoginAction import MyLoginAction
 from myaction.ReNameAction import MyReNameAction
@@ -232,11 +233,16 @@ class MyUIUtil(object):
         pa.setColor(QPalette.WindowText, Qt.red)
         console_instance.win_label.setPalette(pa)
 
-        console_instance.viewEntry = QTableWidget(0, 7)
-        console_instance.gridlayout.addWidget(console_instance.viewEntry, 15, 0, 30, 28)
-        console_instance.viewEntry.setHorizontalHeaderLabels([u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否'])
+        console_instance.viewEntry = QTableWidget(0, 8)
+        console_instance.gridlayout.addWidget(console_instance.viewEntry, 15, 0, 30, 36)
+        console_instance.viewEntry.setHorizontalHeaderLabels([u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否', u'开奖号码'])
         console_instance.viewEntry.horizontalHeader().setStretchLastSection(True)
         console_instance.viewEntry.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+
+        console_instance.clearKaijiangBtn = QtGui.QPushButton(u"清空开奖面板")
+        console_instance.connect(console_instance.clearKaijiangBtn, QtCore.SIGNAL('clicked()'),
+                                 lambda: MyClearKaijiangInfoAction.run(console_instance))
+        console_instance.gridlayout.addWidget(console_instance.clearKaijiangBtn, 15, 36, 1, 3)
 
         console_instance.setLayout(console_instance.gridlayout)
 
