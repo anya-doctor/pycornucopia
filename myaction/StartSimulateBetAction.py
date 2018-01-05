@@ -106,6 +106,7 @@ class MyStartSimulateBetAction(object):
             return
 
         open_balls = console_instance.open_balls
+        logging.info(u"【下注中】結算开奖结果=%s" % open_balls)
 
         for item in console_instance.all_ball_needToBetList:
             # 更新期数
@@ -116,8 +117,9 @@ class MyStartSimulateBetAction(object):
                 win_flag = False
                 for inner_item in item[3]:
                     logging.info(
-                            u"【下注中】结算对比位置%s开奖%s == 下注球%s " % (inner_item[0], open_balls[inner_item[0]], inner_item[1]))
-                    if int(open_balls[inner_item[0]]) == int(inner_item[1]):
+                            u"【下注中】结算对比位置%s开奖%s 与 下注球%s " % (inner_item[0], open_balls[inner_item[0]], inner_item[1]))
+                    # 因为位置1就是open_balls[0]，所以要减1
+                    if int(open_balls[inner_item[0]-1]) == int(inner_item[1]):
                         logging.info(u"【下注中】结算发现中！！！")
                         win_flag = True
                         break
