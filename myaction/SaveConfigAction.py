@@ -35,6 +35,7 @@ class MySaveConfigAction(object):
 
             # 实时更改
             console_instance.balls_bet_amount = betAmount.split('-')
+            console_instance.balls_bet_amount = [int(v) for v in console_instance.balls_bet_amount]
             console_instance.first_n = int(first_n)
             console_instance.earn_money_at = earn_money_at
             console_instance.lost_money_at = lost_money_at

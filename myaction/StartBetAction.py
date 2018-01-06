@@ -144,6 +144,7 @@ class MyStartBetAction(object):
                         if simulate_mode:
                             console_instance.simulate_money += int(console_instance.balls_bet_amount[item[2]]) * 10
                     else:
+                        logging.info(u"【下注中】结算发现不中")
                         if simulate_mode:
                             console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
 
@@ -199,10 +200,18 @@ class MyStartBetAction(object):
                 for i in range(1, 11):
                     a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
                     if a:
-                        # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
-                        c = [[i, v] for v in a]
-                        console_instance.all_ball_needToBetList.append(
-                                [console_instance.timesnow, console_instance.timesnow, 0, c])
+                        # 如果a是tuple，说明a想要一个位置下注多条
+                        if isinstance(a, tuple):
+                            # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index]
+                            for j in range(len(a)):
+                                c = [[i, v] for v in a[j]]
+                                console_instance.all_ball_needToBetList.append(
+                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
+                        # 如果a是list，说明就下注这个list即可
+                        elif isinstance(a, list):
+                            c = [[i, v] for v in a]
+                            console_instance.all_ball_needToBetList.append(
+                                    [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0])
             # 如果不為空
             else:
                 # 如果是期期滾
@@ -211,10 +220,18 @@ class MyStartBetAction(object):
                     for i in range(1, 11):
                         a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
                         if a:
-                            # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
-                            c = [[i, v] for v in a]
-                            console_instance.all_ball_needToBetList.append(
-                                    [console_instance.timesnow, console_instance.timesnow, 0, c])
+                            # 如果a是tuple，说明a想要一个位置下注多条
+                            if isinstance(a, tuple):
+                                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index]
+                                for j in range(len(a)):
+                                    c = [[i, v] for v in a[j]]
+                                    console_instance.all_ball_needToBetList.append(
+                                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
+                            # 如果a是list，说明就下注这个list即可
+                            elif isinstance(a, list):
+                                c = [[i, v] for v in a]
+                                console_instance.all_ball_needToBetList.append(
+                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0])
                 # 如果是常規模式
                 else:
                     logging.info(u"【下注中】下注列表不為空，進入常規模式...")
@@ -223,14 +240,33 @@ class MyStartBetAction(object):
                         index = item[3][0][0]
                         a, b = MyStartBetAction.verical_get_bet_list(console_instance, index)
                         if a:
-                            c = [[index, v] for v in a]
-                            item[3] = c
+                            # 如果a是tuple，说明a想要一个位置下注多条
+                            if isinstance(a, tuple):
+                                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index]
+                                mother_son_list = []
+                                for x_index, x in enumerate(console_instance.all_ball_needToBetList):
+                                    if x[0] == item[0] and x[1] == item[1] and x[4] == item[4]:
+                                        mother_son_list.append(x_index)
+                                logging.info(u"【下注中】找到母子序列号：%s" % mother_son_list)
+
+                                assert len(a) == len(mother_son_list)
+
+                                for j in range(len(a)):
+                                    c = [[index, v] for v in a[j]]
+                                    console_instance.all_ball_needToBetList[mother_son_list[j]][3] = c
+                            # 如果a是list，说明就下注这个list即可
+                            elif isinstance(a, list):
+                                c = [[index, v] for v in a]
+                                item[3] = c
+
         else:
             pass
 
     @staticmethod
     def verical_get_bet_list(console_instance, bet_index):
         try:
+            from myutil.MyConsole import MyConsole
+            assert isinstance(console_instance, MyConsole)
             logging.info(u"【下注中】垂直模式：位置=%s" % bet_index)
             # 某些号码不想要
             dic = {
@@ -251,12 +287,31 @@ class MyStartBetAction(object):
             # 舍弃N期
             lines = console_instance.history_data
             line = lines[int(console_instance.first_n)]
+            balls = line[2:12]
 
-            bet_balls = [str(line[2])]
+            bet_dic = {
+                1: (str(console_instance.ball3_1_Entry.text()).split('-'), str(console_instance.ball4_1_Entry.text()).split('-')),
+                2: (str(console_instance.ball3_2_Entry.text()).split('-'),str(console_instance.ball4_2_Entry.text()).split('-')),
+                3: (str(console_instance.ball3_3_Entry.text()).split('-'),str(console_instance.ball4_3_Entry.text()).split('-')),
+                4: (str(console_instance.ball3_4_Entry.text()).split('-'),str(console_instance.ball4_4_Entry.text()).split('-')),
+                5: (str(console_instance.ball3_5_Entry.text()).split('-'),str(console_instance.ball4_5_Entry.text()).split('-')),
+                6: (str(console_instance.ball3_6_Entry.text()).split('-'),str(console_instance.ball4_6_Entry.text()).split('-')),
+                7: (str(console_instance.ball3_7_Entry.text()).split('-'),str(console_instance.ball4_7_Entry.text()).split('-')),
+                8: (str(console_instance.ball3_8_Entry.text()).split('-'),str(console_instance.ball4_8_Entry.text()).split('-')),
+                9: (str(console_instance.ball3_9_Entry.text()).split('-'),str(console_instance.ball4_9_Entry.text()).split('-')),
+                10: (str(console_instance.ball3_10_Entry.text()).split('-'),str(console_instance.ball4_10_Entry.text()).split('-')),
+            }
+
+            bet_balls = bet_dic[balls[bet_index-1]]
             ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-            not_bet_balls = [v for v in ten_balls if v not in bet_balls]
+            not_bet_balls = []
             ret = bet_balls, not_bet_balls
-            logging.info(u"【计算结果】下注=%s" % (ret[0]))
+
+            if isinstance(bet_balls, tuple):
+                for i in range(len(bet_balls)):
+                    logging.info(u"【计算结果】下注=%s" % bet_balls[i])
+            elif isinstance(bet_balls, list):
+                logging.info(u"【计算结果】下注=%s" % bet_balls)
             return ret
         except Exception, ex:
             logging.error(ex, exc_info=1)

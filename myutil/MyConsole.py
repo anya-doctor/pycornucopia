@@ -35,7 +35,7 @@ class MyConsole(QWidget):
         self.is_bet_success2 = False
         self.balls_bet_flag = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # [0,0,0,0,0]
         self.all_ball_needToBetList = []  # [[1,2,3,4],[3,4,5,6],[2,1,3,4],[2,3,4,1],[7,8,9,0]]
-        self.balls_bet_amount = []  # ['1','2','4','8']
+        self.balls_bet_amount = []  # [1,2,4,8]
 
         self.goThread = None
         self.betThread = None
