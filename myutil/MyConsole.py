@@ -176,7 +176,7 @@ class MyConsole(QWidget):
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 1, newItem)
 
-                newItem = QTableWidgetItem(u','.join([u"位置%s,球%s" % (v[0], v[1]) for v in item[3]]))
+                newItem = QTableWidgetItem(u','.join([u"位%s球%s" % (v[0], v[1]) for v in item[3]]))
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 2, newItem)
 
