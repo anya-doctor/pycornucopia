@@ -25,9 +25,9 @@ class MyUpdateSimulateComboModeAction(object):
             elif mode == 0:
                 if console_instance.getPreBetDatgaTimer:
                     logging.info(u"【模拟下注中】开启获取预下注数据定时器...")
-                    console_instance.getPreBetDatgaTimer.start()
+                    console_instance.getPreBetDatgaTimer.start(1000)
                 if console_instance.getHistoryResultDataTimer:
                     logging.info(u"【模拟下注中】开启获取历史数据定时器...")
-                    console_instance.getHistoryResultDataTimer.start()
+                    console_instance.getHistoryResultDataTimer.start(1000)
         except Exception, ex:
             logging.error(ex)
