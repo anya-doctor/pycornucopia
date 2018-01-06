@@ -1,5 +1,4 @@
 # coding:utf-8
-import json
 import logging
 
 from PyQt4.QtCore import *
@@ -19,8 +18,14 @@ class MyClearKaijiangInfoAction(object):
             console_instance.viewEntry.clearContents()
             console_instance.viewEntry.setRowCount(0)
 
+            logging.info(u"【控制台】赢损清0...")
+            console_instance.simulate_lb.setText(u"模拟赢钱：0")
+
             logging.info(u"【控制台】清空下注列表...")
             console_instance.all_ball_needToBetList = []
+            console_instance.open_balls = []
+            console_instance.history_data = []
+
         except Exception, ex:
             logging.error(ex)
 

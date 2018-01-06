@@ -13,7 +13,11 @@ class MyUpdateSimulateHistoryResultDataAction(object):
             logging.info(u"【控制台】更新历史结果数据")
             assert isinstance(data_list, list)
 
-            # 先排好序
+            # 去掉第一行为空结果的情况（因为可能在结算...）
+            if len(data_list) > 1 and data_list[0][2] == "":
+                del data_list[0]
+
+            # 排好序
             data_list.sort(key=lambda x: x[0], reverse=True)
             filter(lambda x: x[2] != '', data_list)
             logging.info(data_list)

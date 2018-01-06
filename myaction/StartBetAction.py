@@ -15,16 +15,27 @@ class MyStartBetAction(object):
     @beautiful_log
     # 响应开始按钮
     def run(console_instance):
-        if console_instance.goBtn.text() == u'开始':
-            MyStartBetAction.for_start(console_instance)
-            console_instance.goBtn.setText(u'停止')
+        if not console_instance.loginSuccessData:
+            msgtitle = u"失败了"
+            msg = u"请先登录，才能获取数据..."
+            QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
+                                     Q_ARG(str, msg))
+        elif console_instance.isSimulate_combobox.currentIndex() == 1:
+            msgtitle = u"失败了"
+            msg = u"请切换到正常模式"
+            QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
+                                     Q_ARG(str, msg))
         else:
-            if console_instance.betTimer != None:
-                console_instance.betTimer.stop()
-            console_instance.curP = '-1'
-            console_instance.all_ball_needToBetList = []
-            console_instance.goBtn.setText(u'开始')
-            QtGui.QMessageBox.about(console_instance, u'请注意', u"已经停止，下注列表全部清空。")
+            if console_instance.goBtn.text() == u'开始':
+                MyStartBetAction.for_start(console_instance)
+                console_instance.goBtn.setText(u'停止')
+            else:
+                if console_instance.betTimer != None:
+                    console_instance.betTimer.stop()
+                console_instance.curP = '-1'
+                console_instance.all_ball_needToBetList = []
+                console_instance.goBtn.setText(u'开始')
+                QtGui.QMessageBox.about(console_instance, u'请注意', u"已经停止，下注列表全部清空。")
 
     @staticmethod
     def for_start(console_instance):

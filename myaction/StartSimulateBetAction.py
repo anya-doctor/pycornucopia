@@ -1,13 +1,12 @@
 # coding:utf-8
 import copy
+import json
 import logging
 
-from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import QComboBox, QTableWidgetItem
 
 from common.common import BET_MODE_VERTICAL
-from mythread import MyBetThread
 from myutil.tool.MyTool import beautiful_log
 
 
@@ -16,9 +15,15 @@ class MyStartSimulateBetAction(object):
     @beautiful_log
     # 响应开始按钮
     def run(console_instance):
+        assert isinstance(console_instance.isSimulate_combobox, QComboBox)
         if not console_instance.loginSuccessData:
             msgtitle = u"失败了"
             msg = u"请先登录，才能获取数据..."
+            QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
+                                     Q_ARG(str, msg))
+        elif not console_instance.isSimulate_combobox.currentIndex() == 1:
+            msgtitle = u"失败了"
+            msg = u"请切换到模拟模式"
             QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                      Q_ARG(str, msg))
         elif not console_instance.simulate_data:
@@ -27,23 +32,16 @@ class MyStartSimulateBetAction(object):
             QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                      Q_ARG(str, msg))
         else:
-            if console_instance.simulateBtn.text() == u'开始模拟':
-                assert isinstance(console_instance.up_limit_combobox, QComboBox)
-                MyStartSimulateBetAction.for_start(console_instance)
-                console_instance.simulateBtn.setText(u'停止模拟')
-                if console_instance.getPreBetDatgaTimer:
-                    logging.info(u"【模拟下注中】停掉获取预下注数据定时器...")
-                    console_instance.getPreBetDatgaTimer.stop()
-            else:
-                console_instance.simulateBtn.setText(u'开始模拟')
-                if console_instance.getPreBetDatgaTimer:
-                    logging.info(u"【模拟下注中】开启获取预下注数据定时器...")
-                    console_instance.getPreBetDatgaTimer.start()
+            MyStartSimulateBetAction.for_start(console_instance)
 
     @staticmethod
     def for_start(console_instance):
+        # 每一次开始，都会初始化历史数据，因为太重要了。。。
         up_limit = int(console_instance.up_limit_combobox.currentText())
         down_limit = int(console_instance.down_limit_combobox.currentText())
+        console_instance.history_data = filter(lambda x: int(x[0]) < down_limit, console_instance.simulate_data)
+        with open('config/simulate_history.json', 'wb') as f:
+            f.write(json.dumps(console_instance.history_data))
 
         # 截断模拟数据
         tmp_simulate_data = filter(lambda x: down_limit <= int(x[0]) <= up_limit, console_instance.simulate_data)
@@ -59,18 +57,25 @@ class MyStartSimulateBetAction(object):
         for item in reversed(tmp_simulate_data):
             # 结算
             MyStartSimulateBetAction.do_balance(console_instance)
+
             console_instance.simulate_lb.setText(u"模拟赢钱：" + str(console_instance.simulate_money))
 
             MyStartSimulateBetAction.do_calculate(console_instance)
-            MyStartSimulateBetAction.simulate_bet(console_instance)
             console_instance.loadTableData()
+            MyStartSimulateBetAction.simulate_bet(console_instance)
 
             # 把新的一期附带到history_data
             logging.info(u"【模拟下注中】附带%s->history_data" % item)
             assert isinstance(console_instance.history_data, list)
             console_instance.history_data.insert(0, item)
-            console_instance.timesnow = int(item[0])+1
+            console_instance.timesnow = int(item[0]) + 1
             console_instance.open_balls = item[2:12]
+
+        # 最后一次结算
+        MyStartSimulateBetAction.do_balance(console_instance)
+        console_instance.simulate_lb.setText(u"模拟赢钱：" + str(console_instance.simulate_money))
+        with open('config/simulate_history.json', 'wb') as f:
+            f.write(json.dumps(console_instance.history_data))
 
     @staticmethod
     def simulate_bet(console_instance):
@@ -80,7 +85,7 @@ class MyStartSimulateBetAction(object):
 
         for item in console_instance.all_ball_needToBetList:
             row = console_instance.viewEntry.rowCount()
-            logging.info(u"【下注结果界面】row_count=%s" % row)
+            logging.info(u"【下注结果界面】row_count=%s,cnt=%s" % (row, cnt))
             newItem = QTableWidgetItem(u'已投注')
             newItem.setBackgroundColor(console_instance.c)
             console_instance.viewEntry.setItem((row - len(console_instance.all_ball_needToBetList) + cnt), 5, newItem)
@@ -119,11 +124,12 @@ class MyStartSimulateBetAction(object):
                     logging.info(
                             u"【下注中】结算对比位置%s开奖%s 与 下注球%s " % (inner_item[0], open_balls[inner_item[0]], inner_item[1]))
                     # 因为位置1就是open_balls[0]，所以要减1
-                    if int(open_balls[inner_item[0]-1]) == int(inner_item[1]):
+                    if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
                         logging.info(u"【下注中】结算发现中！！！")
                         win_flag = True
-                        break
-
+                        console_instance.simulate_money += int(console_instance.balls_bet_amount[item[2]]) * 10
+                    else:
+                        console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
                 if win_flag:
                     item[2] = 0
                 else:

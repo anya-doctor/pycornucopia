@@ -15,6 +15,7 @@ from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
 from myaction.StartBetAction import MyStartBetAction
 from myaction.StartSimulateBetAction import MyStartSimulateBetAction
+from myaction.UpdateSimulateComboModeAction import MyUpdateSimulateComboModeAction
 from myaction.UpdateSimulateLabelAction import MyUpdateSimulateLabelAction
 from myutil.db.MyDB import MyDBUtil
 from myutil.tool.MyTool import beautiful_log
@@ -100,29 +101,39 @@ class MyUIUtil(object):
         console_instance.gridlayout.addWidget(console_instance.linesEntry, 0, 13, 3, 12)
 
         # 加入模拟功能
-        console_instance.simulate_lb = QLabel(u'模拟赢钱：')
-        console_instance.gridlayout.addWidget(console_instance.simulate_lb, 0, 29,1, 3)
-        pa = QPalette()
-        pa.setColor(QPalette.WindowText, Qt.darkCyan)
-        console_instance.simulate_lb.setPalette(pa)
-
         console_instance.simulate_qishu_lb = QLabel(u'选中期数：')
-        console_instance.gridlayout.addWidget(console_instance.simulate_qishu_lb, 0, 32,1, 8)
+        console_instance.gridlayout.addWidget(console_instance.simulate_qishu_lb, 0, 32, 1, 8)
+
+        # 是否模拟模式
+        console_instance.isSimulate_combobox = QComboBox()
+        console_instance.isSimulate_combobox.addItem(u'正常模式')
+        console_instance.isSimulate_combobox.addItem(u'模拟模式')
+        console_instance.gridlayout.addWidget(console_instance.isSimulate_combobox, 0, 29, 1, 2)
+        console_instance.connect(console_instance.isSimulate_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
+                                 lambda: MyUpdateSimulateComboModeAction.run(console_instance))
 
         console_instance.loadHistoryBtn = QtGui.QPushButton(u"载入历史数据")
         console_instance.connect(console_instance.loadHistoryBtn, QtCore.SIGNAL('clicked()'),
                                  lambda: MyGetSimulateHistoryResultDataAction.run(console_instance))
         console_instance.gridlayout.addWidget(console_instance.loadHistoryBtn, 1, 29, 1, 3)
 
+        console_instance.simulate_lb = QLabel(u'模拟赢钱：')
+        console_instance.gridlayout.addWidget(console_instance.simulate_lb, 2, 29, 1, 3)
+        pa = QPalette()
+        pa.setColor(QPalette.WindowText, Qt.darkCyan)
+        console_instance.simulate_lb.setPalette(pa)
+
         console_instance.up_limit_combobox = QComboBox()
         console_instance.up_limit_combobox.addItem(u'上限期数')
         console_instance.gridlayout.addWidget(console_instance.up_limit_combobox, 1, 32, 1, 2)
-        console_instance.connect(console_instance.up_limit_combobox, QtCore.SIGNAL("currentIndexChanged(int)"), lambda: MyUpdateSimulateLabelAction.run(console_instance))
+        console_instance.connect(console_instance.up_limit_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
+                                 lambda: MyUpdateSimulateLabelAction.run(console_instance))
 
         console_instance.down_limit_combobox = QComboBox()
         console_instance.down_limit_combobox.addItem(u'下限期数')
         console_instance.gridlayout.addWidget(console_instance.down_limit_combobox, 2, 32, 1, 2)
-        console_instance.connect(console_instance.down_limit_combobox, QtCore.SIGNAL("currentIndexChanged(int)"), lambda: MyUpdateSimulateLabelAction.run(console_instance))
+        console_instance.connect(console_instance.down_limit_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
+                                 lambda: MyUpdateSimulateLabelAction.run(console_instance))
 
         console_instance.simulateBtn = QtGui.QPushButton(u"开始模拟")
         console_instance.connect(console_instance.simulateBtn, QtCore.SIGNAL('clicked()'),
@@ -235,7 +246,8 @@ class MyUIUtil(object):
 
         console_instance.viewEntry = QTableWidget(0, 8)
         console_instance.gridlayout.addWidget(console_instance.viewEntry, 15, 0, 30, 36)
-        console_instance.viewEntry.setHorizontalHeaderLabels([u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否', u'开奖号码'])
+        console_instance.viewEntry.setHorizontalHeaderLabels(
+                [u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否', u'开奖号码'])
         console_instance.viewEntry.horizontalHeader().setStretchLastSection(True)
         console_instance.viewEntry.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
@@ -272,8 +284,9 @@ class MyUIUtil(object):
             bets = row[3]
             if '-' in bets:
                 console_instance.balls_bet_amount = bets.split('-')
+                console_instance.balls_bet_amount = [int(v) for v in console_instance.balls_bet_amount]
             else:
-                console_instance.balls_bet_amount = [bets]
+                console_instance.balls_bet_amount = [int(bets)]
             # 载入止盈止损
             console_instance.earnMoneyAtEntry.setText(row[4])
             console_instance.lostMoneyAtEntry.setText(row[5])

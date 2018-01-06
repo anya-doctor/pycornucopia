@@ -92,6 +92,10 @@ class MyConsole(QWidget):
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)
 
+        # 设置一些按钮不可点击
+        assert isinstance(self.goBtn, QPushButton)
+        self.goBtn.setEnabled(False)
+
     @pyqtSlot()
     def onLoginBtn(self):
         MyLoginAction.run(self)

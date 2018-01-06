@@ -50,8 +50,8 @@ class MyGetSimulateHistoryResultDataAction(object):
 
             from mythread.MyGetSimulateHistoryResultDataThread import MyGetSimulateHistoryResultDataThread
             console_instance.getSimulateHistoryResultDataThread = MyGetSimulateHistoryResultDataThread(
-                console_instance.parent,
-                console_instance)
+                    console_instance.parent,
+                    console_instance)
             console_instance.getSimulateHistoryResultDataThread.start()
 
             # 在这里才能把时间间隔调整...

@@ -95,6 +95,7 @@ class MainWindow(QtGui.QMainWindow):
         logging.info(u"【主窗口-历史数据展板-大更新】################START HistoryResultData################")
         # 先清空...
         self.viewEntry.clearContents()
+        self.viewEntry.setRowCount(0)
 
         for period in data_list:
             # 添加一行
