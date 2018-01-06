@@ -16,12 +16,16 @@ class MyUpdatePreBetDataAction(object):
     @pyqtSlot(dict)
     def run(console_instance, data_dict):
         try:
-            logging.info(u"【控制台】更新预下注数据")
             console_instance.preBetDataDic = data_dict
             timesnow = console_instance.preBetDataDic['data']['betnotice']['timesnow']
             timeclose = console_instance.preBetDataDic['data']['betnotice']['timeclose']
             timeopen = console_instance.preBetDataDic['data']['betnotice']['timeopen']
             console_instance.open_balls = console_instance.preBetDataDic['data']['betnotice']['resultnum']
+
+            logging.info(u"【更新预下注数据】timesnow=%s" % timesnow)
+            logging.info(u"【更新预下注数据】timeclose=%s" % timeclose)
+            logging.info(u"【更新预下注数据】timeopen=%s" % timeopen)
+            logging.info(u"【更新预下注数据】open_balls=%s" % console_instance.open_balls)
 
             # 稍微处理下开奖号码 "03" => "3"
             for index, ball in enumerate(console_instance.open_balls):
@@ -29,7 +33,6 @@ class MyUpdatePreBetDataAction(object):
                     console_instance.open_balls[index] = ball[1]
 
             # 如果发现更新了期数，则开始结算..
-            logging.info(u"【更新预下注数据】console_instance.timesnow=%s, timesnow=%s" % (console_instance.timesnow, timesnow))
             if int(console_instance.timesnow) == 0:
                 # 更新期数, 这是第一次进来，只有初始化，没有结算
                 if 0 < int(timesnow):
@@ -40,7 +43,7 @@ class MyUpdatePreBetDataAction(object):
                 if int(console_instance.timesnow) == int(timesnow):
                     # 虽然期数相同，但是可以看看是否需要填充开奖结果，有些开奖结果很傻逼，最近一期是空的。。
                     if console_instance.history_data and console_instance.history_data[0][2] == "":
-                        logging.info(u"【更新历史数据Action】虽然期数没更新，但开奖数据最近一期为空，填充之...")
+                        logging.info(u"【更新预下注数据】虽然期数没更新，但开奖数据最近一期为空，填充之...")
                         # 更新数据
                         now_history_data = [int(v) for v in console_instance.open_balls]
                         now_history_data.insert(0, console_instance.history_data[0][1])
@@ -52,50 +55,49 @@ class MyUpdatePreBetDataAction(object):
                                                  Q_ARG(str, str(timesnow)), Q_ARG(list, console_instance.open_balls))
 
                 elif int(console_instance.timesnow) < int(timesnow):
-                    same_flag = True
-                    for index, ball in enumerate(console_instance.history_data[0][2:12]):
-                        if int(console_instance.open_balls[index]) != int(ball):
-                            same_flag = False
-                            break
-                    if same_flag:
-                        logging.info(u"【更新历史数据Action】虽然期数更新了，但數據還在結算中，等待...")
-                        pass
+                    if console_instance.history_data and console_instance.history_data[0][2] == "":
+                        logging.info(u"【更新预下注数据】你觉得可能吗？都过了一期的时间了，上一期的历史数据还是空...")
+                        logging.info(u"【更新预下注数据】这个时候我宁愿重新获取一份历史数据！")
+                        console_instance.getHistoryResultDataTimer.start(1000)
                     else:
-                        # 更新期数
-                        console_instance.timesnow = timesnow
-
-                        # 更新历史数据
-                        logging.info(u"【更新历史数据】###########")
-                        if not console_instance.history_data:
-                            logging.error(u"【更新历史数据】控制台对象竟然没有历史数据！！！")
+                        same_flag = True
+                        for index, ball in enumerate(console_instance.history_data[0][2:12]):
+                            if int(console_instance.open_balls[index]) != int(ball):
+                                same_flag = False
+                                break
+                        if same_flag:
+                            logging.info(u"【更新预下注数据】虽然期数更新了，但數據還在結算中，等待...")
+                            pass
                         else:
-                            now_history_data = [int(v) for v in console_instance.open_balls]
-                            now_history_data.insert(0, MyTool.getCurrentTimeStr())
-                            now_history_data.insert(0, str(int(console_instance.timesnow) - 1))
+                            # 更新期数
+                            console_instance.timesnow = timesnow
 
-                            console_instance.history_data.insert(0, now_history_data)
-                            with open('config/history.json', 'wb') as f:
-                                f.write(json.dumps(console_instance.history_data))
+                            # 更新历史数据
+                            if not console_instance.history_data:
+                                logging.error(u"【更新预下注数据】控制台对象竟然没有历史数据！！！")
+                            else:
+                                now_history_data = [int(v) for v in console_instance.open_balls]
+                                now_history_data.insert(0, MyTool.getCurrentTimeStr())
+                                now_history_data.insert(0, str(int(console_instance.timesnow) - 1))
 
-                            QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData",
-                                                     Qt.QueuedConnection,
-                                                     Q_ARG(str, str(timesnow)),
-                                                     Q_ARG(list, console_instance.open_balls))
+                                console_instance.history_data.insert(0, now_history_data)
+                                with open('config/history.json', 'wb') as f:
+                                    f.write(json.dumps(console_instance.history_data))
 
-                            # 开始下一局 写数据到Table 通知控制台下注
-                            if console_instance.all_ball_needToBetList:
-                                MyStartBetAction.for_start(console_instance)
+                                QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData",
+                                                         Qt.QueuedConnection,
+                                                         Q_ARG(str, str(timesnow)),
+                                                         Q_ARG(list, console_instance.open_balls))
+
+                                # 开始下一局 写数据到Table 通知控制台下注
+                                if console_instance.all_ball_needToBetList:
+                                    MyStartBetAction.for_start(console_instance)
 
             if 'win' in console_instance.preBetDataDic['data']:
                 win = console_instance.preBetDataDic['data']['win']
             else:
                 win = '???'
-
-            logging.info("timesnow=%s" % timesnow)
-            logging.info("timeclose=%s" % timeclose)
-            logging.info("timeopen=%s" % timeopen)
             logging.info("win=%s" % win)
-            logging.info("open_balls=%s" % console_instance.open_balls)
 
             # 顺便更新下控制台的UI
             console_instance.timeclose_label.setText(u'封盘：' + str(timeclose))
@@ -118,3 +120,7 @@ class MyUpdatePreBetDataAction(object):
                 console_instance.getPreBetDatgaTimer.setInterval(10 * 1000)
         except Exception, ex:
             logging.error(ex, exc_info=1)
+            logging.error("timesnow=%s" % timesnow)
+            logging.error("timeclose=%s" % timeclose)
+            logging.error("timeopen=%s" % timeopen)
+            logging.error("open_balls=%s" % console_instance.open_balls)

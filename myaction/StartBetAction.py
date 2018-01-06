@@ -139,7 +139,8 @@ class MyStartBetAction(object):
                     logging.info(open_balls)
                     logging.info(inner_item)
                     logging.info(
-                            u"【下注中】结算对比位置%s开奖%s == 下注球%s " % (inner_item[0], open_balls[inner_item[0]-1], inner_item[1]))
+                            u"【下注中】结算对比位置%s开奖%s == 下注球%s " % (
+                            inner_item[0], open_balls[inner_item[0] - 1], inner_item[1]))
                     if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
                         logging.info(u"【下注中】结算发现中！！！")
                         win_flag = True
@@ -292,19 +293,29 @@ class MyStartBetAction(object):
             balls = line[2:12]
 
             bet_dic = {
-                1: (str(console_instance.ball3_1_Entry.text()).split('-'), str(console_instance.ball4_1_Entry.text()).split('-')),
-                2: (str(console_instance.ball3_2_Entry.text()).split('-'),str(console_instance.ball4_2_Entry.text()).split('-')),
-                3: (str(console_instance.ball3_3_Entry.text()).split('-'),str(console_instance.ball4_3_Entry.text()).split('-')),
-                4: (str(console_instance.ball3_4_Entry.text()).split('-'),str(console_instance.ball4_4_Entry.text()).split('-')),
-                5: (str(console_instance.ball3_5_Entry.text()).split('-'),str(console_instance.ball4_5_Entry.text()).split('-')),
-                6: (str(console_instance.ball3_6_Entry.text()).split('-'),str(console_instance.ball4_6_Entry.text()).split('-')),
-                7: (str(console_instance.ball3_7_Entry.text()).split('-'),str(console_instance.ball4_7_Entry.text()).split('-')),
-                8: (str(console_instance.ball3_8_Entry.text()).split('-'),str(console_instance.ball4_8_Entry.text()).split('-')),
-                9: (str(console_instance.ball3_9_Entry.text()).split('-'),str(console_instance.ball4_9_Entry.text()).split('-')),
-                10: (str(console_instance.ball3_10_Entry.text()).split('-'),str(console_instance.ball4_10_Entry.text()).split('-')),
+                1: (str(console_instance.ball3_1_Entry.text()).split('-'),
+                    str(console_instance.ball4_1_Entry.text()).split('-')),
+                2: (str(console_instance.ball3_2_Entry.text()).split('-'),
+                    str(console_instance.ball4_2_Entry.text()).split('-')),
+                3: (str(console_instance.ball3_3_Entry.text()).split('-'),
+                    str(console_instance.ball4_3_Entry.text()).split('-')),
+                4: (str(console_instance.ball3_4_Entry.text()).split('-'),
+                    str(console_instance.ball4_4_Entry.text()).split('-')),
+                5: (str(console_instance.ball3_5_Entry.text()).split('-'),
+                    str(console_instance.ball4_5_Entry.text()).split('-')),
+                6: (str(console_instance.ball3_6_Entry.text()).split('-'),
+                    str(console_instance.ball4_6_Entry.text()).split('-')),
+                7: (str(console_instance.ball3_7_Entry.text()).split('-'),
+                    str(console_instance.ball4_7_Entry.text()).split('-')),
+                8: (str(console_instance.ball3_8_Entry.text()).split('-'),
+                    str(console_instance.ball4_8_Entry.text()).split('-')),
+                9: (str(console_instance.ball3_9_Entry.text()).split('-'),
+                    str(console_instance.ball4_9_Entry.text()).split('-')),
+                10: (str(console_instance.ball3_10_Entry.text()).split('-'),
+                     str(console_instance.ball4_10_Entry.text()).split('-')),
             }
 
-            bet_balls = bet_dic[balls[bet_index-1]]
+            bet_balls = bet_dic[balls[bet_index - 1]]
             ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
             not_bet_balls = []
             ret = bet_balls, not_bet_balls

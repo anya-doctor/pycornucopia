@@ -250,8 +250,18 @@ class MyUIUtil(object):
         console_instance.gridlayout.addWidget(console_instance.viewEntry, 15, 0, 30, 36)
         console_instance.viewEntry.setHorizontalHeaderLabels(
                 [u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否', u'开奖号码'])
+        a = console_instance.viewEntry.horizontalHeader()
+        assert isinstance(a, QHeaderView)
+        a.resizeSection(0, 80)
+        a.resizeSection(1, 80)
+        a.resizeSection(2, 600)
+        a.resizeSection(3, 80)
+        a.resizeSection(4, 80)
+        a.resizeSection(5, 80)
+        a.resizeSection(6, 80)
+        a.resizeSection(7, 100)
+
         console_instance.viewEntry.horizontalHeader().setStretchLastSection(True)
-        console_instance.viewEntry.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 
         console_instance.clearKaijiangBtn = QtGui.QPushButton(u"清空开奖面板")
         console_instance.connect(console_instance.clearKaijiangBtn, QtCore.SIGNAL('clicked()'),
