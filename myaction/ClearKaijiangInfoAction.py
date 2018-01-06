@@ -26,6 +26,9 @@ class MyClearKaijiangInfoAction(object):
             console_instance.open_balls = []
             console_instance.history_data = []
 
+            logging.info(u"【控制台】清空本次下注金额...")
+            console_instance.now_bet_money_label.setText(u'本次下注金额: 0')
+
         except Exception, ex:
             logging.error(ex)
 

@@ -108,7 +108,7 @@ class MyStartBetAction(object):
             console_instance.betTimer.start(3000)
 
     @staticmethod
-    def do_balance(console_instance):
+    def do_balance(console_instance, simulate_mode=False):
         """
         做好结算工作
         all_ball_needToBetList = [
@@ -138,10 +138,14 @@ class MyStartBetAction(object):
                 for inner_item in item[3]:
                     logging.info(
                             u"【下注中】结算对比位置%s开奖%s == 下注球%s " % (inner_item[0], open_balls[inner_item[0]], inner_item[1]))
-                    if int(open_balls[inner_item[0]]) == int(inner_item[1]):
+                    if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
                         logging.info(u"【下注中】结算发现中！！！")
                         win_flag = True
-                        break
+                        if simulate_mode:
+                            console_instance.simulate_money += int(console_instance.balls_bet_amount[item[2]]) * 10
+                    else:
+                        if simulate_mode:
+                            console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
 
                 if win_flag:
                     item[2] = 0
