@@ -234,11 +234,13 @@ class MyUIUtil(object):
         console_instance.timeopen_label = QLabel(u'下局: ')
         console_instance.win_label = QLabel(u'赢钱: ')
         console_instance.open_balls_label = QLabel(u'开奖: ')
+        console_instance.now_bet_money_label = QLabel(u'本次下注金额: ')
         console_instance.gridlayout.addWidget(console_instance.qishu_label, 14, 0, 1, 2)
         console_instance.gridlayout.addWidget(console_instance.timeclose_label, 14, 2, 1, 2)
         console_instance.gridlayout.addWidget(console_instance.timeopen_label, 14, 4, 1, 2)
         console_instance.gridlayout.addWidget(console_instance.win_label, 14, 6, 1, 2)
         console_instance.gridlayout.addWidget(console_instance.open_balls_label, 14, 8, 1, 6)
+        console_instance.gridlayout.addWidget(console_instance.now_bet_money_label, 14, 14, 1, 6)
 
         pa = QPalette()
         pa.setColor(QPalette.WindowText, Qt.red)

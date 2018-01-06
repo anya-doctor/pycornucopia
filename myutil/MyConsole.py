@@ -72,6 +72,7 @@ class MyConsole(QWidget):
         self.limit_label = None
         self.remain_label = None
         self.already_bet_label = None
+        self.now_bet_money_label = None
 
         self.timesold = 0
         self.timesnow = 0
@@ -152,6 +153,13 @@ class MyConsole(QWidget):
     @pyqtSlot()
     def loadTableData(self):
         try:
+            # 本次下注金额
+            now_bet_money = 0
+            for i in self.all_ball_needToBetList:
+                for j in i[3]:
+                    now_bet_money += self.balls_bet_amount[i[2]]
+            self.now_bet_money_label.setText(u"本次下注金额：%s" % now_bet_money)
+
             self.colorflag += 1
             self.c = QColor("darkgray") if self.colorflag % 2 == 0 else QColor("gray")
 
