@@ -286,6 +286,11 @@ class MyUIUtil(object):
 
             console_instance.linesEntry.setText(lines)
             console_instance.lines = row[0].split(' ')
+            lines = str(console_instance.linesEntry.toPlainText())
+            lines = lines.split('\n')
+            for index, line in enumerate(lines):
+                logging.info(u"【初始化界面】线路%s=%s" % (index, line))
+
             console_instance.userEntry.setText(row[1])
             console_instance.passEntry.setText(row[2])
             console_instance.username = console_instance.userEntry.text()

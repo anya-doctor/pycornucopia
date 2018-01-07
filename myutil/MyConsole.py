@@ -276,18 +276,17 @@ class MyConsole(QWidget):
         self.loginTimer.setInterval(500)
         self.login_fail_cnt += 1
         logging.info(u"登录失败次数=%s" % self.login_fail_cnt)
-        if self.login_fail_cnt >= 5:
-            # 先杀死老的登录进程
-            self.loginTimer.stop()
-            if self.loginThread:
-                if self.loginThread.isRunning():
-                    logging.info(u"老的loginThread还在，杀死它...")
-                    self.loginThread.quit()
-                    self.loginThread.wait()
+        if self.login_fail_cnt >= 3:
+            self.lines_flag += 1
 
-            QtGui.QMessageBox.about(self, u'登录失败', u"请检查下线路吧。。")
+            # 天道好循环
+            lines = str(self.linesEntry.toPlainText())
+            lines = lines.split('\n')
+            if self.lines_flag == len(lines):
+                self.lines_flag = 0
+
+            logging.info(u"【控制台】因为登录失败次数=%s，所以切换下一条线路，线路=%s." % (self.login_fail_cnt, self.lines_flag))
             self.login_fail_cnt = 0
-        self.loginBtn.setEnabled(True)
 
     @pyqtSlot(dict)
     def betFailed(self, ret_json):

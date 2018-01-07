@@ -14,22 +14,23 @@ class MyLoginThread(QtCore.QThread):
     def __init__(self, overlay, console):
         QtCore.QThread.__init__(self)
         self.overlay = overlay
-        self.console = console
-        lines = str(self.console.linesEntry.toPlainText())
+        self.console_instance = console
+        lines = str(self.console_instance.linesEntry.toPlainText())
         lines = lines.split('\n')
+        logging.info(u"【登录线程】切换线路=%s" % self.console_instance.lines_flag)
 
-        self.loginUrl = str(lines[0])
+        self.loginUrl = str(lines[self.console_instance.lines_flag])
         self.host = self.loginUrl.replace("http://", "").split('/')[0]
         self.rootUrl = "http://" + self.host
         self.path = self.host + ''
         self.origin_url = ""
         self.headers = {}
 
-        logging.info(u"【登录线程】: lineText=%s" % lines)
-        logging.info(u"【登录线程】: loginUrl=%s" % self.loginUrl)
-        logging.info(u"【登录线程】: host=%s" % self.host)
-        logging.info(u"【登录线程】: rootUrl=%s" % self.rootUrl)
-        logging.info(u"【登录线程】: path=%s" % self.path)
+        logging.info(u"【登录线程】lineText=%s" % lines)
+        logging.info(u"【登录线程】loginUrl=%s" % self.loginUrl)
+        logging.info(u"【登录线程】host=%s" % self.host)
+        logging.info(u"【登录线程】rootUrl=%s" % self.rootUrl)
+        logging.info(u"【登录线程】path=%s" % self.path)
 
     # 从antivc获取验证码错误返回error
     def getCheckcode(self):
@@ -82,8 +83,8 @@ class MyLoginThread(QtCore.QThread):
         payload = {
             'VerifyCode': code,
             '__VerifyValue': __VerifyValue,
-            '__name': str(self.console.userEntry.text()),
-            'password': str(self.console.passEntry.text()),
+            '__name': str(self.console_instance.userEntry.text()),
+            'password': str(self.console_instance.passEntry.text()),
             'isSec': 0,
             'cid': 1229,
             'cname': '星际',
@@ -149,15 +150,15 @@ class MyLoginThread(QtCore.QThread):
     def run(self):
         try:
             if False:
-                # if self.console.fake_mode:
+                # if self.console_instance.fake_mode:
                 cookies_jar = {'AC': 1}
             else:
                 cookies_jar = self.login()
 
             if 'AC' in cookies_jar:
-                name = self.console.nameEntry.text()
+                name = self.console_instance.nameEntry.text()
                 name += u"【已登录】"
-                QMetaObject.invokeMethod(self.console.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
+                QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
 
                 now = getCurrentTimestamp()
                 self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[
@@ -178,24 +179,24 @@ class MyLoginThread(QtCore.QThread):
                 }
 
                 # 一旦登录成功，这开始获取两个数据：预下注数据 + 历史数据
-                QMetaObject.invokeMethod(self.console, "onLoginSuccess", Qt.QueuedConnection, Q_ARG(dict, data_dic))
+                QMetaObject.invokeMethod(self.console_instance, "onLoginSuccess", Qt.QueuedConnection, Q_ARG(dict, data_dic))
 
-                QMetaObject.invokeMethod(self.console, "onGetPreBetDataHideBtn", Qt.QueuedConnection)
-                QMetaObject.invokeMethod(self.console, "onGetHistoryResultDataHideBtn", Qt.QueuedConnection)
+                QMetaObject.invokeMethod(self.console_instance, "onGetPreBetDataHideBtn", Qt.QueuedConnection)
+                QMetaObject.invokeMethod(self.console_instance, "onGetHistoryResultDataHideBtn", Qt.QueuedConnection)
 
             else:
                 msg = u"获取数据异常..."
-                QMetaObject.invokeMethod(self.console, "onLoginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
-                name = self.console.nameEntry.text()
+                QMetaObject.invokeMethod(self.console_instance, "onLoginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
+                name = self.console_instance.nameEntry.text()
                 name += u"【未登录】"
-                QMetaObject.invokeMethod(self.console.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
+                QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
         except Exception, ex:
             logging.error(ex, exc_info=1)
             msg = u"登录失败，可能是动态获取验证码出问题，请重试！"
-            QMetaObject.invokeMethod(self.console, "onLoginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
-            name = self.console.nameEntry.text()
+            QMetaObject.invokeMethod(self.console_instance, "onLoginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
+            name = self.console_instance.nameEntry.text()
             name += u"【未登录】"
             logging.info(u"【登录线程】%s" % name)
-            QMetaObject.invokeMethod(self.console.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
+            QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
         finally:
             QMetaObject.invokeMethod(self.overlay, "myclose", Qt.QueuedConnection)
