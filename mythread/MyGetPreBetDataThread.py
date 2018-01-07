@@ -19,15 +19,6 @@ class MyGetPreBetDataThread(QtCore.QThread):
         self.cookies_jar = cookies_jar
         self.headers = headers
 
-    def get_header_data(self):
-        """
-            http://pc10.sss44.us/scowa14889f_39473/ssc/header/index?&_=1514696130757__autorefresh
-        """
-        r1 = requests.Request('POST', self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
-                              headers=self.headers)
-        prep1 = req_session.prepare_request(r1)
-        rr1 = req_session.send(prep1, stream=False, timeout=10)
-
     def get_pre_bet_data(self):
         logging.info("#####################start to get pre bet data...#####################")
         if not self.origin_url:
@@ -105,8 +96,13 @@ class MyGetPreBetDataThread(QtCore.QThread):
                 json_data = self.get_pre_bet_data()
 
             if not json_data:
-                logging.info("======================RELOGIN======================")
+                logging.info(u"【获取预下注数据线程】被挤下线，重新触发登录逻辑！")
                 QMetaObject.invokeMethod(self.console, "onLoginBtn", Qt.QueuedConnection)
+                name = self.console.nameEntry.text()
+                name += u"【未登录】"
+                logging.info(u"【获取预下注数据线程】窗口标题=%s" % name)
+                QMetaObject.invokeMethod(self.console.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
+
             elif json_data and isinstance(json_data, dict):
                 QMetaObject.invokeMethod(self.console, "onUpdatePreBetDataHideBtn", Qt.QueuedConnection,
                                          Q_ARG(dict, json_data))

@@ -14,6 +14,7 @@ from myaction.StartBetAction import MyStartBetAction
 from myaction.UpdateHistoryResultDataAction import MyUpdateHistoryResultDataAction
 from myaction.UpdatePreBetDataAction import MyUpdatePreBetDataAction
 from myaction.UpdateSimulateHistoryResultDataAction import MyUpdateSimulateHistoryResultDataAction
+from mythread import MyBetThread
 from myutil.gui.MyUI import MyUIUtil
 
 
@@ -31,20 +32,20 @@ class MyConsole(QWidget):
         self.username = ''
         self.password = ''
         self.row_index = 0  # 当前到第几行了
-        self.is_bet_success1 = False
-        self.is_bet_success2 = False
         self.balls_bet_flag = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # [0,0,0,0,0]
         self.all_ball_needToBetList = []  # [[1,2,3,4],[3,4,5,6],[2,1,3,4],[2,3,4,1],[7,8,9,0]]
         self.balls_bet_amount = []  # [1,2,4,8]
 
         self.goThread = None
         self.betThread = None
+        self.rebetThread = None  #专门用来处理下注的时候被挤下线等情况的重新下注
         self.getPreBetDataThread = None
         self.loginThread = None
         self.getHistoryResultDataThread = None
         self.getSimulateHistoryResultDataThread = None
 
         self.betTimer = None
+        self.rebetTimer = None
         self.getPreBetDatgaTimer = None
         self.loginTimer = None
         self.getHistoryResultDataTimer = None
@@ -90,6 +91,8 @@ class MyConsole(QWidget):
         self.isQQG = False
         self.isLoseAdd = True
 
+        self.is_bet_success = False
+
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)
 
@@ -97,8 +100,19 @@ class MyConsole(QWidget):
         assert isinstance(self.goBtn, QPushButton)
         self.goBtn.setEnabled(False)
 
+        """
+            all_ball_needToBetList = [
+                [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
+                [],
+                ...
+            ]
+        """
+
     @pyqtSlot()
     def onLoginBtn(self):
+        # 每次登录，这个重要的data都要清空，否则会影响后续判断
+        self.loginSuccessData = {}
+
         MyLoginAction.run(self)
 
     def onReNameBtn(self):
@@ -240,31 +254,6 @@ class MyConsole(QWidget):
             for i in self.all_ball_needToBetList:
                 logging.info(i)
 
-    @pyqtSlot()
-    def onStartBetHideBtn(self):
-        ##界面更新
-        for i in range(len(self.all_ball_needToBetList)):
-            row = self.viewEntry.rowCount()
-            newItem = QTableWidgetItem(u'未')
-            newItem.setBackgroundColor(self.c)
-            self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + i), 5, newItem)
-        ##开搞
-        self.is_bet_success = True
-
-        from mythread import MyBetThread
-        self.bet_thread = MyBetThread.MyBetDataThread(self)
-        self.bet_thread.start()
-
-    # 响应下注
-    @pyqtSlot()
-    def bet(self):
-        bet_result = self.browser.bet(self.all_ball_needToBetList, self.balls_bet_amount)
-        if bet_result['data']['success']:
-            self.is_bet_success1 = True
-            self.is_bet_success2 = True
-        else:
-            logging.error(bet_result)
-
     @pyqtSlot(dict)
     def onLoginSuccess(self, loginSuccessData):
         # 登录成功
@@ -278,6 +267,7 @@ class MyConsole(QWidget):
             logging.info(u"【登录成功】我停掉了线程...")
             self.loginThread.quit()
             self.loginThread.wait()
+        self.loginBtn.setEnabled(False)
 
     @pyqtSlot(str)
     def onLoginFailed(self, msg):
@@ -297,27 +287,111 @@ class MyConsole(QWidget):
 
             QtGui.QMessageBox.about(self, u'登录失败', u"请检查下线路吧。。")
             self.login_fail_cnt = 0
+        self.loginBtn.setEnabled(True)
+
+    @pyqtSlot(dict)
+    def betFailed(self, ret_json):
+        self.is_bet_success = False
+
+        # 更新下注面板信息...
+        cnt = 0
+        row = self.viewEntry.rowCount()
+
+        logging.info(u"【下注结果界面】bet_list=%s" % self.all_ball_needToBetList)
+        logging.info(u"【下注结果界面】row_count=%s" % row)
+
+        dic = {
+            1: u'冠军',
+            2: u'亞軍',
+            3: u'第三名',
+            4: u'第四名',
+            5: u'第五名',
+            6: u'第六名',
+            7: u'第七名',
+            8: u'第八名',
+            9: u'第九名',
+            10: u'第十名',
+        }
+        fail_msg = u"失败%s单" % len(ret_json['errors'])
+        for item in self.all_ball_needToBetList:
+            newItem = QTableWidgetItem(fail_msg)
+            newItem.setBackgroundColor(self.c)
+            self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
+            cnt += 1
 
     @pyqtSlot()
-    def betFailed(self):
-        QtGui.QMessageBox.about(self, u'失败了！', u"此次下注失败，建議查看日誌...")
+    def betSuccess(self):
+        self.is_bet_success = True
+
+        # 更新下注面板信息...
+        cnt = 0
+        row = self.viewEntry.rowCount()
+
+        logging.info(u"【下注结果界面】bet_list=%s" % self.all_ball_needToBetList)
+        logging.info(u"【下注结果界面】row_count=%s" % row)
+
+        for item in self.all_ball_needToBetList:
+            newItem = QTableWidgetItem(u'已投注')
+            newItem.setBackgroundColor(self.c)
+            self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
+            cnt += 1
 
     @pyqtSlot(str, str)
     def alert(self, msgtitle, msg):
         QtGui.QMessageBox.about(self, msgtitle, msg)
 
     @pyqtSlot()
-    def betSuccess(self):
-        # 更新下注面板信息...
-        cnt = 0
-        logging.info(u"【下注结果界面】bet_list=%s" % self.all_ball_needToBetList)
+    def onRetBetHidenBtn(self):
+        logging.info(u"【控制台】触发逻辑：onRetBetHidenBtn.")
+        # 删除定时器，清空资源...
+        if self.rebetTimer:
+            del self.rebetTimer
 
-        for item in self.all_ball_needToBetList:
-            row = self.viewEntry.rowCount()
-            logging.info(u"【下注结果界面】row_count=%s" % row)
-            newItem = QTableWidgetItem(u'已投注')
-            newItem.setBackgroundColor(self.c)
-            self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
-            cnt += 1
+        # 一旦开始了，就开始一次就行了
+        self.rebetTimer = QTimer()
+        self.rebetTimer.timeout.connect(lambda: self.rebet())
+        self.rebetTimer.start(1000)
 
-        self.goBtn.setEnabled(False)
+    def rebet(self):
+        if not self.loginSuccessData:
+            logging.info(u"【重新下注线程】貌似还没登录，稍等5秒钟...")
+            self.rebetTimer.setInterval(5 * 1000)
+        else:
+            if 'win' not in self.preBetDataDic['data']:
+                logging.info(u"【重新下注线程】還在結算階段，拿不到最新數據，等待之...")
+                self.rebetTimer.setInterval(5 * 1000)
+            else:
+                self.cur_money = int(self.preBetDataDic['data']['win'].replace(',', ''))
+                self.timesnow = int(self.preBetDataDic['data']['betnotice']['timesnow'])
+                self.timeclose = int(self.preBetDataDic['data']['betnotice']['timeclose'])
+                self.timeopen = int(self.preBetDataDic['data']['betnotice']['timeopen'])
+                logging.info(u"【重新下注线程】当前金额=%s" % self.cur_money)
+                logging.info(u"【重新下注线程】当前期数=%s" % self.timesnow)
+                logging.info(u"【重新下注线程】当前剩余时间=%s" % self.timeclose)
+                logging.info(u"【重新下注线程】下局开始时间=%s" % self.timeopen)
+
+                # 判断止损条件
+                logging.info(u"【重新下注线程】设置损=%s,设置盈=%s,当前=%s" % (self.lost_money_at, self.earn_money_at, self.cur_money))
+                if not (self.lost_money_at < self.cur_money < self.earn_money_at):
+                    self.rebetTimer.stop()
+                    logging.info(u"已停止达到赢损条件。")
+                    QtGui.QMessageBox.about(self, u'已停止', u"达到赢损条件。")
+                    # 重新设置按钮文字...
+                    self.goBtn.setText(u'开始')
+                else:
+                    # 理论上触发一次就够了, 定时器关闭...
+                    self.rebetTimer.stop()
+
+                    # 杀掉老的进程
+                    if self.rebetThread and self.rebetThread.isRunning():
+                        logging.info(u"【重新下注线程】老的 rebetThread 还在，杀死它...")
+                        self.rebetThread.quit()
+                        self.rebetThread.wait()
+
+                    # 至少留5秒的时候来
+                    if self.timeclose < 1:
+                        logging.info(u"【重新下注线程】下注时间=%s,来不及了，本次下注失败，停止下注。" % self.timeclose)
+                        self.rebetTimer.stop()
+                    else:
+                        self.rebetThread = MyBetThread.MyBetDataThread(self)
+                        self.rebetThread.start(1000)

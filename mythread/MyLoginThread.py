@@ -65,7 +65,7 @@ class MyLoginThread(QtCore.QThread):
             f.write(rr2.content)
 
         code = self.getCheckcode()
-        logging.info(u"【登录】验证码=%s" % code)
+        logging.info(u"【登录线程】验证码=%s" % code)
         headers = {
             'Host': self.host,
             'Proxy-Connection': 'keep-alive',
@@ -123,7 +123,7 @@ class MyLoginThread(QtCore.QThread):
                 d[1] = d[1].replace(' ', '')
                 ddd += "%s=%s;" % (d[0], d[1])
 
-        logging.info(u"【登录】cookies_jar=%s" % cookies_jar)
+        logging.info(u"【登录线程】cookies_jar=%s" % cookies_jar)
 
         headers2 = {
             'Host': 'pc10.sss66.us',
@@ -187,12 +187,15 @@ class MyLoginThread(QtCore.QThread):
                 msg = u"获取数据异常..."
                 QMetaObject.invokeMethod(self.console, "onLoginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
                 name = self.console.nameEntry.text()
+                name += u"【未登录】"
                 QMetaObject.invokeMethod(self.console.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
         except Exception, ex:
             logging.error(ex, exc_info=1)
             msg = u"登录失败，可能是动态获取验证码出问题，请重试！"
             QMetaObject.invokeMethod(self.console, "onLoginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
             name = self.console.nameEntry.text()
+            name += u"【未登录】"
+            logging.info(u"【登录线程】%s" % name)
             QMetaObject.invokeMethod(self.console.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
         finally:
             QMetaObject.invokeMethod(self.overlay, "myclose", Qt.QueuedConnection)

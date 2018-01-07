@@ -65,10 +65,8 @@ class MyStartBetAction(object):
 
                 # 判断止损条件
                 logging.info(u"【赢损】设置损=%s,设置盈=%s,当前=%s" % (
-                    int(console_instance.lost_money_at), int(console_instance.earn_money_at),
-                    console_instance.cur_money))
-                if not (int(console_instance.lost_money_at) < console_instance.cur_money < int(
-                        console_instance.earn_money_at)):
+                    console_instance.lost_money_at, console_instance.earn_money_at, console_instance.cur_money))
+                if not (console_instance.lost_money_at < console_instance.cur_money < console_instance.earn_money_at):
                     console_instance.betTimer.stop()
                     logging.info(u"已停止达到赢损条件。")
                     QtGui.QMessageBox.about(console_instance, u'已停止', u"达到赢损条件。")
@@ -136,11 +134,9 @@ class MyStartBetAction(object):
                 logging.info(u"【下注中】结算進入輸追加模式...")
                 win_flag = False
                 for inner_item in item[3]:
-                    logging.info(open_balls)
-                    logging.info(inner_item)
                     logging.info(
                             u"【下注中】结算对比位置%s开奖%s == 下注球%s " % (
-                            inner_item[0], open_balls[inner_item[0] - 1], inner_item[1]))
+                                inner_item[0], open_balls[inner_item[0] - 1], inner_item[1]))
                     if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
                         logging.info(u"【下注中】结算发现中！！！")
                         win_flag = True

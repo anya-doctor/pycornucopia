@@ -18,7 +18,7 @@ class MyLoginAction(object):
             # 先把老的登录进程杀死
             console_instance.loginTimer = QTimer()
             console_instance.loginTimer.timeout.connect(lambda: MyLoginAction.do_login(console_instance))
-            console_instance.loginTimer.start()
+            console_instance.loginTimer.start(1000)
         except Exception, ex:
             logging.error(ex, exc_info=1)
 

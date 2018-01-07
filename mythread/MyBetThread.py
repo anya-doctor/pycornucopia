@@ -18,10 +18,10 @@ class MyBetDataThread(QtCore.QThread):
     def get_bet_str(self):
         try:
             if not self.console_instance.preBetDataDic:
-                logging.error(u"【下注中】拿不到下注前数据！！！放弃此次下注！")
+                logging.error(u"【下注线程】拿不到下注前数据！！！放弃此次下注！")
                 return ""
             if not self.console_instance.preBetDataDic['data']['integrate']:
-                logging.error(u"【下注中】如果拿不到赔率list！！！放弃此次下注！")
+                logging.error(u"【下注线程】如果拿不到赔率list！！！放弃此次下注！")
                 return ""
 
             version_number = self.console_instance.preBetDataDic['data']['version_number']
@@ -50,20 +50,20 @@ class MyBetDataThread(QtCore.QThread):
 
     def bet(self):
         if not self.console_instance.all_ball_needToBetList:
-            logging.error(u"【下注中】下注列表为空，啥都不干...")
+            logging.error(u"【下注线程】下注列表为空，啥都不干...")
             return {}
 
-        logging.info(u"【下注中】组装下注URI..")
+        logging.info(u"【下注线程】组装下注URI..")
         logging.info(self.console_instance.loginSuccessData)
         now = getCurrentTimestamp()
         pk_post_bet_url = self.console_instance.loginSuccessData['pk_post_bet_url'].split("&&_=")[0] + "&&_=" + str(
                 now) + "__ajax"
-        logging.info(u"【下注中】pk_post_bet_url=%s" % pk_post_bet_url)
+        logging.info(u"【下注线程】pk_post_bet_url=%s" % pk_post_bet_url)
 
         bet_str = self.get_bet_str()
         if not bet_str:
-            logging.error(u"【下注中】生成下注str出错！")
-            logging.error(u"【下注中】再次拿预下注数据！")
+            logging.error(u"【下注线程】生成下注str出错！")
+            logging.error(u"【下注线程】再次拿预下注数据！")
             return
 
         a = bet_str.split('&')
@@ -79,37 +79,64 @@ class MyBetDataThread(QtCore.QThread):
         real_content = r.content.split('êêê')[0]
         real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
 
-        logging.info(u"【下注中】 字符串=%s" % real_content)
+        logging.info(u"【下注线程】 字符串=%s" % real_content)
+        # 当然在这里有可能遇到不想要的东西
+        if "/webssc/js/plugins/ValidatorAlert" in real_content:
+            # 说明应该重新登录了...
+            return None
+        if "window.parent.location.href =" in real_content:
+            # 说明应该重新登录了...
+            return None
 
         real_content = real_content.replace("u'", "'").replace("'", '"')
         t_json = json.loads(real_content)
 
-        logging.info(u"【下注中】 json=%s" % t_json)
+        logging.info(u"【下注线程】 json=%s" % t_json)
         return t_json
 
     def bet_fake(self):
         return {'state': 1}
 
     def run(self):
-        if self.console_instance.fake_mode:
-            ret_json = self.bet_fake()
-        else:
-            ret_json = self.bet()
+        try:
+            if self.console_instance.fake_mode:
+                ret_json = self.bet_fake()
+            else:
+                ret_json = self.bet()
 
-        # 先判斷是否下注成功。。。
-        bet_success_flag = True
-        if int(ret_json['state']) != 1:
-            bet_success_flag = False
-        if "errors" in ret_json and ret_json["errors"]:
-            if len(ret_json['errors']) > 0:
-                bet_success_flag = False
-                for err in ret_json['errors']:
-                    logging.error(u"【下注結果】錯誤=%s" % err['note'])
+            if not ret_json:
+                logging.info(u"【下注线程】被挤下线，重新触发登录逻辑！")
+                QMetaObject.invokeMethod(self.console_instance, "onLoginBtn", Qt.QueuedConnection)
 
-        if bet_success_flag:
-            logging.info(u"【下注结果】成功！！！")
-            QMetaObject.invokeMethod(self.console_instance, "betSuccess", Qt.QueuedConnection)
-        else:
-            logging.error(u"【下注结果】失败！！！")
-            logging.error(u"【下注結果】 %s" % json.dumps(ret_json))
-            QMetaObject.invokeMethod(self.console_instance, "betFailed", Qt.QueuedConnection)
+                # 重新开始下注定时器...
+                logging.info(u"【下注线程】重新开始下注定时器rebetTimer！！！！")
+                QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn", Qt.QueuedConnection)
+
+                name = self.console_instance.nameEntry.text()
+                name += u"【未登录】"
+                logging.info(u"【下注线程】窗口标题=%s" % name)
+                QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
+            else:
+                # 先判斷是否下注成功。。。
+                bet_success_flag = True
+                if int(ret_json['state']) == 1:
+                    bet_success_flag = True
+                elif int(ret_json['state']) >= 2:
+                    bet_success_flag = False
+                    if "errors" in ret_json and ret_json["errors"]:
+                        if len(ret_json['errors']) > 0:
+                            bet_success_flag = False
+                            for err in ret_json['errors']:
+                                logging.error(u"【下注結果】錯誤=%s" % err['note'])
+                    # 写到文件中。。。
+                    with open('config/bet_error_%s.json' % self.console_instance.timesnow, 'w') as f:
+                        f.write(json.dumps(ret_json))
+                if bet_success_flag:
+                    logging.info(u"【下注线程】成功！！！")
+                    QMetaObject.invokeMethod(self.console_instance, "betSuccess", Qt.QueuedConnection)
+                else:
+                    logging.error(u"【下注线程】失败！！！")
+                    logging.error(u"【下注线程】 %s" % json.dumps(ret_json))
+                    QMetaObject.invokeMethod(self.console_instance, "betFailed", Qt.QueuedConnection, Q_ARG(dict, ret_json))
+        except Exception,ex:
+            logging.error(ex, exc_info=1)

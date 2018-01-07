@@ -37,8 +37,8 @@ class MySaveConfigAction(object):
             console_instance.balls_bet_amount = betAmount.split('-')
             console_instance.balls_bet_amount = [int(v) for v in console_instance.balls_bet_amount]
             console_instance.first_n = int(first_n)
-            console_instance.earn_money_at = earn_money_at
-            console_instance.lost_money_at = lost_money_at
+            console_instance.earn_money_at = int(earn_money_at)
+            console_instance.lost_money_at = int(lost_money_at)
             console_instance.username = username
             console_instance.password = password
             console_instance.lines = lines.split(' ')
@@ -183,11 +183,5 @@ class MySaveConfigAction(object):
             if a:
                 QtGui.QMessageBox.about(console_instance, u'成功', u"保存成功")
 
-            # 更新goThread的数据
-            if console_instance.goThread != None:
-                QMetaObject.invokeMethod(console_instance.goThread, "update_goThreadData", Qt.QueuedConnection,
-                                         Q_ARG(int, console_instance.first_n), Q_ARG(str, betAmount), Q_ARG(str, isQQG),
-                                         Q_ARG(str, isLoseAdd))
-                # QMetaObject.invokeMethod(console_instance.goThread, "update_goThreadData2", Qt.QueuedConnection, Q_ARG(str, betAmount))
         except Exception, ex:
             logging.error(ex, exc_info=1)

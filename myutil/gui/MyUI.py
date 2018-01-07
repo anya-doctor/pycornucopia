@@ -310,11 +310,15 @@ class MyUIUtil(object):
                 console_instance.lost_money_at = '-9999999999'
             else:
                 console_instance.lost_money_at = row[5]
+            console_instance.earn_money_at = int(console_instance.earn_money_at)
+            console_instance.lost_money_at = int(console_instance.lost_money_at)
 
             # 载入名字
             console_instance.nameEntry.setText(row[6])
+            name = row[6]
+            name += u"【未登录】"
             QMetaObject.invokeMethod(console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection,
-                                     Q_ARG(str, row[6]))
+                                     Q_ARG(str, name))
 
             # 载入前N期
             console_instance.first_n_Entry.setText(row[7])
