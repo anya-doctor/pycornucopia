@@ -127,7 +127,11 @@ class MyBetDataThread(QtCore.QThread):
                         if len(ret_json['errors']) > 0:
                             bet_success_flag = False
                             for err in ret_json['errors']:
-                                logging.error(u"【下注結果】錯誤=%s" % err['note'])
+                                logging.error(u"【下注线程】eid=%s，錯誤=%s" % (err['eid'], err['note']))
+                                if int(err['eid']) == 1111: # 網絡繁忙，請稍後再試！
+                                    # 重新开始下注定时器...
+                                    logging.info(u"【下注线程】重新开始下注定时器rebetTimer！！！！")
+                                    QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn", Qt.QueuedConnection)
                     # 写到文件中。。。
                     with open('config/bet_error_%s.json' % self.console_instance.timesnow, 'w') as f:
                         f.write(json.dumps(ret_json))

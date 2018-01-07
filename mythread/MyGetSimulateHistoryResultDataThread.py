@@ -42,6 +42,8 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
                 prep1 = req_session.prepare_request(r1)
                 rr1 = req_session.send(prep1, stream=False, timeout=10)
                 real_content = rr1.content.split('êêê')[0]
+                rr1.close()
+
                 real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
                 # logging.info(real_content)
                 json_data = json.loads(real_content)

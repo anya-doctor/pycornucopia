@@ -20,7 +20,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
         self.headers = headers
 
     def get_pre_bet_data(self):
-        logging.info("#####################start to get pre bet data...#####################")
+        logging.info(u"【获取预下注数据线程】开始获取...")
         if not self.origin_url:
             return -1
         t = ['ballNO15', 'ballNO60']
@@ -35,12 +35,14 @@ class MyGetPreBetDataThread(QtCore.QThread):
 
             r1 = requests.Request('POST', self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
                                   headers=self.headers)
+
             prep1 = req_session.prepare_request(r1)
             rr1 = req_session.send(prep1, stream=False, timeout=10)
 
-            # r = requests.post(self.pk_pre_bet_get_data_url, params=payload, cookies=self.cookies_jar,
-            #                   headers=self.headers, timeout=10)
+            logging.info(u"【获取预下注数据线程】%s" % id(rr1))
+
             real_content = rr1.content.split('êêê')[0]
+            rr1.close()
             real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
             # logging.info("real_content_%s =%s" % (i, real_content))
 
@@ -52,7 +54,17 @@ class MyGetPreBetDataThread(QtCore.QThread):
                 # 说明应该重新登录了...
                 return None
 
-            t_json = json.loads(real_content)
+            # 如果一个json长度不对劲，那么就跳过这个吧...
+            if len(real_content) <= 1:
+                return "NULL_DATA"
+
+            try:
+                t_json = json.loads(real_content)
+            except Exception,ex:
+                logging.error(rr1.content)
+                logging.error(real_content)
+                logging.info(u"【获取预下注数据线程】解析json数据失败...")
+                raise ex
             if t_json and t_json['data']['success']:
                 version_number = t_json['data']['version_number']
                 win = t_json['data']['win'] if 'win' in t_json['data'] else 'NULL'
@@ -95,7 +107,9 @@ class MyGetPreBetDataThread(QtCore.QThread):
             else:
                 json_data = self.get_pre_bet_data()
 
-            if not json_data:
+            if json_data == "NULL_DATA":
+                logging.info(u"【获取预下注数据线程】本次请求拿到的数据为NULL，不算数...")
+            elif not json_data:
                 logging.info(u"【获取预下注数据线程】被挤下线，重新触发登录逻辑！")
                 QMetaObject.invokeMethod(self.console, "onLoginBtn", Qt.QueuedConnection)
                 name = self.console.nameEntry.text()

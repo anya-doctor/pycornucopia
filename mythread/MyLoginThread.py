@@ -50,9 +50,9 @@ class MyLoginThread(QtCore.QThread):
         r1 = requests.Request('GET', get_code_url1)
         prep1 = req_session.prepare_request(r1)
         rr1 = req_session.send(prep1, stream=False, timeout=10)
-
-        # r = requests.get(get_code_url1, timeout=10)
         a = rr1.content
+        rr1.close()
+
         b = a.split('_')[0]
         __VerifyValue = a.split('_')[1]
         get_code_url2 = self.rootUrl + "/getVcode/.auth?t=%s&systemversion=4_6&.auth" % b
@@ -64,6 +64,7 @@ class MyLoginThread(QtCore.QThread):
         # r = requests.get(get_code_url2, timeout=10)
         with open('./config/checkcode.png', 'wb') as f:
             f.write(rr2.content)
+            rr2.close()
 
         code = self.getCheckcode()
         logging.info(u"【登录线程】验证码=%s" % code)
@@ -97,6 +98,8 @@ class MyLoginThread(QtCore.QThread):
 
         # r = requests.post(self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers, timeout=5)
         real_content = rr3.content.split('êêê')[0]
+        rr3.close()
+
         real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
         a = real_content.split('\n')
         logging.info(u"【登录线程】登录body=%s" % a)
@@ -141,10 +144,9 @@ class MyLoginThread(QtCore.QThread):
 
         r4 = requests.Request('GET', recheck_url, cookies=cookies_jar, headers=headers2)
         prep4 = req_session.prepare_request(r4)
-        req_session.send(prep4, stream=False, timeout=10)
+        rr4 = req_session.send(prep4, stream=False, timeout=10)
+        rr4.close()
 
-        # r = requests.get(recheck_url, cookies=cookies_jar, headers=headers2, timeout=10)
-        # r.close()
         return cookies_jar
 
     def run(self):

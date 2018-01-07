@@ -28,6 +28,8 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
             rr1 = req_session.send(prep1, stream=False, timeout=10)
 
             real_content = rr1.content.split('êêê')[0]
+            rr1.close()
+
             real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
             logging.info(u"【获取历史数据线程】结果如下")
             # logging.info(real_content)
