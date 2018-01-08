@@ -199,7 +199,7 @@ class MyStartBetAction(object):
             logging.info(u"【下注中】下注列表為空，初始化...")
             if not console_instance.all_ball_needToBetList:
                 for i in range(1, 11):
-                    a, b = MyStartBetAction.verical_get_bet_list(console_instance, i)
+                    a, b = MyAlgorithm.verical_get_bet_list(console_instance, i)
                     if a:
                         # 如果a是tuple，说明a想要一个位置下注多条
                         if isinstance(a, tuple):
@@ -239,7 +239,7 @@ class MyStartBetAction(object):
                     for item in console_instance.all_ball_needToBetList:
                         # 替換新的下注列表
                         index = item[3][0][0]
-                        a, b = MyStartBetAction.verical_get_bet_list(console_instance, index)
+                        a, b = MyAlgorithm.verical_get_bet_list(console_instance, index)
                         if a:
                             # 如果a是tuple，说明a想要一个位置下注多条
                             if isinstance(a, tuple):
