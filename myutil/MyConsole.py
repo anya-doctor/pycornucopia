@@ -283,6 +283,7 @@ class MyConsole(QWidget):
             # 天道好循环
             lines = str(self.linesEntry.toPlainText())
             lines = lines.split('\n')
+            lines = filter(lambda x: x, lines)  # 过滤空值的行...
             if self.lines_flag == len(lines):
                 self.lines_flag = 0
 

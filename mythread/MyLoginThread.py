@@ -17,6 +17,7 @@ class MyLoginThread(QtCore.QThread):
         self.console_instance = console
         lines = str(self.console_instance.linesEntry.toPlainText())
         lines = lines.split('\n')
+        lines = filter(lambda x: x, lines)  # 过滤空值的行...
         logging.info(u"【登录线程】切换线路=%s" % self.console_instance.lines_flag)
 
         self.loginUrl = str(lines[self.console_instance.lines_flag])
@@ -96,9 +97,12 @@ class MyLoginThread(QtCore.QThread):
         prep3 = req_session.prepare_request(r3)
         rr3 = req_session.send(prep3, stream=False, timeout=5)
 
-        # r = requests.post(self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers, timeout=5)
         real_content = rr3.content.split('êêê')[0]
         rr3.close()
+
+        if 'Request unsuccessful' in real_content:
+            logging.error(u"【登录线程】请求登录body=Request unsuccessful")
+            return {}
 
         real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
         a = real_content.split('\n')
@@ -107,6 +111,12 @@ class MyLoginThread(QtCore.QThread):
 
         recheck_url = a[1].replace('host', self.host)
         cookies_jar = requests.cookies.RequestsCookieJar()
+
+        # 说明登录失败
+        if 'Set-Cookie' not in rr3.headers:
+            logging.error(u"【登录线程】验证码失败！")
+            return {}
+
         a = rr3.headers['Set-Cookie']
         b = a.split('/,')
         ddd = "mobiLogin=0; sysinfo=ssc%7C1%7Cb%7Cuc%7Cbeishu100; navNum=0; "
