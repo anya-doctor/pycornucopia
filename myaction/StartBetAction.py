@@ -141,7 +141,8 @@ class MyStartBetAction(object):
                         logging.info(u"【下注中】结算发现中！！！")
                         win_flag = True
                         if simulate_mode:
-                            console_instance.simulate_money += int(console_instance.balls_bet_amount[item[2]]) * 10
+                            console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
+                            console_instance.simulate_money += int(console_instance.balls_bet_amount[item[2]]) * 9.91
                     else:
                         logging.info(u"【下注中】结算发现不中")
                         if simulate_mode:
