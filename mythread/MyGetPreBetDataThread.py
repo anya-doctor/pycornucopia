@@ -60,7 +60,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
 
             try:
                 t_json = json.loads(real_content)
-            except Exception,ex:
+            except Exception, ex:
                 logging.error(rr1.content)
                 logging.error(real_content)
                 logging.info(u"【获取预下注数据线程】解析json数据失败...")

@@ -160,7 +160,8 @@ class MyLoginThread(QtCore.QThread):
             if 'AC' in cookies_jar:
                 name = self.console_instance.nameEntry.text()
                 name += u"【已登录】"
-                QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
+                QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection,
+                                         Q_ARG(str, name))
 
                 now = getCurrentTimestamp()
                 self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[
@@ -181,7 +182,8 @@ class MyLoginThread(QtCore.QThread):
                 }
 
                 # 一旦登录成功，这开始获取两个数据：预下注数据 + 历史数据
-                QMetaObject.invokeMethod(self.console_instance, "onLoginSuccess", Qt.QueuedConnection, Q_ARG(dict, data_dic))
+                QMetaObject.invokeMethod(self.console_instance, "onLoginSuccess", Qt.QueuedConnection,
+                                         Q_ARG(dict, data_dic))
 
                 QMetaObject.invokeMethod(self.console_instance, "onGetPreBetDataHideBtn", Qt.QueuedConnection)
                 QMetaObject.invokeMethod(self.console_instance, "onGetHistoryResultDataHideBtn", Qt.QueuedConnection)
@@ -191,7 +193,8 @@ class MyLoginThread(QtCore.QThread):
                 QMetaObject.invokeMethod(self.console_instance, "onLoginFailed", Qt.QueuedConnection, Q_ARG(str, msg))
                 name = self.console_instance.nameEntry.text()
                 name += u"【未登录】"
-                QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
+                QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection,
+                                         Q_ARG(str, name))
         except Exception, ex:
             logging.error(ex, exc_info=1)
             msg = u"登录失败，可能是动态获取验证码出问题，请重试！"
@@ -199,6 +202,7 @@ class MyLoginThread(QtCore.QThread):
             name = self.console_instance.nameEntry.text()
             name += u"【未登录】"
             logging.info(u"【登录线程】%s" % name)
-            QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
+            QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection,
+                                     Q_ARG(str, name))
         finally:
             QMetaObject.invokeMethod(self.overlay, "myclose", Qt.QueuedConnection)

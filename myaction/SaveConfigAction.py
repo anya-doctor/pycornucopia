@@ -4,7 +4,6 @@ import os
 import sqlite3
 
 from PyQt4 import QtGui
-from PyQt4.QtCore import *
 
 from common import MySettings
 from myutil.tool.MyTool import beautiful_log

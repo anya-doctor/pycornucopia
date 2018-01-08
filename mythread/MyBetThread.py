@@ -115,7 +115,8 @@ class MyBetDataThread(QtCore.QThread):
                 name = self.console_instance.nameEntry.text()
                 name += u"【未登录】"
                 logging.info(u"【下注线程】窗口标题=%s" % name)
-                QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection, Q_ARG(str, name))
+                QMetaObject.invokeMethod(self.console_instance.parent, "mySetWindowTitle", Qt.QueuedConnection,
+                                         Q_ARG(str, name))
             else:
                 # 先判斷是否下注成功。。。
                 bet_success_flag = True
@@ -128,10 +129,11 @@ class MyBetDataThread(QtCore.QThread):
                             bet_success_flag = False
                             for err in ret_json['errors']:
                                 logging.error(u"【下注线程】eid=%s，錯誤=%s" % (err['eid'], err['note']))
-                                if int(err['eid']) == 1111: # 網絡繁忙，請稍後再試！
+                                if int(err['eid']) == 1111:  # 網絡繁忙，請稍後再試！
                                     # 重新开始下注定时器...
                                     logging.info(u"【下注线程】重新开始下注定时器rebetTimer！！！！")
-                                    QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn", Qt.QueuedConnection)
+                                    QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn",
+                                                             Qt.QueuedConnection)
                     # 写到文件中。。。
                     with open('config/bet_error_%s.json' % self.console_instance.timesnow, 'w') as f:
                         f.write(json.dumps(ret_json))
@@ -141,6 +143,7 @@ class MyBetDataThread(QtCore.QThread):
                 else:
                     logging.error(u"【下注线程】失败！！！")
                     logging.error(u"【下注线程】 %s" % json.dumps(ret_json))
-                    QMetaObject.invokeMethod(self.console_instance, "betFailed", Qt.QueuedConnection, Q_ARG(dict, ret_json))
-        except Exception,ex:
+                    QMetaObject.invokeMethod(self.console_instance, "betFailed", Qt.QueuedConnection,
+                                             Q_ARG(dict, ret_json))
+        except Exception, ex:
             logging.error(ex, exc_info=1)

@@ -38,7 +38,7 @@ class MyConsole(QWidget):
 
         self.goThread = None
         self.betThread = None
-        self.rebetThread = None  #专门用来处理下注的时候被挤下线等情况的重新下注
+        self.rebetThread = None  # 专门用来处理下注的时候被挤下线等情况的重新下注
         self.getPreBetDataThread = None
         self.loginThread = None
         self.getHistoryResultDataThread = None

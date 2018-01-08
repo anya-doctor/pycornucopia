@@ -48,7 +48,8 @@ class MyGetPreBetDataAction(object):
                                                                                  'pk_pre_bet_get_data_url'],
                                                                              console_instance.loginSuccessData[
                                                                                  'cookies_jar'],
-                                                                             console_instance.loginSuccessData['headers']
+                                                                             console_instance.loginSuccessData[
+                                                                                 'headers']
                                                                              )
                 console_instance.getPreBetDataThread.start()
 
