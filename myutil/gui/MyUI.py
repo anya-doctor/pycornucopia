@@ -3,6 +3,7 @@ import logging
 import os
 import sqlite3
 
+import time
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -112,33 +113,47 @@ class MyUIUtil(object):
         console_instance.connect(console_instance.isSimulate_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
                                  lambda: MyUpdateSimulateComboModeAction.run(console_instance))
 
+        cal_from_lb = QLabel(u'开始')
+        cal_to_lb = QLabel(u'结束')
+        console_instance.gridlayout.addWidget(cal_from_lb, 1, 29, 1, 1)
+        console_instance.gridlayout.addWidget(cal_to_lb, 2, 29, 1, 1)
+        console_instance.cal_from = QDateEdit()
+        console_instance.gridlayout.addWidget(console_instance.cal_from, 1, 30, 1, 2)
+        now_day = time.strftime("%Y-%m-%d", time.localtime())
+        console_instance.cal_from.setDate(QDate.fromString(now_day, 'yyyy-MM-dd'))
+
+        console_instance.cal_to = QDateEdit()
+        console_instance.gridlayout.addWidget(console_instance.cal_to, 2, 30, 1, 2)
+        now_day = time.strftime("%Y-%m-%d", time.localtime())
+        console_instance.cal_to.setDate(QDate.fromString(now_day, 'yyyy-MM-dd'))
+
         console_instance.loadHistoryBtn = QtGui.QPushButton(u"载入历史数据")
         console_instance.connect(console_instance.loadHistoryBtn, QtCore.SIGNAL('clicked()'),
                                  lambda: MyGetSimulateHistoryResultDataAction.run(console_instance))
-        console_instance.gridlayout.addWidget(console_instance.loadHistoryBtn, 1, 29, 1, 3)
+        console_instance.gridlayout.addWidget(console_instance.loadHistoryBtn, 1, 32, 1, 3)
 
         console_instance.simulate_lb = QLabel(u'模拟赢钱：')
-        console_instance.gridlayout.addWidget(console_instance.simulate_lb, 2, 29, 1, 3)
+        console_instance.gridlayout.addWidget(console_instance.simulate_lb, 2, 32, 1, 3)
         pa = QPalette()
         pa.setColor(QPalette.WindowText, Qt.darkCyan)
         console_instance.simulate_lb.setPalette(pa)
 
         console_instance.up_limit_combobox = QComboBox()
         console_instance.up_limit_combobox.addItem(u'上限期数')
-        console_instance.gridlayout.addWidget(console_instance.up_limit_combobox, 1, 32, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.up_limit_combobox, 1, 35, 1, 2)
         console_instance.connect(console_instance.up_limit_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
                                  lambda: MyUpdateSimulateLabelAction.run(console_instance))
 
         console_instance.down_limit_combobox = QComboBox()
         console_instance.down_limit_combobox.addItem(u'下限期数')
-        console_instance.gridlayout.addWidget(console_instance.down_limit_combobox, 2, 32, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.down_limit_combobox, 2, 35, 1, 2)
         console_instance.connect(console_instance.down_limit_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
                                  lambda: MyUpdateSimulateLabelAction.run(console_instance))
 
         console_instance.simulateBtn = QtGui.QPushButton(u"开始模拟")
         console_instance.connect(console_instance.simulateBtn, QtCore.SIGNAL('clicked()'),
                                  lambda: MyStartSimulateBetAction.run(console_instance))
-        console_instance.gridlayout.addWidget(console_instance.simulateBtn, 1, 34, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.simulateBtn, 1, 37, 1, 2)
 
         # 1
         console_instance.ball1_1_Entry, console_instance.ball2_1_Entry, console_instance.ball3_1_Entry, console_instance.ball4_1_Entry, console_instance.ball5_1_Entry, \

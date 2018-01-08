@@ -7,14 +7,17 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
 from common.common import req_session
+from myutil.tool import MyDate
 from myutil.tool import MyTool
 
 
 class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
-    def __init__(self, mainWindow, console):
+    def __init__(self, mainWindow, console, from_date, to_date):
         QtCore.QThread.__init__(self)
         self.mainWindow = mainWindow
         self.console = console
+        self.from_date = str(from_date)
+        self.to_date = str(to_date)
 
     def run(self):
         try:
@@ -24,16 +27,12 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
             now = MyTool.getCurrentTimestamp()
             url = self.console.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now
 
-            import datetime
-            today = datetime.datetime.today()
-            today_1 = today - datetime.timedelta(days=1)
-            today_2 = today_1 - datetime.timedelta(days=1)
-            date_list = [today, today_1, today_2]
-            date_list = [v.strftime("%Y-%m-%d") for v in date_list]
-
             res = []
             success_flag = True
-            for date in date_list:
+            date_list = MyDate.get_date_list(self.from_date, self.to_date)
+            print date_list
+            for _date in date_list:
+                date = _date.strftime("%Y-%m-%d")
                 payload = {
                     'date': date
                 }
@@ -45,7 +44,6 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
                 rr1.close()
 
                 real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
-                # logging.info(real_content)
                 json_data = json.loads(real_content)
                 if int(json_data['state']) != 1:
                     logging.error(u"【获取模拟用的历史数据线程】出错！")

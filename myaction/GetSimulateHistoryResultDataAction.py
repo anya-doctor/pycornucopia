@@ -48,10 +48,14 @@ class MyGetSimulateHistoryResultDataAction(object):
                     console_instance.getSimulateHistoryResultDataThread.quit()
                     console_instance.getSimulateHistoryResultDataThread.wait()
 
+            # 获取日历的from-to
+            from_date = console_instance.cal_from.date().toString("yyyy-MM-dd")
+            to_date = console_instance.cal_to.date().toString("yyyy-MM-dd")
+
             from mythread.MyGetSimulateHistoryResultDataThread import MyGetSimulateHistoryResultDataThread
             console_instance.getSimulateHistoryResultDataThread = MyGetSimulateHistoryResultDataThread(
                     console_instance.parent,
-                    console_instance)
+                    console_instance, from_date, to_date)
             console_instance.getSimulateHistoryResultDataThread.start()
 
             # 在这里才能把时间间隔调整...

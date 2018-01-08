@@ -267,6 +267,7 @@ class MyConsole(QWidget):
             logging.info(u"【登录成功】我停掉了线程...")
             self.loginThread.quit()
             self.loginThread.wait()
+
         self.loginBtn.setEnabled(False)
 
     @pyqtSlot(str)

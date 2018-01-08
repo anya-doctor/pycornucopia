@@ -23,7 +23,7 @@ class MyUpdateSimulateLabelAction(object):
                 up_limit = int(up_limit)
                 down_limit = int(down_limit)
 
-                lb_txt = u"选中期数：%s-%s，共%s期" % (down_limit, up_limit, up_limit - down_limit + 1)
+                lb_txt = u"选中期数：%s-%s，共%s期，后30期做底" % (down_limit, up_limit, up_limit - down_limit + 1)
                 logging.info(lb_txt)
                 console_instance.simulate_qishu_lb.setText(lb_txt)
                 logging.info(u"【控制台】更新模拟选中的历史数据，之前len=%s" % len(console_instance.simulate_data))
