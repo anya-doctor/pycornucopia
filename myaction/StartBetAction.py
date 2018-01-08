@@ -205,6 +205,10 @@ class MyStartBetAction(object):
                         if isinstance(a, tuple):
                             # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index]
                             for j in range(len(a)):
+                                # 如果多个孩子，有一个孩子是[]，则放弃它
+                                if not a[j]:
+                                    continue
+
                                 c = [[i, v] for v in a[j]]
                                 console_instance.all_ball_needToBetList.append(
                                         [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
@@ -225,6 +229,9 @@ class MyStartBetAction(object):
                             if isinstance(a, tuple):
                                 # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index]
                                 for j in range(len(a)):
+                                    # 如果多个孩子，有一个孩子是[]，则放弃它
+                                    if not a[j]:
+                                        continue
                                     c = [[i, v] for v in a[j]]
                                     console_instance.all_ball_needToBetList.append(
                                             [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])

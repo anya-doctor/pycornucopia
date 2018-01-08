@@ -172,12 +172,12 @@ class MySaveConfigAction(object):
                     for j in i:
                         if not j:
                             continue
-                        m = j.split('-')
-                        for k in m:
-                            if int(k) > 10:
-                                QtGui.QMessageBox.about(console_instance, u'出了点问题', u"数字都是小于等于10吗？")
-                                a = False
-                                break
+                        # m = j.split('-')
+                        # for k in m:
+                        #     if int(k) > 10:
+                        #         QtGui.QMessageBox.about(console_instance, u'出了点问题', u"数字都是小于等于10吗？")
+                        #         a = False
+                        #         break
 
             if a:
                 QtGui.QMessageBox.about(console_instance, u'成功', u"保存成功")
