@@ -5,6 +5,7 @@ import logging
 from PyQt4.QtCore import *
 from PyQt4.QtGui import QPalette
 
+from myaction.GetHistoryResultDataAction import MyGetHistoryResultDataAction
 from myaction.StartBetAction import MyStartBetAction
 from myutil.tool import MyTool
 from myutil.tool.MyTool import beautiful_log
@@ -55,16 +56,24 @@ class MyUpdatePreBetDataAction(object):
                                                  Q_ARG(str, str(timesnow)), Q_ARG(list, console_instance.open_balls))
 
                 elif int(console_instance.timesnow) < int(timesnow):
-                    if console_instance.history_data and console_instance.history_data[0][2] == "":
+                    if not console_instance.history_data:
+                        logging.error(u"【更新预下注数据】因为某种原因历史数据=NULL, 重启获取历史数据定时器..")
+                        MyGetHistoryResultDataAction.run(console_instance)
+                    elif console_instance.history_data and console_instance.history_data[0][2] == "":
                         logging.info(u"【更新预下注数据】你觉得可能吗？都过了一期的时间了，上一期的历史数据还是空...")
                         logging.info(u"【更新预下注数据】这个时候我宁愿重新获取一份历史数据！")
-                        console_instance.getHistoryResultDataTimer.start(1000)
+                        MyGetHistoryResultDataAction.run(console_instance)
                     else:
                         same_flag = True
-                        for index, ball in enumerate(console_instance.history_data[0][2:12]):
-                            if int(console_instance.open_balls[index]) != int(ball):
-                                same_flag = False
-                                break
+                        try:
+                            for index, ball in enumerate(console_instance.history_data[0][2:12]):
+                                if int(console_instance.open_balls[index]) != int(ball):
+                                    same_flag = False
+                                    break
+                        except Exception, ex:
+                            logging.error(ex, exc_info=1)
+                            logging.error(console_instance.history_data)
+
                         if same_flag:
                             logging.info(u"【更新预下注数据】虽然期数更新了，但數據還在結算中，等待...")
                             pass

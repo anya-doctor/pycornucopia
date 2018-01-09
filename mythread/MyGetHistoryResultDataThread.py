@@ -25,7 +25,7 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
             r1 = requests.Request('GET', url, headers=self.console.loginSuccessData['headers'],
                                   cookies=self.console.loginSuccessData['cookies_jar'])
             prep1 = req_session.prepare_request(r1)
-            rr1 = req_session.send(prep1, stream=False, timeout=10)
+            rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
 
             real_content = rr1.content.split('êêê')[0]
             rr1.close()
@@ -33,8 +33,12 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
             real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
             logging.info(u"【获取历史数据线程】结果如下")
             # logging.info(real_content)
-
-            json_data = json.loads(real_content)
+            try:
+                json_data = json.loads(real_content)
+            except Exception,ex:
+                logging.error(ex)
+                logging.error(real_content)
+                json_data = {}
             if json_data and isinstance(json_data, dict):
                 # 如果确切拿到了数据，那么就更新一次即可..
                 if 'result' in json_data['data']:

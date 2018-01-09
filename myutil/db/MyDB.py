@@ -51,7 +51,7 @@ class MyDBUtil(object):
                 ball10_1,ball10_2,ball10_3,ball10_4,ball10_5,ball10_6,ball10_7,ball10_8,ball10_9,ball10_10\
                 ,isQQG,isLoseAdd, n_change)"
         sql += " values('http://pc10.sss44.us/scowa14889f/user/login.html.auth http://pc10.sss22.us/scowa14889f/user/login.html.auth http://pc10.x.sss77.us/scowa14889f/user/login.html.auth','','','2-4-8-16-32-64-128','5000','-5000','','0','hehehe',date(),\
-                '','','','','','','','','','',\
+                '1','1','1','1','1','1','1','1','1','1',\
                 '','','','','','','','','','',\
                 '','','','','','','','','','',\
                 '','','','','','','','','','',\

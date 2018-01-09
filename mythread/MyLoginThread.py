@@ -50,7 +50,7 @@ class MyLoginThread(QtCore.QThread):
 
         r1 = requests.Request('GET', get_code_url1)
         prep1 = req_session.prepare_request(r1)
-        rr1 = req_session.send(prep1, stream=False, timeout=10)
+        rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
         a = rr1.content
         rr1.close()
 
@@ -60,7 +60,7 @@ class MyLoginThread(QtCore.QThread):
 
         r2 = requests.Request('GET', get_code_url2)
         prep2 = req_session.prepare_request(r2)
-        rr2 = req_session.send(prep2, stream=False, timeout=10)
+        rr2 = req_session.send(prep2, stream=False, timeout=10, allow_redirects=False)
 
         # r = requests.get(get_code_url2, timeout=10)
         with open('./config/checkcode.png', 'wb') as f:
@@ -95,7 +95,7 @@ class MyLoginThread(QtCore.QThread):
 
         r3 = requests.Request('POST', self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers)
         prep3 = req_session.prepare_request(r3)
-        rr3 = req_session.send(prep3, stream=False, timeout=5)
+        rr3 = req_session.send(prep3, stream=False, timeout=5, allow_redirects=False)
 
         real_content = rr3.content.split('êêê')[0]
         rr3.close()
@@ -107,16 +107,19 @@ class MyLoginThread(QtCore.QThread):
         real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
         a = real_content.split('\n')
         logging.info(u"【登录线程】登录body=%s" % a)
-        logging.info(u"【登录线程】登录header=%s" % r3.headers)
-
+        logging.info(u"【登录线程】登录header=%s" % rr3.headers)
+        if not a[1]:
+            logging.error(u"【登录线程】验证码失败-1！")
+            return {}
+        
         recheck_url = a[1].replace('host', self.host)
         cookies_jar = requests.cookies.RequestsCookieJar()
 
         # 说明登录失败
         if 'Set-Cookie' not in rr3.headers:
-            logging.error(u"【登录线程】验证码失败！")
+            logging.error(u"【登录线程】验证码失败-2！")
             return {}
-
+        
         a = rr3.headers['Set-Cookie']
         b = a.split('/,')
         ddd = "mobiLogin=0; sysinfo=ssc%7C1%7Cb%7Cuc%7Cbeishu100; navNum=0; "
@@ -154,7 +157,7 @@ class MyLoginThread(QtCore.QThread):
 
         r4 = requests.Request('GET', recheck_url, cookies=cookies_jar, headers=headers2)
         prep4 = req_session.prepare_request(r4)
-        rr4 = req_session.send(prep4, stream=False, timeout=10)
+        rr4 = req_session.send(prep4, stream=False, timeout=10, allow_redirects=False)
         rr4.close()
 
         return cookies_jar

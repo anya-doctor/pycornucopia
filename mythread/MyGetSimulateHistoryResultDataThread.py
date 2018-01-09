@@ -39,7 +39,7 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
                 r1 = requests.Request('POST', url, data=payload, headers=self.console.loginSuccessData['headers'],
                                       cookies=self.console.loginSuccessData['cookies_jar'])
                 prep1 = req_session.prepare_request(r1)
-                rr1 = req_session.send(prep1, stream=False, timeout=10)
+                rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
                 real_content = rr1.content.split('êêê')[0]
                 rr1.close()
 

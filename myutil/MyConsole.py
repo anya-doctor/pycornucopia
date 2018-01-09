@@ -84,6 +84,7 @@ class MyConsole(QWidget):
 
         self.fake_mode = False
         self.fake_mode_getPreBetData = False
+        self.getPreBetDataFailedCnt = 0  # 获取预下注数据错误次数...用来监控获取预下注数据失败
 
         # 登录成功会填充这个dict
         self.loginSuccessData = {}
@@ -134,6 +135,8 @@ class MyConsole(QWidget):
 
     @pyqtSlot(dict)
     def onUpdatePreBetDataHideBtn(self, data_dic):
+        self.getPreBetDataFailedCnt = 0  # 一旦成功，则这个计数器清零
+
         MyUpdatePreBetDataAction.run(self, data_dic)
 
     @pyqtSlot()
@@ -269,6 +272,7 @@ class MyConsole(QWidget):
             self.loginThread.wait()
 
         self.loginBtn.setEnabled(False)
+        self.getPreBetDataFailedCnt = 0  # 一旦成功，则这个计数器清零
 
     @pyqtSlot(str)
     def onLoginFailed(self, msg):
