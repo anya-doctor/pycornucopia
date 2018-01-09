@@ -244,6 +244,13 @@ class MyStartBetAction(object):
                 else:
                     logging.info(u"【下注中】下注列表不為空，進入常規模式...")
                     for item in console_instance.all_ball_needToBetList:
+                        if console_instance.n_change == 0:  # 说明n期换配置不起作用
+                            pass
+                        else:
+                            # 如果n期换配置起作用，但是还没到轮换点，则跳过
+                            if int(item[2]) % console_instance.n_change != 0:
+                                continue
+
                         # 替換新的下注列表
                         index = item[3][0][0]
                         a, b = MyAlgorithm.verical_get_bet_list(console_instance, index)

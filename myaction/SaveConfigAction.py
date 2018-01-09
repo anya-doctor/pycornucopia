@@ -29,6 +29,7 @@ class MySaveConfigAction(object):
             lost_money_at = console_instance.lostMoneyAtEntry.text()
             register_code = console_instance.nameEntry.text()
             first_n = console_instance.first_n_Entry.text()
+            n_change = console_instance.n_change_Entry.text()
             isQQG = True if int(console_instance.isQQG_combobox.currentIndex()) == 0 else False
             isLoseAdd = True if int(console_instance.isLoseAdd_combobox.currentIndex()) == 0 else False
 
@@ -36,6 +37,7 @@ class MySaveConfigAction(object):
             console_instance.balls_bet_amount = betAmount.split('-')
             console_instance.balls_bet_amount = [int(v) for v in console_instance.balls_bet_amount]
             console_instance.first_n = int(first_n)
+            console_instance.n_change = int(n_change)
             console_instance.earn_money_at = int(earn_money_at)
             console_instance.lost_money_at = int(lost_money_at)
             console_instance.username = username
@@ -72,7 +74,7 @@ class MySaveConfigAction(object):
                 ball10_1='" + console_instance.ball10_1_Entry.text() + "',ball10_2='" + console_instance.ball10_2_Entry.text() + "',ball10_3='" + console_instance.ball10_3_Entry.text() + "',ball10_4='" + console_instance.ball10_4_Entry.text() + "',ball10_5='" + console_instance.ball10_5_Entry.text() + "',\
                 ball10_6='" + console_instance.ball10_6_Entry.text() + "',ball10_7='" + console_instance.ball10_7_Entry.text() + "',ball10_8='" + console_instance.ball10_8_Entry.text() + "',ball10_9='" + console_instance.ball10_9_Entry.text() + "',ball10_10='" + console_instance.ball10_10_Entry.text() + "',\
                 isQQG = '" + ('0' if console_instance.isQQG else '1') + "',isLoseAdd = '" + (
-                '0' if console_instance.isLoseAdd else '1') + "';"
+                '0' if console_instance.isLoseAdd else '1') + "',n_change='"+str(n_change)+"';"
 
             cqssc_db.execute(unicode(sql))
             cqssc_db.commit()

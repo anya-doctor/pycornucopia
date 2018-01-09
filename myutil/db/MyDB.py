@@ -34,7 +34,7 @@ class MyDBUtil(object):
                 ball9_6 text NULL,ball9_7 text NULL,ball9_8 text NULL,ball9_9 text NULL,ball9_10 text NULL,\
                 ball10_1 text NULL,ball10_2 text NULL,ball10_3 text NULL,ball10_4 text NULL,ball10_5 text NULL,\
                 ball10_6 text NULL,ball10_7 text NULL,ball10_8 text NULL,ball10_9 text NULL,ball10_10 text NULL\
-                ,isQQG,isLoseAdd);"
+                ,isQQG text NULL,isLoseAdd text NULL, n_change text NULL);"
         mydb.execute(sql)
         mydb.commit()
 
@@ -49,8 +49,8 @@ class MyDBUtil(object):
                 ball8_1,ball8_2,ball8_3,ball8_4,ball8_5,ball8_6,ball8_7,ball8_8,ball8_9,ball8_10,\
                 ball9_1,ball9_2,ball9_3,ball9_4,ball9_5,ball9_6,ball9_7,ball9_8,ball9_9,ball9_10,\
                 ball10_1,ball10_2,ball10_3,ball10_4,ball10_5,ball10_6,ball10_7,ball10_8,ball10_9,ball10_10\
-                ,isQQG,isLoseAdd)"
-        sql += " values('','','','','','','','','hehehe',date(),\
+                ,isQQG,isLoseAdd, n_change)"
+        sql += " values('http://pc10.sss44.us/scowa14889f/user/login.html.auth http://pc10.sss22.us/scowa14889f/user/login.html.auth http://pc10.x.sss77.us/scowa14889f/user/login.html.auth','','','2-4-8-16-32-64-128','5000','-5000','','0','hehehe',date(),\
                 '','','','','','','','','','',\
                 '','','','','','','','','','',\
                 '','','','','','','','','','',\
@@ -60,7 +60,7 @@ class MyDBUtil(object):
                 '','','','','','','','','','',\
                 '','','','','','','','','','',\
                 '','','','','','','','','','',\
-                '','','','','','','','','','','1','1');"
+                '','','','','','','','','','','1','1','5');"
         mydb.execute(sql)
         mydb.commit()
         mydb.close()

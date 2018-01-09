@@ -48,6 +48,11 @@ class MyUIUtil(object):
         console_instance.gridlayout.addWidget(console_instance.passEntry, 1, 1, 1, 3)
         console_instance.gridlayout.addWidget(console_instance.loginBtn, 0, 4, 1, 2)
 
+        n_change_lb = QLabel(u'N期换')
+        console_instance.gridlayout.addWidget(n_change_lb, 1, 4, 1, 1)
+        console_instance.n_change_Entry = QLineEdit()
+        console_instance.gridlayout.addWidget(console_instance.n_change_Entry, 1, 5)
+
         lb3 = QLabel(u'倍投')
         console_instance.betAmountEntry = QLineEdit()
         console_instance.gridlayout.addWidget(lb3, 0, 6)
@@ -291,7 +296,6 @@ class MyUIUtil(object):
     def initConfig(cls, console_instance):
         if not os.path.exists('./config/cqssc.db'):
             MyDBUtil.create_db()
-            return
 
         cqssc_db = sqlite3.connect(MySettings.db_file_path)
         cursor = cqssc_db.execute("SELECT * FROM config;")
@@ -501,7 +505,9 @@ class MyUIUtil(object):
                                       console_instance.ball4, console_instance.ball5,
                                       console_instance.ball6, console_instance.ball7, console_instance.ball8,
                                       console_instance.ball9, console_instance.ball10]
-
+            # 载入n期换
+            console_instance.n_change_Entry.setText(row[112])  # 110 111 就是琪琪滚和输追加
+            console_instance.n_change = int(row[112])
         cursor.close()
         cqssc_db.commit()
         cqssc_db.close()
