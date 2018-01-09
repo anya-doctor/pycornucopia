@@ -6,6 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import QComboBox, QTableWidgetItem
 
 from myaction.StartBetAction import MyStartBetAction
+from mythread.MySimulateBetThread import MySimulateBetThread
 from myutil.tool.MyTool import beautiful_log
 
 
@@ -30,56 +31,23 @@ class MyStartSimulateBetAction(object):
 
     @staticmethod
     def for_start(console_instance):
-        # 每一次开始，都会初始化历史数据，因为太重要了。。。
-        up_limit = int(console_instance.up_limit_combobox.currentText())
-        down_limit = int(console_instance.down_limit_combobox.currentText())
-        console_instance.history_data = filter(lambda x: int(x[0]) < down_limit, console_instance.simulate_data)
-        with open('config/simulate_history.json', 'wb') as f:
-            f.write(json.dumps(console_instance.history_data))
-
-        # 截断模拟数据
-        tmp_simulate_data = filter(lambda x: down_limit <= int(x[0]) <= up_limit, console_instance.simulate_data)
-        logging.info(u"【模拟下注中】，截断数据后len=%s" % (len(tmp_simulate_data)))
-        logging.info(u"【模拟下注中】，第一个=%s" % (tmp_simulate_data[0]))
-        logging.info(u"【模拟下注中】，最后一个=%s" % (tmp_simulate_data[-1]))
-
-        # 模拟当前timesnow + open_balls
-        console_instance.timesnow = int(console_instance.history_data[0][0]) + 1
-        console_instance.open_balls = console_instance.history_data[0][2:12]
-
-        console_instance.simulate_money = 0
-        for item in reversed(tmp_simulate_data):
-            # 结算
-            MyStartBetAction.do_balance(console_instance, simulate_mode=True)
-
-            console_instance.simulate_lb.setText(u"模拟赢钱：" + str(console_instance.simulate_money))
-
-            MyStartBetAction.do_calculate(console_instance)
-            console_instance.loadTableData()
-            MyStartSimulateBetAction.simulate_bet(console_instance)
-
-            # 把新的一期附带到history_data
-            logging.info(u"【模拟下注中】附带%s->history_data" % item)
-            assert isinstance(console_instance.history_data, list)
-            console_instance.history_data.insert(0, item)
-            console_instance.timesnow = int(item[0]) + 1
-            console_instance.open_balls = item[2:12]
-
-        # 最后一次结算
-        MyStartBetAction.do_balance(console_instance, simulate_mode=True)
-        console_instance.simulate_lb.setText(u"模拟赢钱：" + str(console_instance.simulate_money))
-        with open('config/simulate_history.json', 'wb') as f:
-            f.write(json.dumps(console_instance.history_data))
+        # 先把这些老的进程弄死
+        if console_instance.simulateBetThread:
+            logging.info(u"【模拟下注ACTION】老的模拟下注数据线程还在，杀死它...")
+            console_instance.simulateBetThread.quit()
+            console_instance.simulateBetThread.wait()
+        console_instance.simulateBetThread = MySimulateBetThread(console_instance)
+        console_instance.simulateBetThread.start()
 
     @staticmethod
     def simulate_bet(console_instance):
         # 更新下注面板信息...
         cnt = 0
-        logging.info(u"【下注结果界面】bet_list=%s" % console_instance.all_ball_needToBetList)
+        logging.info(u"【模拟下注ACTION】bet_list=%s" % console_instance.all_ball_needToBetList)
 
         for item in console_instance.all_ball_needToBetList:
             row = console_instance.viewEntry.rowCount()
-            logging.info(u"【下注结果界面】row_count=%s,cnt=%s" % (row, cnt))
+            logging.info(u"【模拟下注ACTION】row_count=%s,cnt=%s" % (row, cnt))
             newItem = QTableWidgetItem(u'已投注')
             newItem.setBackgroundColor(console_instance.c)
             console_instance.viewEntry.setItem((row - len(console_instance.all_ball_needToBetList) + cnt), 5, newItem)

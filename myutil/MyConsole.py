@@ -43,6 +43,7 @@ class MyConsole(QWidget):
         self.loginThread = None
         self.getHistoryResultDataThread = None
         self.getSimulateHistoryResultDataThread = None
+        self.simulateBetThread = None
 
         self.betTimer = None
         self.rebetTimer = None
@@ -225,6 +226,12 @@ class MyConsole(QWidget):
                 newItem = QTableWidgetItem(str(self.balls_bet_amount[int(item[2])]))
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 4, newItem)
+
+                # 如果是模拟模式，直接已下注！
+                if self.isSimulate_combobox.currentIndex() == 1:
+                    newItem = QTableWidgetItem(u'已投注')
+                    newItem.setBackgroundColor(self.c)
+                    self.viewEntry.setItem(row, 5, newItem)
             logging.info(u'【控制台】UI界面-1更新...')
         except Exception, ex:
             logging.error(ex, exc_info=1)
@@ -400,3 +407,7 @@ class MyConsole(QWidget):
                     else:
                         self.rebetThread = MyBetThread.MyBetDataThread(self)
                         self.rebetThread.start(1000)
+
+    @pyqtSlot(int)
+    def setSimulateMoney(self, money):
+        self.simulate_lb.setText(u"模拟赢钱：" + str(money))

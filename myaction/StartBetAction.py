@@ -118,11 +118,13 @@ class MyStartBetAction(object):
         :param console_instance:
         :return:
         """
-        logging.info(u"【下注中】当前模式，console_instance.isQQG=%s" % console_instance.isQQG)
-        logging.info(u"【下注中】当前模式，console_instance.isLoseAdd=%s" % console_instance.isLoseAdd)
+        if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+            logging.info(u"【下注中】当前模式，console_instance.isQQG=%s" % console_instance.isQQG)
+            logging.info(u"【下注中】当前模式，console_instance.isLoseAdd=%s" % console_instance.isLoseAdd)
 
         if not console_instance.all_ball_needToBetList:  # 说明上期有数据
-            logging.info(u"【下注中】結算發現無下注列表，跳過結算環節...")
+            if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                logging.info(u"【下注中】結算發現無下注列表，跳過結算環節...")
             return
 
         open_balls = console_instance.open_balls
@@ -132,20 +134,24 @@ class MyStartBetAction(object):
             item[1] = console_instance.timesnow
 
             if console_instance.isLoseAdd:  # 输加注
-                logging.info(u"【下注中】结算進入輸追加模式...")
+                if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                    logging.info(u"【下注中】结算進入輸追加模式...")
                 win_flag = False
                 for inner_item in item[3]:
-                    logging.info(
-                            u"【下注中】结算对比位置%s开奖%s == 下注球%s " % (
-                                inner_item[0], open_balls[inner_item[0] - 1], inner_item[1]))
+                    if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                        logging.info(
+                                u"【下注中】结算对比位置%s开奖%s == 下注球%s " % (
+                                    inner_item[0], open_balls[inner_item[0] - 1], inner_item[1]))
                     if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
-                        logging.info(u"【下注中】结算发现中！！！")
+                        if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                            logging.info(u"【下注中】结算发现中！！！")
                         win_flag = True
                         if simulate_mode:
                             console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
                             console_instance.simulate_money += int(console_instance.balls_bet_amount[item[2]]) * 9.91
                     else:
-                        logging.info(u"【下注中】结算发现不中")
+                        if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                            logging.info(u"【下注中】结算发现不中")
                         if simulate_mode:
                             console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
 
@@ -158,7 +164,8 @@ class MyStartBetAction(object):
                 pass
 
         # 通知控制台中或不中
-        logging.info(u"【下注中】结算通知UI-2...")
+        if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+            logging.info(u"【下注中】结算通知UI-2...")
         b = copy.deepcopy(console_instance.all_ball_needToBetList)
         QMetaObject.invokeMethod(console_instance, "loadTableData2", Q_ARG(list, b))
 
@@ -196,7 +203,8 @@ class MyStartBetAction(object):
         """
         if bet_mode == BET_MODE_VERTICAL:
             # 如果下注列表為空則初始化
-            logging.info(u"【下注中】下注列表為空，初始化...")
+            if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                logging.info(u"【下注中】下注列表為空，初始化...")
             if not console_instance.all_ball_needToBetList:
                 for i in range(1, 11):
                     a, b = MyAlgorithm.verical_get_bet_list(console_instance, i)
@@ -221,7 +229,8 @@ class MyStartBetAction(object):
             else:
                 # 如果是期期滾
                 if console_instance.isQQG:
-                    logging.info(u"【下注中】下注列表不為空，進入期期滾模式...")
+                    if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                        logging.info(u"【下注中】下注列表不為空，進入期期滾模式...")
                     for i in range(1, 11):
                         a, b = MyAlgorithm.verical_get_bet_list(console_instance, i)
                         if a:
@@ -242,7 +251,8 @@ class MyStartBetAction(object):
                                         [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0])
                 # 如果是常規模式
                 else:
-                    logging.info(u"【下注中】下注列表不為空，進入常規模式...")
+                    if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                        logging.info(u"【下注中】下注列表不為空，進入常規模式...")
                     for item in console_instance.all_ball_needToBetList:
                         if console_instance.n_change == 0:  # 说明n期换配置不起作用
                             pass
@@ -262,7 +272,8 @@ class MyStartBetAction(object):
                                 for x_index, x in enumerate(console_instance.all_ball_needToBetList):
                                     if x[0] == item[0] and x[1] == item[1] and x[4] == item[4]:
                                         mother_son_list.append(x_index)
-                                logging.info(u"【下注中】找到母子序列号：%s" % mother_son_list)
+                                if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                                    logging.info(u"【下注中】找到母子序列号：%s" % mother_son_list)
 
                                 assert len(a) == len(mother_son_list)
 

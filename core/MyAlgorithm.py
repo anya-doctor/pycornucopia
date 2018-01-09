@@ -6,7 +6,9 @@ def verical_get_bet_list(console_instance, bet_index):
     try:
         from myutil.MyConsole import MyConsole
         assert isinstance(console_instance, MyConsole)
-        logging.info(u"【下注中】垂直模式：位置=%s，舍弃=%s" % (bet_index, console_instance.first_n))
+        log_flag = False
+        if log_flag:
+            logging.info(u"【下注中】垂直模式：位置=%s，舍弃=%s" % (bet_index, console_instance.first_n))
         # 某些号码不想要
         dic = {
             1: int(console_instance.ball1_1_Entry.text()),
@@ -31,15 +33,15 @@ def verical_get_bet_list(console_instance, bet_index):
         # 找出不重复的球
         no_repeats_balls = []
         all_cnt = int(console_instance.ball2_1_Entry.text())
-        logging.info(u"拿前%s期数据做统计" % all_cnt)
+        if log_flag:
+            logging.info(u"拿前%s期数据做统计" % all_cnt)
 
         for line in lines[console_instance.first_n:console_instance.first_n + all_cnt]:
             tmp_balls = line[2:12]
-            logging.info(line)
-            logging.info(tmp_balls)
             if tmp_balls[bet_index - 1] not in no_repeats_balls:
                 no_repeats_balls.append(tmp_balls[bet_index - 1])
-        logging.info("no_repeats_balls=%s" % no_repeats_balls)
+        if log_flag:
+            logging.info("no_repeats_balls=%s" % no_repeats_balls)
 
         # 映射关系
         dic1 = {
@@ -60,7 +62,8 @@ def verical_get_bet_list(console_instance, bet_index):
         not_bet_balls = list(set(not_bet_balls))  # 去重
         c = 2
         while len(not_bet_balls) < 5:
-            logging.info("不足5颗，补齐。")
+            if log_flag:
+                logging.info("不足5颗，补齐。")
             d = no_repeats_balls[c]
             not_bet_balls += dic1[d]
             not_bet_balls = list(set(not_bet_balls))  # 去重
@@ -76,9 +79,11 @@ def verical_get_bet_list(console_instance, bet_index):
 
         if isinstance(bet_balls, tuple):
             for i in range(len(bet_balls)):
-                logging.info(u"【计算结果】下注=%s" % bet_balls[i])
+                if log_flag:
+                    logging.info(u"【计算结果】下注=%s" % bet_balls[i])
         elif isinstance(bet_balls, list):
-            logging.info(u"【计算结果】下注=%s" % bet_balls)
+            if log_flag:
+                logging.info(u"【计算结果】下注=%s" % bet_balls)
         return ret
     except Exception, ex:
         logging.error(ex, exc_info=1)
