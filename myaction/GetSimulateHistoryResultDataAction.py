@@ -17,11 +17,13 @@ class MyGetSimulateHistoryResultDataAction(object):
         :return:
         """
         try:
-            if not console_instance.loginSuccessData:
-                msgtitle = u"失败了"
-                msg = u"请先登录，才能获取数据..."
+            from_date = console_instance.cal_from.date().toString("yyyy-MM-dd")
+            to_date = console_instance.cal_to.date().toString("yyyy-MM-dd")
+            if to_date < from_date:
+                msgtitle = u"失误了"
+                msg = u"开始日期应该小于等于结束日期..."
                 QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
-                                         Q_ARG(str, msg))
+                                     Q_ARG(str, msg))
             else:
                 logging.info(u"【获取模拟用的历史数据】开启定时器...")
                 # 开始定时器之前先销毁一波...

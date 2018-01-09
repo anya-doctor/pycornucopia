@@ -15,12 +15,7 @@ class MyStartSimulateBetAction(object):
     # 响应开始按钮
     def run(console_instance):
         assert isinstance(console_instance.isSimulate_combobox, QComboBox)
-        if not console_instance.loginSuccessData:
-            msgtitle = u"失败了"
-            msg = u"请先登录，才能获取数据..."
-            QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
-                                     Q_ARG(str, msg))
-        elif not console_instance.isSimulate_combobox.currentIndex() == 1:  # 0正常，1模拟
+        if not console_instance.isSimulate_combobox.currentIndex() == 1:  # 0正常，1模拟
             msgtitle = u"失败了"
             msg = u"请切换到模拟模式"
             QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),

@@ -13,23 +13,17 @@ class MyUpdateSimulateComboModeAction(object):
     def run(console_instance):
         try:
             logging.info(u"【更换正常模拟模式ACTION】切换模拟模式\正常模式")
-            if not console_instance.loginSuccessData:
-                msgtitle = u"失败了"
-                msg = u"请先登录，才能获取数据..."
-                QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
-                                         Q_ARG(str, msg))
-                console_instance.isSimulate_combobox.setCurrentIndex(0)
-            else:
-                # 0 - 正常， 1 - 模拟
-                mode = int(console_instance.isSimulate_combobox.currentIndex())
-                logging.info(u"【更换正常模拟模式ACTION】mode=%s..." % u"模拟" if mode==1 else u"正常")
-                if mode == 1:
-                    if console_instance.getPreBetDatgaTimer:
-                        logging.info(u"【更换正常模拟模式ACTION】停掉获取预下注数据定时器...")
-                        console_instance.getPreBetDatgaTimer.stop()
-                    # 不准真实下注
-                    console_instance.goBtn.setEnabled(False)
-                elif mode == 0:
+            mode = int(console_instance.isSimulate_combobox.currentIndex())
+            logging.info(u"【更换正常模拟模式ACTION】mode=%s..." % u"模拟" if mode==1 else u"正常")
+            if mode == 1:
+                if console_instance.getPreBetDatgaTimer:
+                    logging.info(u"【更换正常模拟模式ACTION】停掉获取预下注数据定时器...")
+                    console_instance.getPreBetDatgaTimer.stop()
+                # 不准真实下注
+                console_instance.goBtn.setEnabled(False)
+            elif mode == 0:
+                # 在登录的前提下...开启相应的定时器
+                if  console_instance.loginSuccessData:
                     if console_instance.getPreBetDatgaTimer:
                         logging.info(u"【更换正常模拟模式ACTION】开启获取预下注数据定时器...")
                         console_instance.getPreBetDatgaTimer.start(1000)
