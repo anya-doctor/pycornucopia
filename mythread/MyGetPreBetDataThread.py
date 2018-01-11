@@ -3,11 +3,10 @@ import json
 import logging
 
 import requests
-from requests.exceptions import ReadTimeout
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
-
 from common.common import req_session
+from requests.exceptions import ReadTimeout
 
 
 class MyGetPreBetDataThread(QtCore.QThread):
@@ -94,8 +93,15 @@ class MyGetPreBetDataThread(QtCore.QThread):
                 logging.error(type(pk_60_predata_json['data']['integrate']))
             return pk_60_predata_json
         except ReadTimeout, ex:
-            logging.info(u"【获取预下注数据线程】获取数据超时...")
+            logging.error(u"【获取预下注数据线程】获取数据超时...")
             return "TIMEOUT"
+        except requests.ConnectionError:
+            logging.error(u"【获取预下注数据线程】对方服务器关闭了连接，重登录吧...")
+            return "RELOGIN"
+        except Exception, ex:
+            logging.error(u"【获取预下注数据线程】未知错误，返回NULL_DATA")
+            logging.error(str(ex))
+            return "NULL_DATA"
 
     def get_pre_bet_date_fake(self):
         with open('config/fake_data.json', 'r') as f:
@@ -121,8 +127,8 @@ class MyGetPreBetDataThread(QtCore.QThread):
                """
                 self.console_instance.getPreBetDataFailedCnt += 1
                 logging.info(u"【获取预下注数据线程】当前获取数据失败次数=%s" % self.console_instance.getPreBetDataFailedCnt)
-                if self.console_instance.getPreBetDataFailedCnt >= 4:
-                    logging.info(u"【获取预下注数据线程】因为失败次数>=4实在过多...重新登录吧！")
+                if self.console_instance.getPreBetDataFailedCnt >= 3:
+                    logging.info(u"【获取预下注数据线程】因为失败次数>=3实在过多...重新登录吧！")
                     QMetaObject.invokeMethod(self.console_instance, "onLoginBtn", Qt.QueuedConnection)
                     name = self.console_instance.nameEntry.text()
                     name += u"【未登录】"

@@ -83,8 +83,8 @@ class MyConsole(QWidget):
         self.preBetDataDic = {}
         self.simulate_data = []  # 模拟用的历史数据
 
-        self.fake_mode = False
-        self.fake_mode_getPreBetData = False
+        self.fake_mode_bet = True
+        self.fake_mode_getPreBetData = True
         self.getPreBetDataFailedCnt = 0  # 获取预下注数据错误次数...用来监控获取预下注数据失败
 
         # 登录成功会填充这个dict
@@ -263,6 +263,32 @@ class MyConsole(QWidget):
             logging.error(ex, exc_info=1)
             for i in self.all_ball_needToBetList:
                 logging.info(i)
+
+    # 更新Table数据-3-下注失败后的填空...
+    @pyqtSlot(list)
+    def loadTableData3(self, open_balls):
+        try:
+            b = self.all_ball_needToBetList
+            row = self.viewEntry.rowCount()
+            for k in range(len(b)):
+                newItem = QTableWidgetItem(u'网差投注失败')
+                newItem.setBackgroundColor(self.c)
+                self.viewEntry.setItem(row - len(b) + k, 5, newItem)
+
+                newItem = QTableWidgetItem(u'无效')
+                newItem.setBackgroundColor(self.c)
+                self.viewEntry.setItem(row - len(b) + k, 6, newItem)
+
+                result_item = QTableWidgetItem(', '.join([str(v) for v in open_balls]))
+                result_item.setBackgroundColor(self.c)
+                self.viewEntry.setItem(row - len(b) + k, 7, result_item)
+
+            logging.info(u"【控制台】UI界面-3更新，结算完毕...")
+        except Exception, ex:
+            logging.error(ex, exc_info=1)
+            for i in self.all_ball_needToBetList:
+                logging.info(i)
+
 
     @pyqtSlot(dict)
     def onLoginSuccess(self, loginSuccessData):

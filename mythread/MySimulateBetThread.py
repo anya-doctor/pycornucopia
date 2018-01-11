@@ -44,7 +44,7 @@ class MySimulateBetThread(QtCore.QThread):
                                          Q_ARG(int, self.console_instance.simulate_money))
                 MyStartBetAction.do_calculate(self.console_instance)
                 QMetaObject.invokeMethod(self.console_instance, "loadTableData", Qt.QueuedConnection)
-
+                QThread.msleep(10)
                 # 把新的一期附带到history_data
                 logging.info(u"【模拟下注中】附带%s->history_data" % item)
                 assert isinstance(self.console_instance.history_data, list)

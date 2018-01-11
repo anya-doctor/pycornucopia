@@ -11,6 +11,7 @@ from PyQt4.QtCore import *
 from common.common import req_session
 from myutil.tool import MyDate
 from myutil.tool import MyTool
+from myutil.tool.MyTool import xml_helper
 
 
 class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
@@ -32,7 +33,7 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
             success_flag = True
             for _date in date_list:
                 date = _date.strftime("%Y-%m-%d")
-                day_data = self.xml_helper(date)
+                day_data = xml_helper(date)
                 if day_data:
                     res.extend(day_data)
                 else:
@@ -42,7 +43,7 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
                                          Q_ARG(list, res))
             else:
                 msgtitle = u"失败了"
-                msg = u"获取模拟用的历史数据失败，请重试..."
+                msg = u"获取模拟用的历史数据失败，可能网络不好；\n可能今天暂无历史数据...\n请重试..."
                 QMetaObject.invokeMethod(self.console, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                          Q_ARG(str, msg))
 
@@ -52,37 +53,6 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
             msg = u"获取模拟用的历史数据失败，请重试..."
             QMetaObject.invokeMethod(self.console, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                      Q_ARG(str, msg))
-
-    def xml_helper(self, my_date):
-        t_date = my_date.replace("-", "")
-        url = "http://kaijiang.500.com/static/info/kaijiang/xml/bjpkshi/%s.xml?_A=YFSAQORP1515509516031" % t_date
-        r = requests.Request('GET', url)
-        prep = req_session.prepare_request(r)
-        rr = req_session.send(prep, stream=False, timeout=10, allow_redirects=False)
-        with open('config/history.xml', 'w') as f:
-            a = rr.content
-            rr.close()
-            dstr = a.decode('gb2312').encode('utf-8')
-            dstr = dstr.replace('gb2312', 'utf-8')
-            f.write(dstr)
-
-        dom = xml.dom.minidom.parse('config/history.xml')
-        root = dom.documentElement
-        rows = root.getElementsByTagName("row")
-        res = []
-        for row in rows:
-            opentime = row.getAttribute("opentime")
-            if my_date not in opentime:
-                continue
-            qishu = row.getAttribute("expect")
-            opencode = row.getAttribute("opencode")
-            # 组装成["660822", "01-09 - 22:57", 7, 2, 10, 1, 9, 6, 5, 3, 4, 8, 9
-            t = [str(qishu), opentime]
-            t1 = opencode.split(",")
-            for t2 in t1:
-                t.append(int(t2))
-            res.append(t)
-        return res
 
     def self_helper(self, date):
         """

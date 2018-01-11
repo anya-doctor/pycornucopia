@@ -99,7 +99,7 @@ class MyBetDataThread(QtCore.QThread):
 
     def run(self):
         try:
-            if self.console_instance.fake_mode:
+            if self.console_instance.fake_mode_bet:
                 ret_json = self.bet_fake()
             else:
                 ret_json = self.bet()

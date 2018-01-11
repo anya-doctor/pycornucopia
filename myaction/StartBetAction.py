@@ -15,7 +15,7 @@ class MyStartBetAction(object):
     @staticmethod
     @beautiful_log
     # 响应开始按钮
-    def run(console_instance):
+    def run(console_instance, repair_mode=False):
         if not console_instance.loginSuccessData:
             msgtitle = u"失败了"
             msg = u"请先登录，才能获取数据..."
@@ -28,7 +28,7 @@ class MyStartBetAction(object):
                                      Q_ARG(str, msg))
         else:
             if console_instance.goBtn.text() == u'开始':
-                MyStartBetAction.for_start(console_instance)
+                MyStartBetAction.for_start(console_instance, repair_mode)
                 console_instance.goBtn.setText(u'停止')
             else:
                 if console_instance.betTimer != None:
@@ -39,17 +39,17 @@ class MyStartBetAction(object):
                 QtGui.QMessageBox.about(console_instance, u'请注意', u"已经停止，下注列表全部清空。")
 
     @staticmethod
-    def for_start(console_instance):
+    def for_start(console_instance, repair_mode=False):
         # 删除定时器，清空资源...
         if console_instance.betTimer:
             del console_instance.betTimer
 
         console_instance.betTimer = QTimer()
-        console_instance.betTimer.timeout.connect(lambda: MyStartBetAction.do_bet(console_instance))
+        console_instance.betTimer.timeout.connect(lambda: MyStartBetAction.do_bet(console_instance, repair_mode))
         console_instance.betTimer.start(1000)
 
     @staticmethod
-    def do_bet(console_instance):
+    def do_bet(console_instance, repair_mode=False):
         try:
             if 'win' not in console_instance.preBetDataDic['data']:
                 logging.info(u"【下注中】還在結算階段，拿不到最新數據，等待之...")
@@ -89,11 +89,12 @@ class MyStartBetAction(object):
                         console_instance.betTimer.start(console_instance.timeopen * 1000)
                     else:
                         logging.info(u"【下注中】计算下注列表...")
-                        # 先清算上局数据，如果有的话...
-                        MyStartBetAction.do_balance(console_instance)
+                        if not repair_mode:
+                            # 先清算上局数据，如果有的话...
+                            MyStartBetAction.do_balance(console_instance)
 
-                        # 计算需要下注的..
-                        MyStartBetAction.do_calculate(console_instance)
+                            # 计算需要下注的..
+                            MyStartBetAction.do_calculate(console_instance)
 
                         # 先弄界面
                         console_instance.loadTableData()
@@ -129,40 +130,34 @@ class MyStartBetAction(object):
 
         open_balls = console_instance.open_balls
 
-        for item in console_instance.all_ball_needToBetList:
-            # 更新期数
-            item[1] = console_instance.timesnow
+        if console_instance.isLoseAdd:  # 输加注
+            if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                logging.info(u"【下注中】结算進入輸追加模式...")
+                for item in console_instance.all_ball_needToBetList:
+                    # 更新期数
+                    item[1] = console_instance.timesnow
+                    win_flag = False
+                    for inner_item in item[3]:
+                        if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
+                            if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
+                                logging.info(
+                                    u"【下注中】结算对比位置%s开奖%s == 下注球%s 结算发现中！！！" % (
+                                        inner_item[0], open_balls[inner_item[0] - 1], inner_item[1]))
+                            win_flag = True
+                            if simulate_mode:
+                                console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
+                                console_instance.simulate_money += int(console_instance.balls_bet_amount[item[2]]) * 9.91
+                        else:
+                            if simulate_mode:
+                                console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
 
-            if console_instance.isLoseAdd:  # 输加注
-                if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
-                    logging.info(u"【下注中】结算進入輸追加模式...")
-                win_flag = False
-                for inner_item in item[3]:
-                    if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
-                        logging.info(
-                                u"【下注中】结算对比位置%s开奖%s == 下注球%s " % (
-                                    inner_item[0], open_balls[inner_item[0] - 1], inner_item[1]))
-                    if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
-                        if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
-                            logging.info(u"【下注中】结算发现中！！！")
-                        win_flag = True
-                        if simulate_mode:
-                            console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
-                            console_instance.simulate_money += int(console_instance.balls_bet_amount[item[2]]) * 9.91
+                    if win_flag:
+                        item[2] = 0
                     else:
-                        if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
-                            logging.info(u"【下注中】结算发现不中")
-                        if simulate_mode:
-                            console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
-
-                if win_flag:
-                    item[2] = 0
-                else:
-                    item[2] += 1
+                        item[2] += 1
             else:
                 logging.info(u"【下注中】進入赢追加模式...")
                 pass
-
         # 通知控制台中或不中
         if console_instance.isSimulate_combobox.currentIndex() == 0:  #正常模式才日志输出
             logging.info(u"【下注中】结算通知UI-2...")
@@ -213,8 +208,10 @@ class MyStartBetAction(object):
                         if isinstance(a, tuple):
                             # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index]
                             for j in range(len(a)):
-                                # 如果多个孩子，有一个孩子是[]，则放弃它
+                                # 如果多个孩子，有一个孩子是[] 或者['']，则放弃它
                                 if not a[j]:
+                                    continue
+                                if len(a[j]) == 1 and not a[j][0]:
                                     continue
 
                                 c = [[i, v] for v in a[j]]
@@ -241,6 +238,8 @@ class MyStartBetAction(object):
                                     # 如果多个孩子，有一个孩子是[]，则放弃它
                                     if not a[j]:
                                         continue
+                                    if len(a[j]) == 1 and not a[j][0]:
+                                        continue
                                     c = [[i, v] for v in a[j]]
                                     console_instance.all_ball_needToBetList.append(
                                             [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
@@ -258,7 +257,10 @@ class MyStartBetAction(object):
                             pass
                         else:
                             # 如果n期换配置起作用，但是还没到轮换点，则跳过
-                            if int(item[2]) % console_instance.n_change != 0:
+                            logging.info("############## %s %s" % (item[2], console_instance.n_change))
+                            if int(item[2]) == 0: # 说明中了
+                                pass
+                            elif int(item[2]) % console_instance.n_change != 0:
                                 continue
 
                         # 替換新的下注列表
@@ -278,6 +280,10 @@ class MyStartBetAction(object):
                                 assert len(a) == len(mother_son_list)
 
                                 for j in range(len(a)):
+                                    # 因为这里也能决定别的兄弟的n期换更新，所以加一个限制条件
+                                    # 不满足条件的就continue
+                                    if console_instance.n_change > 0 and int(console_instance.all_ball_needToBetList[mother_son_list[j]][2]) % console_instance.n_change != 0:  # 说明n期换配置不起作用
+                                        continue
                                     c = [[index, v] for v in a[j]]
                                     console_instance.all_ball_needToBetList[mother_son_list[j]][3] = c
                             # 如果a是list，说明就下注这个list即可

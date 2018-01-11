@@ -2,12 +2,16 @@
 import json
 import logging
 
+import datetime
+from datetime import timedelta
+
 import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
 from common.common import req_session
 from myutil.tool import MyTool
+from myutil.tool.MyTool import xml_helper
 
 
 class MyGetHistoryResultDataThread(QtCore.QThread):
@@ -31,8 +35,6 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
             rr1.close()
 
             real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
-            logging.info(u"【获取历史数据线程】结果如下")
-            # logging.info(real_content)
             try:
                 json_data = json.loads(real_content)
             except Exception,ex:
@@ -42,8 +44,17 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
             if json_data and isinstance(json_data, dict):
                 # 如果确切拿到了数据，那么就更新一次即可..
                 if 'result' in json_data['data']:
+                    # 如果拿到的数据len <= 30，那么说明今天还早，那么就去拿昨天的数据吧。。。
+                    if len(json_data['data']['result']) <= 30:
+                        logging.info(u"【获取历史数据线程】拿到的数据len <= 30，那么说明今天还早，拿昨天的数据...")
+                        today = datetime.datetime.today()
+                        day = timedelta(days=1)
+                        yesterday = today-day
+                        res = xml_helper(yesterday.strftime("%Y-%m-%d"))
+                        json_data['data']['result'].extend(res)
                     # 判断是否最近一期为空...
                     QMetaObject.invokeMethod(self.console, "onUpdateHistoryResultDataHideBtn", Qt.QueuedConnection,
                                              Q_ARG(dict, json_data))
         except Exception, ex:
             logging.error(ex, exc_info=1)
+
