@@ -1,8 +1,7 @@
 # #coding:utf-8
+import datetime
 import json
 import logging
-
-import datetime
 from datetime import timedelta
 
 import requests
@@ -37,7 +36,7 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
             real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
             try:
                 json_data = json.loads(real_content)
-            except Exception,ex:
+            except Exception, ex:
                 logging.error(ex)
                 logging.error(real_content)
                 json_data = {}
@@ -49,7 +48,7 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
                         logging.info(u"【获取历史数据线程】拿到的数据len <= 30，那么说明今天还早，拿昨天的数据...")
                         today = datetime.datetime.today()
                         day = timedelta(days=1)
-                        yesterday = today-day
+                        yesterday = today - day
                         res = xml_helper(yesterday.strftime("%Y-%m-%d"))
                         json_data['data']['result'].extend(res)
                     # 判断是否最近一期为空...
@@ -57,4 +56,3 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
                                              Q_ARG(dict, json_data))
         except Exception, ex:
             logging.error(ex, exc_info=1)
-

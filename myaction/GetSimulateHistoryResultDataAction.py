@@ -13,7 +13,7 @@ class MyGetSimulateHistoryResultDataAction(object):
     def run(console_instance):
         """
         如果登录成功，则会回调这个函数，则开启获取历史数据！
-        :param data_dic:
+        :param console_instance:
         :return:
         """
         try:
@@ -23,7 +23,7 @@ class MyGetSimulateHistoryResultDataAction(object):
                 msgtitle = u"失误了"
                 msg = u"开始日期应该小于等于结束日期..."
                 QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
-                                     Q_ARG(str, msg))
+                                         Q_ARG(str, msg))
             else:
                 logging.info(u"【获取模拟用的历史数据】开启定时器...")
                 # 开始定时器之前先销毁一波...
@@ -32,7 +32,7 @@ class MyGetSimulateHistoryResultDataAction(object):
 
                 console_instance.getSimulateHistoryResultDataTimer = QTimer()
                 console_instance.getSimulateHistoryResultDataTimer.timeout.connect(
-                        lambda: MyGetSimulateHistoryResultDataAction.do_getHistoryResultData(console_instance))
+                    lambda: MyGetSimulateHistoryResultDataAction.do_getHistoryResultData(console_instance))
                 console_instance.getSimulateHistoryResultDataTimer.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
@@ -56,8 +56,8 @@ class MyGetSimulateHistoryResultDataAction(object):
 
             from mythread.MyGetSimulateHistoryResultDataThread import MyGetSimulateHistoryResultDataThread
             console_instance.getSimulateHistoryResultDataThread = MyGetSimulateHistoryResultDataThread(
-                    console_instance.parent,
-                    console_instance, from_date, to_date)
+                console_instance.parent,
+                console_instance, from_date, to_date)
             console_instance.getSimulateHistoryResultDataThread.start()
 
             # 在这里才能把时间间隔调整...

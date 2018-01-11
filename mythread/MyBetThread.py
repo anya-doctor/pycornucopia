@@ -57,7 +57,7 @@ class MyBetDataThread(QtCore.QThread):
         logging.info(self.console_instance.loginSuccessData)
         now = getCurrentTimestamp()
         pk_post_bet_url = self.console_instance.loginSuccessData['pk_post_bet_url'].split("&&_=")[0] + "&&_=" + str(
-                now) + "__ajax"
+            now) + "__ajax"
         logging.info(u"【下注线程】pk_post_bet_url=%s" % pk_post_bet_url)
 
         bet_str = self.get_bet_str()

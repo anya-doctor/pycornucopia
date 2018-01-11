@@ -44,8 +44,8 @@ class MyUpdatePreBetDataAction(object):
                 MyGetHistoryResultDataAction.run(console_instance)
             elif console_instance.history_data and int(timesnow) - int(console_instance.history_data[0][0]) >= 2:
                 logging.info(
-                        u"【更新预下注数据】timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
-                            timesnow, console_instance.history_data[0][0]))
+                    u"【更新预下注数据】timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
+                        timesnow, console_instance.history_data[0][0]))
                 MyGetHistoryResultDataAction.run(console_instance)
             else:
                 # 更新期数，顺便结算...
@@ -122,11 +122,11 @@ class MyUpdatePreBetDataAction(object):
                         if i == 0:
                             pass
                         else:
-                            MyStartBetAction.do_balance(console_instance) # 结算一次...
+                            MyStartBetAction.do_balance(console_instance)  # 结算一次...
 
-                            MyStartBetAction.do_calculate(console_instance) # 计算需要下注的..
+                            MyStartBetAction.do_calculate(console_instance)  # 计算需要下注的..
 
-                            console_instance.loadTableData() # 先弄界面
+                            console_instance.loadTableData()  # 先弄界面
                             # 如果当前是下注成功的过，结算后
                             if console_instance.is_bet_success:
                                 logging.info(u"【更新预下注数据】因为本期数据%s下注成功，则跳过loadTableData3()" % console_instance.timesnow)
@@ -135,7 +135,6 @@ class MyUpdatePreBetDataAction(object):
                                 QMetaObject.invokeMethod(console_instance, "loadTableData3", Qt.QueuedConnection,
                                                          Q_ARG(list, break_openballs))
                                 QThread.msleep(100)
-
 
                         # 这一次开始，绝壁没下注成功
                         console_instance.is_bet_success = False
@@ -161,7 +160,8 @@ class MyUpdatePreBetDataAction(object):
             console_instance.timeclose_label.setText(u'封盘：' + str(timeclose))
             console_instance.timeopen_label.setText(u'下局：' + str(timeopen))
             console_instance.qishu_label.setText(u'期数：' + str(timesnow))
-            console_instance.open_balls_label.setText(u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
+            console_instance.open_balls_label.setText(
+                u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
 
             pa = QPalette()
             pa.setColor(QPalette.WindowText, Qt.red)

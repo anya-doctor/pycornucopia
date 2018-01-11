@@ -13,7 +13,7 @@ class MyGetHistoryResultDataAction(object):
     def run(console_instance):
         """
         如果登录成功，则会回调这个函数，则开启获取历史数据！
-        :param data_dic:
+        :param console_instance:
         :return:
         """
         try:
@@ -24,7 +24,7 @@ class MyGetHistoryResultDataAction(object):
 
             console_instance.getHistoryResultDataTimer = QTimer()
             console_instance.getHistoryResultDataTimer.timeout.connect(
-                    lambda: MyGetHistoryResultDataAction.do_getHistoryResultData(console_instance))
+                lambda: MyGetHistoryResultDataAction.do_getHistoryResultData(console_instance))
             console_instance.getHistoryResultDataTimer.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)

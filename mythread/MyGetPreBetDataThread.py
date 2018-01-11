@@ -5,8 +5,9 @@ import logging
 import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
-from common.common import req_session
 from requests.exceptions import ReadTimeout
+
+from common.common import req_session
 
 
 class MyGetPreBetDataThread(QtCore.QThread):

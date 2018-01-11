@@ -111,7 +111,7 @@ class MyLoginThread(QtCore.QThread):
         if not a[1]:
             logging.error(u"【登录线程】验证码失败-1！")
             return {}
-        
+
         recheck_url = a[1].replace('host', self.host)
         cookies_jar = requests.cookies.RequestsCookieJar()
 
@@ -119,7 +119,7 @@ class MyLoginThread(QtCore.QThread):
         if 'Set-Cookie' not in rr3.headers:
             logging.error(u"【登录线程】验证码失败-2！")
             return {}
-        
+
         a = rr3.headers['Set-Cookie']
         b = a.split('/,')
         ddd = "mobiLogin=0; sysinfo=ssc%7C1%7Cb%7Cuc%7Cbeishu100; navNum=0; "

@@ -1,12 +1,10 @@
 # #coding:utf-8
 import json
 import logging
-import xml.dom.minidom
 
 import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
-
 
 from common.common import req_session
 from myutil.tool import MyDate

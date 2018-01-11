@@ -53,7 +53,7 @@ def verical_get_bet_list(console_instance, bet_index):
 
         bet_balls = bet_dic[balls[bet_index - 1]]
         if bet_balls[1] == ['']:
-            bet_balls = (bet_balls[0], )
+            bet_balls = (bet_balls[0],)
 
         ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
         not_bet_balls = []
@@ -67,4 +67,3 @@ def verical_get_bet_list(console_instance, bet_index):
         return ret
     except Exception, ex:
         logging.error(ex, exc_info=1)
-

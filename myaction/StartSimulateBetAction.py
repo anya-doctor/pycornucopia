@@ -1,11 +1,9 @@
 # coding:utf-8
-import json
 import logging
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import QComboBox, QTableWidgetItem
 
-from myaction.StartBetAction import MyStartBetAction
 from mythread.MySimulateBetThread import MySimulateBetThread
 from myutil.tool.MyTool import beautiful_log
 

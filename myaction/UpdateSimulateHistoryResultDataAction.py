@@ -17,7 +17,7 @@ class MyUpdateSimulateHistoryResultDataAction(object):
                 msgtitle = u"失败了"
                 msg = u"获得的模拟历史数据竟然是空的！"
                 QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
-                                     Q_ARG(str, msg))
+                                         Q_ARG(str, msg))
             else:
                 # 去掉第一行为空结果的情况（因为可能在结算...）
                 if len(data_list) > 1 and data_list[0][2] == "":

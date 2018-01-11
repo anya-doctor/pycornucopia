@@ -83,8 +83,8 @@ class MyConsole(QWidget):
         self.preBetDataDic = {}
         self.simulate_data = []  # 模拟用的历史数据
 
-        self.fake_mode_bet = True
-        self.fake_mode_getPreBetData = True
+        self.fake_mode_bet = False
+        self.fake_mode_getPreBetData = False
         self.getPreBetDataFailedCnt = 0  # 获取预下注数据错误次数...用来监控获取预下注数据失败
 
         # 登录成功会填充这个dict
@@ -288,7 +288,6 @@ class MyConsole(QWidget):
             logging.error(ex, exc_info=1)
             for i in self.all_ball_needToBetList:
                 logging.info(i)
-
 
     @pyqtSlot(dict)
     def onLoginSuccess(self, loginSuccessData):

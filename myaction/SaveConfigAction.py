@@ -74,7 +74,7 @@ class MySaveConfigAction(object):
                 ball10_1='" + console_instance.ball10_1_Entry.text() + "',ball10_2='" + console_instance.ball10_2_Entry.text() + "',ball10_3='" + console_instance.ball10_3_Entry.text() + "',ball10_4='" + console_instance.ball10_4_Entry.text() + "',ball10_5='" + console_instance.ball10_5_Entry.text() + "',\
                 ball10_6='" + console_instance.ball10_6_Entry.text() + "',ball10_7='" + console_instance.ball10_7_Entry.text() + "',ball10_8='" + console_instance.ball10_8_Entry.text() + "',ball10_9='" + console_instance.ball10_9_Entry.text() + "',ball10_10='" + console_instance.ball10_10_Entry.text() + "',\
                 isQQG = '" + ('0' if console_instance.isQQG else '1') + "',isLoseAdd = '" + (
-                '0' if console_instance.isLoseAdd else '1') + "',n_change='"+str(n_change)+"';"
+                '0' if console_instance.isLoseAdd else '1') + "',n_change='" + str(n_change) + "';"
 
             cqssc_db.execute(unicode(sql))
             cqssc_db.commit()
@@ -174,13 +174,6 @@ class MySaveConfigAction(object):
                     for j in i:
                         if not j:
                             continue
-                        # m = j.split('-')
-                        # for k in m:
-                        #     if int(k) > 10:
-                        #         QtGui.QMessageBox.about(console_instance, u'出了点问题', u"数字都是小于等于10吗？")
-                        #         a = False
-                        #         break
-
             if a:
                 QtGui.QMessageBox.about(console_instance, u'成功', u"保存成功")
 

@@ -55,8 +55,8 @@ class MySimulateBetThread(QtCore.QThread):
             # 最后一次结算
             MyStartBetAction.do_balance(self.console_instance, simulate_mode=True)
             QMetaObject.invokeMethod(self.console_instance, "setSimulateMoney", Qt.QueuedConnection,
-                                         Q_ARG(int, self.console_instance.simulate_money))
-            #with open('config/simulate_history.json', 'wb') as f:
+                                     Q_ARG(int, self.console_instance.simulate_money))
+            # with open('config/simulate_history.json', 'wb') as f:
             #    f.write(json.dumps(self.console_instance.history_data))
         except Exception, ex:
             logging.error(ex, exc_info=1)
