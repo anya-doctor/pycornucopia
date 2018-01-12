@@ -23,10 +23,11 @@ class MyUpdatePreBetDataAction(object):
             timeopen = console_instance.preBetDataDic['data']['betnotice']['timeopen']
             console_instance.open_balls = console_instance.preBetDataDic['data']['betnotice']['resultnum']
 
-            logging.info(u"【更新预下注数据】timesnow=%s" % timesnow)
+            logging.info(u"【更新预下注数据】timesnow=%s, console_instance.timesnow=%s" % (timesnow, console_instance.timesnow))
             logging.info(u"【更新预下注数据】timeclose=%s" % timeclose)
             logging.info(u"【更新预下注数据】timeopen=%s" % timeopen)
             logging.info(u"【更新预下注数据】open_balls=%s" % console_instance.open_balls)
+            logging.info(u"【更新预下注数据】win=%s" % (data_dict['data']['win'] if 'win' in data_dict['data'] else 'NULL'))
 
             # 稍微处理下开奖号码 "03" => "3"
             for index, ball in enumerate(console_instance.open_balls):
@@ -42,68 +43,58 @@ class MyUpdatePreBetDataAction(object):
             elif int(console_instance.timesnow) > 0 and not console_instance.history_data:
                 logging.error(u"【更新预下注数据】因为某种原因历史数据=NULL, 重启获取历史数据定时器..")
                 MyGetHistoryResultDataAction.run(console_instance)
-            elif console_instance.history_data and int(timesnow) - int(console_instance.history_data[0][0]) >= 2:
+            elif 'win' not in console_instance.preBetDataDic['data']:
+                logging.info(u"【更新预下注数据】還在結算階段，拿不到最新數據，等待之...")
+            elif console_instance.history_data and int(timesnow) - int(console_instance.history_data[0][0]) >= 3:
+                # 假设现在 timesnow = console_instance.timesnow = 661167，此时历史数据最新 = 661166
+                # 在某个时刻，正在结算中，可能只要10秒吧，timesnow=661168，但是历史数据还是 661166
+                # 所以是存在int(timesnow) - int(console_instance.history_data[0][0]) >= 2
+                # 等结算完成，才能timesnow=661168, console_instance.timesnow = 661167， 历史数据最新 = 661167
                 logging.info(
-                    u"【更新预下注数据】timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
-                        timesnow, console_instance.history_data[0][0]))
+                        u"【更新预下注数据】timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
+                            timesnow, console_instance.history_data[0][0]))
                 MyGetHistoryResultDataAction.run(console_instance)
             else:
+                # 进来这里都是稳定的数据了，不存在什么结算啊，之类的...
                 # 更新期数，顺便结算...
                 if int(console_instance.timesnow) == int(timesnow):
-                    # 虽然期数相同，但是可以看看是否需要填充开奖结果，有些开奖结果很傻逼，最近一期是空的。。
-                    if console_instance.history_data[0][2] == "":
-                        logging.info(u"【更新预下注数据】虽然期数没更新，但开奖数据最近一期为空，填充之...")
-                        # 更新数据
-                        now_history_data = [int(v) for v in console_instance.open_balls]
-                        now_history_data.insert(0, console_instance.history_data[0][1])
-                        now_history_data.insert(0, console_instance.history_data[0][0])
-                        console_instance.history_data[0] = now_history_data
-                        # 更新UI
-                        QMetaObject.invokeMethod(console_instance.parent, "completeHistoryResultData",
-                                                 Qt.QueuedConnection,
-                                                 Q_ARG(str, str(timesnow)), Q_ARG(list, console_instance.open_balls))
-
+                    pass
                 elif int(timesnow) - int(console_instance.timesnow) == 1:  # 好的最新一期的更新
-                    if console_instance.history_data[0][2] == "":
-                        logging.info(u"【更新预下注数据】你觉得可能吗？都过了一期的时间了，上一期的历史数据还是空...")
-                        logging.info(u"【更新预下注数据】这个时候我宁愿重新获取一份历史数据！")
-                        MyGetHistoryResultDataAction.run(console_instance)
+                    logging.info(u"【更新预下注数据】稳定的数据，走正常流程...")
+
+                    # 更新历史数据
+                    now_history_data = [int(v) for v in console_instance.open_balls]
+                    now_history_data.insert(0, MyTool.getCurrentTimeStr())
+                    now_history_data.insert(0, str(int(console_instance.timesnow)))
+                    if int(console_instance.history_data[0][0]) == int(console_instance.timesnow):
+                        logging.info(u"【更新预下注数据】历史最新=%s，console_instance.timesnow=%s, 更新历史数据发现有同一期但为空的数据，置换之..." % (
+                            console_instance.history_data[0][0], console_instance.timesnow))
+                        console_instance.history_data[0] = now_history_data
+                    elif int(console_instance.history_data[0][0]) == int(console_instance.timesnow) - 1:
+                        logging.info(u"【更新预下注数据】历史最新=%s，console_instance.timesnow=%s, 更新历史数据, 增加之..." % (
+                            console_instance.history_data[0][0], console_instance.timesnow))
+                        console_instance.history_data.insert(0, now_history_data)
                     else:
-                        same_flag = True
-                        try:
-                            for index, ball in enumerate(console_instance.history_data[0][2:12]):
-                                if int(console_instance.open_balls[index]) != int(ball):
-                                    same_flag = False
-                                    break
-                        except Exception, ex:
-                            logging.error(ex, exc_info=1)
-                            logging.error(console_instance.history_data)
+                        logging.error(
+                                u"【更新预下注数据】什么情况！！！历史最新=%s，console_instance.timesnow=%s,timesnow=%s 更新历史数据,遇到意外！！！" % (
+                                    console_instance.history_data[0][0], console_instance.timesnow, timesnow))
+                        raise Exception
 
-                        if same_flag:
-                            logging.info(u"【更新预下注数据】虽然期数更新了，但數據還在結算中，等待...")
-                            pass
-                        else:
-                            # 更新期数
-                            console_instance.timesnow = timesnow
+                    # 更新期数
+                    console_instance.timesnow = timesnow
 
-                            # 更新历史数据
-                            now_history_data = [int(v) for v in console_instance.open_balls]
-                            now_history_data.insert(0, MyTool.getCurrentTimeStr())
-                            now_history_data.insert(0, str(int(console_instance.timesnow) - 1))
+                    with open('config/history.json', 'wb') as f:
+                        f.write(json.dumps(console_instance.history_data))
 
-                            console_instance.history_data.insert(0, now_history_data)
-                            with open('config/history.json', 'wb') as f:
-                                f.write(json.dumps(console_instance.history_data))
+                    QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData",
+                                             Qt.QueuedConnection,
+                                             Q_ARG(str, str(timesnow)),
+                                             Q_ARG(list, console_instance.open_balls))
 
-                            QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData",
-                                                     Qt.QueuedConnection,
-                                                     Q_ARG(str, str(timesnow)),
-                                                     Q_ARG(list, console_instance.open_balls))
-
-                            # 开始下一局 写数据到Table 通知控制台下注
-                            if console_instance.all_ball_needToBetList:
-                                MyStartBetAction.for_start(console_instance)
-                elif int(timesnow) - int(console_instance.timesnow) > 1:  # 好的，说明中间有断层
+                    # 开始下一局 写数据到Table 通知控制台下注
+                    if console_instance.all_ball_needToBetList:
+                        MyStartBetAction.for_start(console_instance)
+                elif int(timesnow) - int(console_instance.timesnow) >= 2:  # 好的，说明中间有断层
                     logging.error(u"【更新预下注数据】%s-%s>1说明有断层现象.." % (timesnow, console_instance.timesnow))
                     # 第1步，把UI的空白补上
                     logging.error(u"【更新预下注数据】补上UI空白..")
@@ -154,14 +145,13 @@ class MyUpdatePreBetDataAction(object):
                 win = console_instance.preBetDataDic['data']['win']
             else:
                 win = '???'
-            logging.info("win=%s" % win)
 
             # 顺便更新下控制台的UI
             console_instance.timeclose_label.setText(u'封盘：' + str(timeclose))
             console_instance.timeopen_label.setText(u'下局：' + str(timeopen))
             console_instance.qishu_label.setText(u'期数：' + str(timesnow))
             console_instance.open_balls_label.setText(
-                u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
+                    u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
 
             pa = QPalette()
             pa.setColor(QPalette.WindowText, Qt.red)
