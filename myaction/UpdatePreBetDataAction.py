@@ -28,6 +28,9 @@ class MyUpdatePreBetDataAction(object):
             logging.info(u"【更新预下注数据】timeopen=%s" % timeopen)
             logging.info(u"【更新预下注数据】open_balls=%s" % console_instance.open_balls)
             logging.info(u"【更新预下注数据】win=%s" % (data_dict['data']['win'] if 'win' in data_dict['data'] else 'NULL'))
+            logging.info(u"【更新预下注数据】历史最新一期=%s" % (
+                console_instance.history_data[0][0] if console_instance.history_data and len(
+                    console_instance.history_data) > 0 else 'NULL'))
 
             # 稍微处理下开奖号码 "03" => "3"
             for index, ball in enumerate(console_instance.open_balls):
@@ -45,14 +48,18 @@ class MyUpdatePreBetDataAction(object):
                 MyGetHistoryResultDataAction.run(console_instance)
             elif 'win' not in console_instance.preBetDataDic['data']:
                 logging.info(u"【更新预下注数据】還在結算階段，拿不到最新數據，等待之...")
-            elif console_instance.history_data and int(timesnow) - int(console_instance.history_data[0][0]) >= 3:
+            elif console_instance.history_data and int(timesnow) - int(console_instance.history_data[0][0]) >= 2:
                 # 假设现在 timesnow = console_instance.timesnow = 661167，此时历史数据最新 = 661166
                 # 在某个时刻，正在结算中，可能只要10秒吧，timesnow=661168，但是历史数据还是 661166
                 # 所以是存在int(timesnow) - int(console_instance.history_data[0][0]) >= 2
                 # 等结算完成，才能timesnow=661168, console_instance.timesnow = 661167， 历史数据最新 = 661167
+
+                # 但为什么我这里还是执意用>=2呢，因为真的有的时候断线1期，也是符合这个情况的，比如：
+                # timesnow=661168, console.timesnow=661167, 历史最新=661166，这个已经过了结算期间，稳定下来了...
+                # 所以此时网络故障卡了，那么就会 661168 - 661166 >= 2，断层
                 logging.info(
-                        u"【更新预下注数据】timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
-                            timesnow, console_instance.history_data[0][0]))
+                    u"【更新预下注数据】断层-2，timesnow=%s, console_instance.timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
+                        timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
                 MyGetHistoryResultDataAction.run(console_instance)
             else:
                 # 进来这里都是稳定的数据了，不存在什么结算啊，之类的...
@@ -76,8 +83,8 @@ class MyUpdatePreBetDataAction(object):
                         console_instance.history_data.insert(0, now_history_data)
                     else:
                         logging.error(
-                                u"【更新预下注数据】什么情况！！！历史最新=%s，console_instance.timesnow=%s,timesnow=%s 更新历史数据,遇到意外！！！" % (
-                                    console_instance.history_data[0][0], console_instance.timesnow, timesnow))
+                            u"【更新预下注数据】什么情况！！！timesnow=%s, console_instance.timesnow=%s,历史最新=%s，更新历史数据,遇到意外！！！" % (
+                                timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
                         raise Exception
 
                     # 更新期数
@@ -95,51 +102,45 @@ class MyUpdatePreBetDataAction(object):
                     if console_instance.all_ball_needToBetList:
                         MyStartBetAction.for_start(console_instance)
                 elif int(timesnow) - int(console_instance.timesnow) >= 2:  # 好的，说明中间有断层
+                    """
+                        一旦进来这里，就说明断层开始。
+                        假设之前：timesnow=661167, console.timesnow=661167， 历史最新一期=661166
+                        然后断线1期后恢复：
+                        此时此刻，timesnow=661168, console.timesnow=661167, 历史最新一期=661168（因为历史数据在进来那一瞬间就更新了）
+                        如果是断线2期后恢复：
+                        此时此刻，timesnow=661169, console.timesnow=661167, 历史最新一期=661169（因为历史数据在进来那一瞬间就更新了）
+                        ...
+
+                    """
                     logging.error(u"【更新预下注数据】%s-%s>1说明有断层现象.." % (timesnow, console_instance.timesnow))
                     # 第1步，把UI的空白补上
                     logging.error(u"【更新预下注数据】补上UI空白..")
 
                     cnt = int(timesnow) - int(console_instance.timesnow)
+                    begin_timesnow = int(console_instance.timesnow)
                     logging.error(u"【更新预下注数据】cnt=%s" % cnt)
-                    #
-                    for i in range(cnt):
-                        logging.error(u"【更新预下注数据】i=%s" % i)
-                        break_qishu = console_instance.timesnow
-                        break_openballs = filter(lambda x: int(x[0]) == int(break_qishu), console_instance.history_data)
-                        logging.info(u"【更新预下注数据】被遗忘的那一期=%s" % break_openballs)
-                        break_openballs = break_openballs[0][2:12]
 
-                        # 第一期是真的下注过的，只是没UI显示结算出来罢了。。
-                        if i == 0:
-                            pass
-                        else:
+                    for i in range(cnt + 1):
+                        cur_timesnow = int(begin_timesnow) + i
+                        logging.error(u"【更新预下注数据】当前处理期数=%s" % (cur_timesnow))
+                        if cur_timesnow < timesnow:
+                            # 开奖信息
+                            cur_openballs = filter(lambda x: int(x[0]) == int(cur_timesnow),
+                                                   console_instance.history_data)
+                            cur_openballs = cur_openballs[0]
+
+                            console_instance.open_balls = cur_openballs
+                            logging.error(u"【更新预下注数据】阶段-1，开奖结算UI，开奖结果=%s" % (cur_openballs))
+
+                            console_instance.timesnow = cur_timesnow + 1
                             MyStartBetAction.do_balance(console_instance)  # 结算一次...
-
                             MyStartBetAction.do_calculate(console_instance)  # 计算需要下注的..
-
                             console_instance.loadTableData()  # 先弄界面
-                            # 如果当前是下注成功的过，结算后
-                            if console_instance.is_bet_success:
-                                logging.info(u"【更新预下注数据】因为本期数据%s下注成功，则跳过loadTableData3()" % console_instance.timesnow)
-                            else:
-                                logging.info(u"【更新预下注数据】因为本期数据%s未下注成功，进入loadTableData3()" % console_instance.timesnow)
-                                QMetaObject.invokeMethod(console_instance, "loadTableData3", Qt.QueuedConnection,
-                                                         Q_ARG(list, break_openballs))
-                                QThread.msleep(100)
 
-                        # 这一次开始，绝壁没下注成功
-                        console_instance.is_bet_success = False
-
-                        # 期数升级一次
-                        console_instance.open_balls = break_openballs
-                        console_instance.timesnow = int(console_instance.timesnow) + 1
-                        for item in console_instance.all_ball_needToBetList:
-                            item[1] = console_instance.timesnow
-
-                    # 第3步，重新下注
-                    logging.error(u"【更新预下注数据】开始下一局 写数据到Table 通知控制台下注...")
-                    if console_instance.all_ball_needToBetList:
-                        MyStartBetAction.for_start(console_instance, repair_mode=True)
+                            console_instance.is_bet_success = False  # 未下注成功的...
+                        else:
+                            logging.error(u"【更新预下注数据】阶段-2，触发下注...")
+                            QMetaObject.invokeMethod(console_instance, "onRetBetHidenBtn", Qt.QueuedConnection)
 
             if 'win' in console_instance.preBetDataDic['data']:
                 win = console_instance.preBetDataDic['data']['win']
@@ -151,7 +152,7 @@ class MyUpdatePreBetDataAction(object):
             console_instance.timeopen_label.setText(u'下局：' + str(timeopen))
             console_instance.qishu_label.setText(u'期数：' + str(timesnow))
             console_instance.open_balls_label.setText(
-                    u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
+                u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
 
             pa = QPalette()
             pa.setColor(QPalette.WindowText, Qt.red)

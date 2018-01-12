@@ -33,22 +33,22 @@
     "play": "ballNO60",
     "bigDrawStatus": "1",
     "success": true,
-    "win": "-10",
+    "win": "0",
     "betnotice": {
       "status": 1,
-      "timesnow": "661019",
-      "timesold": "661015",
+      "timesnow": "661261",
+      "timesold": "661260",
       "resultnum": [
-        "10",
-        "02",
-        "01",
-        "09",
-        "05",
-        "04",
         "06",
         "03",
-        "07",
-        "08"
+        "02",
+        "09",
+        "01",
+        "08",
+        "05",
+        "04",
+        "10",
+        "07"
       ],
       "timeclose": 15,
       "timeopen": 85

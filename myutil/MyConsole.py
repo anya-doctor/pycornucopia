@@ -83,8 +83,9 @@ class MyConsole(QWidget):
         self.preBetDataDic = {}
         self.simulate_data = []  # 模拟用的历史数据
 
-        self.fake_mode_bet = False
-        self.fake_mode_getPreBetData = False
+        self.fake_mode_bet = True
+        self.fake_mode_getPreBetData = True
+        self.fake_mode_getHistoryData = True
         self.getPreBetDataFailedCnt = 0  # 获取预下注数据错误次数...用来监控获取预下注数据失败
 
         # 登录成功会填充这个dict
@@ -257,6 +258,17 @@ class MyConsole(QWidget):
                 result_item = QTableWidgetItem(', '.join([str(v) for v in self.open_balls]))
                 result_item.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row - len(b) + k, 7, result_item)
+
+                a = self.viewEntry.item(row - len(b) + k, 5).text()
+                logging.info("#######3 %s" % a)
+                if not a:
+                    newItem = QTableWidgetItem(u'网差无投')
+                    newItem.setBackgroundColor(self.c)
+                    self.viewEntry.setItem(row - len(b) + k, 6, newItem)
+
+                    result_item = QTableWidgetItem(u'无效')
+                    result_item.setBackgroundColor(self.c)
+                    self.viewEntry.setItem(row - len(b) + k, 7, result_item)
 
             logging.info(u"【控制台】UI界面-2更新，结算完毕...")
         except Exception, ex:

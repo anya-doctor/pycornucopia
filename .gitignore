@@ -6,3 +6,4 @@ log/
 *.png
 config/*.json
 config/*.db
+!/config/fake_history.json
