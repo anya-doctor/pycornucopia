@@ -127,7 +127,7 @@ class MyUpdatePreBetDataAction(object):
                             # 开奖信息
                             cur_openballs = filter(lambda x: int(x[0]) == int(cur_timesnow),
                                                    console_instance.history_data)
-                            cur_openballs = cur_openballs[0]
+                            cur_openballs = cur_openballs[0][2:12]
 
                             console_instance.open_balls = cur_openballs
                             logging.error(u"【更新预下注数据】阶段-1，开奖结算UI，开奖结果=%s" % (cur_openballs))
