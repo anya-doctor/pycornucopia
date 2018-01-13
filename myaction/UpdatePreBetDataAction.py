@@ -1,4 +1,5 @@
 # coding:utf-8
+import copy
 import json
 import logging
 
@@ -30,7 +31,7 @@ class MyUpdatePreBetDataAction(object):
             logging.info(u"【更新预下注数据】win=%s" % (data_dict['data']['win'] if 'win' in data_dict['data'] else 'NULL'))
             logging.info(u"【更新预下注数据】历史最新一期=%s" % (
                 console_instance.history_data[0][0] if console_instance.history_data and len(
-                    console_instance.history_data) > 0 else 'NULL'))
+                        console_instance.history_data) > 0 else 'NULL'))
 
             # 稍微处理下开奖号码 "03" => "3"
             for index, ball in enumerate(console_instance.open_balls):
@@ -58,8 +59,8 @@ class MyUpdatePreBetDataAction(object):
                 # timesnow=661168, console.timesnow=661167, 历史最新=661166，这个已经过了结算期间，稳定下来了...
                 # 所以此时网络故障卡了，那么就会 661168 - 661166 >= 2，断层
                 logging.info(
-                    u"【更新预下注数据】断层-2，timesnow=%s, console_instance.timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
-                        timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
+                        u"【更新预下注数据】断层-2，timesnow=%s, console_instance.timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
+                            timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
                 MyGetHistoryResultDataAction.run(console_instance)
             else:
                 # 进来这里都是稳定的数据了，不存在什么结算啊，之类的...
@@ -77,14 +78,17 @@ class MyUpdatePreBetDataAction(object):
                         logging.info(u"【更新预下注数据】历史最新=%s，console_instance.timesnow=%s, 更新历史数据发现有同一期但为空的数据，置换之..." % (
                             console_instance.history_data[0][0], console_instance.timesnow))
                         console_instance.history_data[0] = now_history_data
+                        # 顺便要更新下UI结果面板...
+                        b = copy.deepcopy(console_instance.history_data)
+                        console_instance.parent.updateHistoryResultData(b)
                     elif int(console_instance.history_data[0][0]) == int(console_instance.timesnow) - 1:
                         logging.info(u"【更新预下注数据】历史最新=%s，console_instance.timesnow=%s, 更新历史数据, 增加之..." % (
                             console_instance.history_data[0][0], console_instance.timesnow))
                         console_instance.history_data.insert(0, now_history_data)
                     else:
                         logging.error(
-                            u"【更新预下注数据】什么情况！！！timesnow=%s, console_instance.timesnow=%s,历史最新=%s，更新历史数据,遇到意外！！！" % (
-                                timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
+                                u"【更新预下注数据】什么情况！！！timesnow=%s, console_instance.timesnow=%s,历史最新=%s，更新历史数据,遇到意外！！！" % (
+                                    timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
                         raise Exception
 
                     # 更新期数
@@ -123,24 +127,36 @@ class MyUpdatePreBetDataAction(object):
                     for i in range(cnt + 1):
                         cur_timesnow = int(begin_timesnow) + i
                         logging.error(u"【更新预下注数据】当前处理期数=%s" % (cur_timesnow))
-                        if cur_timesnow < timesnow:
+                        if int(cur_timesnow) == int(begin_timesnow):
                             # 开奖信息
                             cur_openballs = filter(lambda x: int(x[0]) == int(cur_timesnow),
                                                    console_instance.history_data)
+                            logging.info(u"第一期，######%s" % cur_openballs)
+                            MyStartBetAction.do_balance(console_instance)  # 结算一次...
+                            console_instance.timesnow = cur_timesnow + 1
+                            MyStartBetAction.do_calculate(console_instance)  # 计算需要下注的..
+
+                            b = copy.deepcopy(console_instance.all_ball_needToBetList)
+                            console_instance.loadTableData(b)
+                        elif int(cur_timesnow) < int(timesnow):
+                            # 开奖信息
+                            cur_openballs = filter(lambda x: int(x[0]) == int(cur_timesnow),
+                                                   console_instance.history_data)
+                            logging.info(u"第2期，######%s" % cur_openballs)
                             cur_openballs = cur_openballs[0][2:12]
 
                             console_instance.open_balls = cur_openballs
                             logging.error(u"【更新预下注数据】阶段-1，开奖结算UI，开奖结果=%s" % (cur_openballs))
 
-                            console_instance.timesnow = cur_timesnow + 1
                             MyStartBetAction.do_balance(console_instance)  # 结算一次...
+                            console_instance.timesnow = cur_timesnow + 1
                             MyStartBetAction.do_calculate(console_instance)  # 计算需要下注的..
-                            console_instance.loadTableData()  # 先弄界面
-
+                            b = copy.deepcopy(console_instance.all_ball_needToBetList)
+                            console_instance.loadTableData(b)
                             console_instance.is_bet_success = False  # 未下注成功的...
                         else:
                             logging.error(u"【更新预下注数据】阶段-2，触发下注...")
-                            QMetaObject.invokeMethod(console_instance, "onRetBetHidenBtn", Qt.QueuedConnection)
+                            console_instance.onRetBetHidenBtn()
 
             if 'win' in console_instance.preBetDataDic['data']:
                 win = console_instance.preBetDataDic['data']['win']
@@ -152,7 +168,7 @@ class MyUpdatePreBetDataAction(object):
             console_instance.timeopen_label.setText(u'下局：' + str(timeopen))
             console_instance.qishu_label.setText(u'期数：' + str(timesnow))
             console_instance.open_balls_label.setText(
-                u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
+                    u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
 
             pa = QPalette()
             pa.setColor(QPalette.WindowText, Qt.red)

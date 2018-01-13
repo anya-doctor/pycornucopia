@@ -32,7 +32,7 @@ class MyGetSimulateHistoryResultDataAction(object):
 
                 console_instance.getSimulateHistoryResultDataTimer = QTimer()
                 console_instance.getSimulateHistoryResultDataTimer.timeout.connect(
-                    lambda: MyGetSimulateHistoryResultDataAction.do_getHistoryResultData(console_instance))
+                        lambda: MyGetSimulateHistoryResultDataAction.do_getHistoryResultData(console_instance))
                 console_instance.getSimulateHistoryResultDataTimer.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
@@ -56,8 +56,8 @@ class MyGetSimulateHistoryResultDataAction(object):
 
             from mythread.MyGetSimulateHistoryResultDataThread import MyGetSimulateHistoryResultDataThread
             console_instance.getSimulateHistoryResultDataThread = MyGetSimulateHistoryResultDataThread(
-                console_instance.parent,
-                console_instance, from_date, to_date)
+                    console_instance.parent,
+                    console_instance, from_date, to_date)
             console_instance.getSimulateHistoryResultDataThread.start()
 
             # 在这里才能把时间间隔调整...

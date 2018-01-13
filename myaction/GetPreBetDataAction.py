@@ -20,7 +20,7 @@ class MyGetPreBetDataAction(object):
         try:
             console_instance.getPreBetDatgaTimer = QTimer()
             console_instance.getPreBetDatgaTimer.timeout.connect(
-                lambda: MyGetPreBetDataAction.do_getPreBetData(console_instance))
+                    lambda: MyGetPreBetDataAction.do_getPreBetData(console_instance))
             console_instance.getPreBetDatgaTimer.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)

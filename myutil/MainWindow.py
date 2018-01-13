@@ -35,7 +35,7 @@ class MainWindow(QtGui.QMainWindow):
         # tab3 -
         self.viewEntry = QTableWidget(0, 12)
         self.viewEntry.setHorizontalHeaderLabels(
-            [u'期数', u'时间', u'冠军', u'亚军', u'第三名', u'第四名', u'第五名', u'第六名', u'第七名', u'第八名', u'第九名', u'第十名'])
+                [u'期数', u'时间', u'冠军', u'亚军', u'第三名', u'第四名', u'第五名', u'第六名', u'第七名', u'第八名', u'第九名', u'第十名'])
         self.viewEntry.horizontalHeader().setStretchLastSection(True)
         self.viewEntry.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
 

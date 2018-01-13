@@ -83,9 +83,9 @@ class MyConsole(QWidget):
         self.preBetDataDic = {}
         self.simulate_data = []  # 模拟用的历史数据
 
-        self.fake_mode_bet = True
-        self.fake_mode_getPreBetData = True
-        self.fake_mode_getHistoryData = True
+        self.fake_mode_bet = False
+        self.fake_mode_getPreBetData = False
+        self.fake_mode_getHistoryData = False
         self.getPreBetDataFailedCnt = 0  # 获取预下注数据错误次数...用来监控获取预下注数据失败
 
         # 登录成功会填充这个dict
@@ -151,7 +151,8 @@ class MyConsole(QWidget):
     def onUpdateHistoryResultDataHideBtn(self, data_dic):
         # 定时器关闭
         logging.info(u"【控制台】关闭获取开奖结果定时器")
-        self.getHistoryResultDataTimer.stop()
+        if self.getHistoryResultDataTimer:
+            self.getHistoryResultDataTimer.stop()
 
         MyUpdateHistoryResultDataAction.run(self, data_dic)
 
@@ -169,12 +170,12 @@ class MyConsole(QWidget):
         self.goTimer.setInterval(seconds * 1000)
 
     # 更新Table数据-1
-    @pyqtSlot()
-    def loadTableData(self):
+    @pyqtSlot(list)
+    def loadTableData(self, all_ball_needToBetList):
         try:
             # 本次下注金额
             now_bet_money = 0
-            for i in self.all_ball_needToBetList:
+            for i in all_ball_needToBetList:
                 for j in i[3]:
                     now_bet_money += self.balls_bet_amount[i[2]]
             self.now_bet_money_label.setText(u"本次下注金额：%s" % now_bet_money)
@@ -182,7 +183,7 @@ class MyConsole(QWidget):
             self.colorflag += 1
             self.c = QColor("darkgray") if self.colorflag % 2 == 0 else QColor("gray")
 
-            for index, item in enumerate(self.all_ball_needToBetList):
+            for index, item in enumerate(all_ball_needToBetList):
                 # 添加一行
                 row = self.viewEntry.rowCount()
                 self.viewEntry.insertRow(row)
@@ -236,7 +237,7 @@ class MyConsole(QWidget):
             logging.info(u'【控制台】UI界面-1更新...')
         except Exception, ex:
             logging.error(ex, exc_info=1)
-            for i in self.all_ball_needToBetList:
+            for i in all_ball_needToBetList:
                 logging.info(i)
 
     # 更新Table数据-2-判断中否
@@ -259,43 +260,17 @@ class MyConsole(QWidget):
                 result_item.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row - len(b) + k, 7, result_item)
 
-                a = self.viewEntry.item(row - len(b) + k, 5).text()
-                logging.info("#######3 %s" % a)
+                a = self.viewEntry.item(row - len(b) + k, 5)
                 if not a:
                     newItem = QTableWidgetItem(u'网差无投')
                     newItem.setBackgroundColor(self.c)
+                    self.viewEntry.setItem(row - len(b) + k, 5, newItem)
+
+                    newItem = QTableWidgetItem(u'无效')
+                    newItem.setBackgroundColor(self.c)
                     self.viewEntry.setItem(row - len(b) + k, 6, newItem)
 
-                    result_item = QTableWidgetItem(u'无效')
-                    result_item.setBackgroundColor(self.c)
-                    self.viewEntry.setItem(row - len(b) + k, 7, result_item)
-
             logging.info(u"【控制台】UI界面-2更新，结算完毕...")
-        except Exception, ex:
-            logging.error(ex, exc_info=1)
-            for i in self.all_ball_needToBetList:
-                logging.info(i)
-
-    # 更新Table数据-3-下注失败后的填空...
-    @pyqtSlot(list)
-    def loadTableData3(self, open_balls):
-        try:
-            b = self.all_ball_needToBetList
-            row = self.viewEntry.rowCount()
-            for k in range(len(b)):
-                newItem = QTableWidgetItem(u'网差投注失败')
-                newItem.setBackgroundColor(self.c)
-                self.viewEntry.setItem(row - len(b) + k, 5, newItem)
-
-                newItem = QTableWidgetItem(u'无效')
-                newItem.setBackgroundColor(self.c)
-                self.viewEntry.setItem(row - len(b) + k, 6, newItem)
-
-                result_item = QTableWidgetItem(', '.join([str(v) for v in open_balls]))
-                result_item.setBackgroundColor(self.c)
-                self.viewEntry.setItem(row - len(b) + k, 7, result_item)
-
-            logging.info(u"【控制台】UI界面-3更新，结算完毕...")
         except Exception, ex:
             logging.error(ex, exc_info=1)
             for i in self.all_ball_needToBetList:

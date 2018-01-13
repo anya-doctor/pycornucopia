@@ -54,10 +54,10 @@ class MyBetDataThread(QtCore.QThread):
             return {}
 
         logging.info(u"【下注线程】组装下注URI..")
-        logging.info(self.console_instance.loginSuccessData)
+        # logging.info(self.console_instance.loginSuccessData)
         now = getCurrentTimestamp()
         pk_post_bet_url = self.console_instance.loginSuccessData['pk_post_bet_url'].split("&&_=")[0] + "&&_=" + str(
-            now) + "__ajax"
+                now) + "__ajax"
         logging.info(u"【下注线程】pk_post_bet_url=%s" % pk_post_bet_url)
 
         bet_str = self.get_bet_str()
@@ -91,7 +91,7 @@ class MyBetDataThread(QtCore.QThread):
         real_content = real_content.replace("u'", "'").replace("'", '"')
         t_json = json.loads(real_content)
 
-        logging.info(u"【下注线程】 json=%s" % t_json)
+        # logging.info(u"【下注线程】 json=%s" % t_json)
         return t_json
 
     def bet_fake(self):

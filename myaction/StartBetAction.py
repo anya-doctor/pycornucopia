@@ -85,8 +85,9 @@ class MyStartBetAction(object):
 
                     # 至少留5秒的时候来
                     if console_instance.timeclose < 5:
-                        logging.info(u"【下注中】下注时间=%s,来不及了，重启下注定时器..." % console_instance.timeclose)
-                        console_instance.betTimer.start(console_instance.timeopen * 1000)
+                        logging.info(u"【下注中】下注时间 timeclose=%s,来不及了，重启下注定时器..." % console_instance.timeclose)
+                        logging.info(u"【下注中】下注时间 timeopen=%s" % console_instance.timeopen)
+                        console_instance.betTimer.start(abs(console_instance.timeopen) * 1000)
                     else:
                         logging.info(u"【下注中】计算下注列表...")
                         if not repair_mode:
@@ -97,7 +98,8 @@ class MyStartBetAction(object):
                             MyStartBetAction.do_calculate(console_instance)
 
                         # 先弄界面
-                        console_instance.loadTableData()
+                        b = copy.deepcopy(console_instance.all_ball_needToBetList)
+                        console_instance.loadTableData(b)
 
                         logging.info(u"【下注中】开启下注线程...")
                         # 一旦开始了，就开始一次就行了
@@ -132,8 +134,6 @@ class MyStartBetAction(object):
         if console_instance.isLoseAdd:  # 输加注
             logging.info(u"【下注中】结算進入輸追加模式...")
             for item in console_instance.all_ball_needToBetList:
-                # 更新期数
-                item[1] = console_instance.timesnow
                 win_flag = False
                 for inner_item in item[3]:
                     if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
@@ -143,7 +143,7 @@ class MyStartBetAction(object):
                         if simulate_mode:
                             console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
                             console_instance.simulate_money += int(
-                                console_instance.balls_bet_amount[item[2]]) * 9.91
+                                    console_instance.balls_bet_amount[item[2]]) * 9.91
                     else:
                         if simulate_mode:
                             console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
@@ -160,12 +160,12 @@ class MyStartBetAction(object):
         if console_instance.isSimulate_combobox.currentIndex() == 0:  # 正常模式才日志输出
             logging.info(u"【下注中】结算通知UI-2...")
         b = copy.deepcopy(console_instance.all_ball_needToBetList)
-        QMetaObject.invokeMethod(console_instance, "loadTableData2", Q_ARG(list, b))
+        console_instance.loadTableData2(b)
 
         if console_instance.isQQG:
             # 期期滚- 过滤掉期期滚中了或者爆了的数据项
             console_instance.all_ball_needToBetList = filter(
-                lambda x: x[2] != 0 and x[2] != len(console_instance.balls_bet_amount), b)
+                    lambda x: x[2] != 0 and x[2] != len(console_instance.balls_bet_amount), b)
         else:
             # 常规 - 重置那些被爆了的
             for i in console_instance.all_ball_needToBetList:
@@ -214,12 +214,12 @@ class MyStartBetAction(object):
 
                                 c = [[i, v] for v in a[j]]
                                 console_instance.all_ball_needToBetList.append(
-                                    [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
+                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
                         # 如果a是list，说明就下注这个list即可
                         elif isinstance(a, list):
                             c = [[i, v] for v in a]
                             console_instance.all_ball_needToBetList.append(
-                                [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0])
+                                    [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0])
             # 如果不為空
             else:
                 # 如果是期期滾
@@ -240,16 +240,21 @@ class MyStartBetAction(object):
                                         continue
                                     c = [[i, v] for v in a[j]]
                                     console_instance.all_ball_needToBetList.append(
-                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
+                                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
                             # 如果a是list，说明就下注这个list即可
                             elif isinstance(a, list):
                                 c = [[i, v] for v in a]
                                 console_instance.all_ball_needToBetList.append(
-                                    [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0])
+                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0])
                 # 如果是常規模式
                 else:
                     if console_instance.isSimulate_combobox.currentIndex() == 0:  # 正常模式才日志输出
                         logging.info(u"【下注中】下注列表不為空，進入常規模式...")
+
+                    # 更新期数...
+                    for item in console_instance.all_ball_needToBetList:
+                        item[1] = console_instance.timesnow
+
                     for item in console_instance.all_ball_needToBetList:
                         if console_instance.n_change == 0:  # 说明n期换配置不起作用
                             pass
@@ -260,7 +265,6 @@ class MyStartBetAction(object):
                                 pass
                             elif int(item[2]) % console_instance.n_change != 0:
                                 continue
-
                         # 替換新的下注列表
                         index = item[3][0][0]
                         a, b = MyAlgorithm.verical_get_bet_list(console_instance, index)

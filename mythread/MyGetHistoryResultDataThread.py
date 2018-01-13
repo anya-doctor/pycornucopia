@@ -63,7 +63,6 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
                             'result': json.load(f)
                         }
                     }
-                self.console_instance.fake_mode_getHistoryData = False
             else:
                 json_data = self.get_data()
             if json_data:

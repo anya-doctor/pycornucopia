@@ -269,7 +269,7 @@ class MyUIUtil(object):
         console_instance.viewEntry = QTableWidget(0, 8)
         console_instance.gridlayout.addWidget(console_instance.viewEntry, 15, 0, 30, 36)
         console_instance.viewEntry.setHorizontalHeaderLabels(
-            [u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否', u'开奖号码'])
+                [u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否', u'开奖号码'])
         a = console_instance.viewEntry.horizontalHeader()
         assert isinstance(a, QHeaderView)
         a.resizeSection(0, 80)

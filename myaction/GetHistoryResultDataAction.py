@@ -24,7 +24,7 @@ class MyGetHistoryResultDataAction(object):
 
             console_instance.getHistoryResultDataTimer = QTimer()
             console_instance.getHistoryResultDataTimer.timeout.connect(
-                lambda: MyGetHistoryResultDataAction.do_getHistoryResultData(console_instance))
+                    lambda: MyGetHistoryResultDataAction.do_getHistoryResultData(console_instance))
             console_instance.getHistoryResultDataTimer.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
