@@ -12,6 +12,7 @@ from common import MySettings
 from myaction.ClearKaijiangInfoAction import MyClearKaijiangInfoAction
 from myaction.GetSimulateHistoryResultDataAction import MyGetSimulateHistoryResultDataAction
 from myaction.LoginAction import MyLoginAction
+from myaction.PauseBetAction import MyPauseBetAction
 from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
 from myaction.StartBetAction import MyStartBetAction
@@ -68,6 +69,13 @@ class MyUIUtil(object):
         console_instance.gridlayout.addWidget(console_instance.earnMoneyAtEntry, 1, 7, 1, 2)
         console_instance.gridlayout.addWidget(console_instance.lostMoneyAtEntry, 1, 9, 1, 3)
         console_instance.gridlayout.addWidget(console_instance.saveConfigBtn, 1, 26, 1, 2)
+
+        console_instance.pauseBet_combobox = QComboBox()
+        console_instance.pauseBet_combobox.addItem(u'正常下注模式')
+        console_instance.pauseBet_combobox.addItem(u'暂停下注模式')
+        console_instance.connect(console_instance.pauseBet_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
+                                 lambda: MyPauseBetAction.run(console_instance))
+        console_instance.gridlayout.addWidget(console_instance.pauseBet_combobox, 0, 26, 1, 2)
 
         lb6 = QLabel(u'程序命名')
         console_instance.nameEntry = QLineEdit()

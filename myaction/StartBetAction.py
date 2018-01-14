@@ -33,7 +33,7 @@ class MyStartBetAction(object):
             else:
                 if console_instance.betTimer != None:
                     console_instance.betTimer.stop()
-                console_instance.curP = '-1'
+                console_instance.timesnow = 0
                 console_instance.all_ball_needToBetList = []
                 console_instance.goBtn.setText(u'开始')
                 QtGui.QMessageBox.about(console_instance, u'请注意', u"已经停止，下注列表全部清空。")
@@ -103,8 +103,19 @@ class MyStartBetAction(object):
 
                         logging.info(u"【下注中】开启下注线程...")
                         # 一旦开始了，就开始一次就行了
-                        console_instance.betThread = MyBetThread.MyBetDataThread(console_instance)
-                        console_instance.betThread.start()
+                        if int(console_instance.pauseBet_combobox.currentIndex()) == 1:
+                            logging.info(u"【下注中】本期%s处于暂停下注模式！！不下注咯.." % console_instance.timesnow)
+                            console_instance.is_bet_success = False
+                            # UI跟上，填写：放弃投注...
+                            b = copy.deepcopy(console_instance.all_ball_needToBetList)
+                            console_instance.loadTableData3(b)
+                        else:
+                            logging.info(u"【下注中】本期%s处于正常下注模式！下注咯.." % console_instance.timesnow)
+                            console_instance.betThread = MyBetThread.MyBetDataThread(console_instance,
+                                                                                     console_instance.all_ball_needToBetList,
+                                                                                     console_instance.preBetDataDic[
+                                                                                         'data']['integrate'])
+                            console_instance.betThread.start()
         except Exception, ex:
             logging.error(ex, exc_info=1)
             console_instance.betTimer.start(3000)

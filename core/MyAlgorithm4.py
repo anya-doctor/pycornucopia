@@ -28,31 +28,23 @@ def verical_get_bet_list(console_instance, bet_index):
         line = lines[int(console_instance.first_n)]
         balls = line[2:12]
 
-        bet_dic = {
-            1: (str(console_instance.ball3_1_Entry.text()).split('-'),
-                str(console_instance.ball4_1_Entry.text()).split('-')),
-            2: (str(console_instance.ball3_2_Entry.text()).split('-'),
-                str(console_instance.ball4_2_Entry.text()).split('-')),
-            3: (str(console_instance.ball3_3_Entry.text()).split('-'),
-                str(console_instance.ball4_3_Entry.text()).split('-')),
-            4: (str(console_instance.ball3_4_Entry.text()).split('-'),
-                str(console_instance.ball4_4_Entry.text()).split('-')),
-            5: (str(console_instance.ball3_5_Entry.text()).split('-'),
-                str(console_instance.ball4_5_Entry.text()).split('-')),
-            6: (str(console_instance.ball3_6_Entry.text()).split('-'),
-                str(console_instance.ball4_6_Entry.text()).split('-')),
-            7: (str(console_instance.ball3_7_Entry.text()).split('-'),
-                str(console_instance.ball4_7_Entry.text()).split('-')),
-            8: (str(console_instance.ball3_8_Entry.text()).split('-'),
-                str(console_instance.ball4_8_Entry.text()).split('-')),
-            9: (str(console_instance.ball3_9_Entry.text()).split('-'),
-                str(console_instance.ball4_9_Entry.text()).split('-')),
-            10: (str(console_instance.ball3_10_Entry.text()).split('-'),
-                 str(console_instance.ball4_10_Entry.text()).split('-')),
-        }
+        cnt = int(console_instance.ball2_1_Entry.text())
+        up = int(console_instance.ball2_2_Entry.text())
+        down = int(console_instance.ball2_3_Entry.text())
+        logging.info(u"【下注中】历史前%s期，up=%s,down=%s" % (cnt, up, down))
+        bet_balls = []
+        dic = {}
+        for line in lines[int(console_instance.first_n): int(console_instance.first_n) + cnt]:
+            balls = line[2:12]
+            if balls[bet_index - 1] not in dic:
+                dic[balls[bet_index - 1]] = 1
+            else:
+                dic[balls[bet_index - 1]] += 1
+        for key, value in dic.iteritems():
+            if down <= value <= up and key:
+                bet_balls.append(str(key))
 
-        bet_balls = bet_dic[balls[bet_index - 1]]
-        if len(bet_balls) > 1 and bet_balls[1] == ['']:
+        if len(bet_balls) > 2 and bet_balls[1] == ['']:
             bet_balls = (bet_balls[0],)
 
         ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']

@@ -1,4 +1,5 @@
 # #coding:utf-8
+import copy
 import logging
 
 from PyQt4 import QtGui
@@ -83,7 +84,9 @@ class MyConsole(QWidget):
         self.preBetDataDic = {}
         self.simulate_data = []  # 模拟用的历史数据
 
+        self.fake_mode_peilv = True
         self.fake_mode_bet = False
+        self.fake_mode_login = False
         self.fake_mode_getPreBetData = False
         self.fake_mode_getHistoryData = False
         self.getPreBetDataFailedCnt = 0  # 获取预下注数据错误次数...用来监控获取预下注数据失败
@@ -276,6 +279,25 @@ class MyConsole(QWidget):
             for i in self.all_ball_needToBetList:
                 logging.info(i)
 
+    @pyqtSlot(list)
+    def loadTableData3(self, all_ball_needToBetList):
+        try:
+            b = all_ball_needToBetList
+            row = self.viewEntry.rowCount()
+            # 更新下注面板信息...
+            cnt = 0
+            row = self.viewEntry.rowCount()
+            for item in self.all_ball_needToBetList:
+                newItem = QTableWidgetItem(u'放弃投注')
+                newItem.setBackgroundColor(self.c)
+                self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
+                cnt += 1
+                logging.info(u"【控制台】UI界面-3更新，特殊情况结算完毕...")
+        except Exception, ex:
+            logging.error(ex, exc_info=1)
+            for i in self.all_ball_needToBetList:
+                logging.info(i)
+
     @pyqtSlot(dict)
     def onLoginSuccess(self, loginSuccessData):
         # 登录成功
@@ -364,8 +386,8 @@ class MyConsole(QWidget):
     def alert(self, msgtitle, msg):
         QtGui.QMessageBox.about(self, msgtitle, msg)
 
-    @pyqtSlot()
-    def onRetBetHidenBtn(self):
+    @pyqtSlot(list, dict)
+    def onRetBetHidenBtn(self, all_ball_needToBetList, peilv_dict):
         logging.info(u"【控制台】触发逻辑：onRetBetHidenBtn.")
         # 删除定时器，清空资源...
         if self.rebetTimer:
@@ -373,10 +395,10 @@ class MyConsole(QWidget):
 
         # 一旦开始了，就开始一次就行了
         self.rebetTimer = QTimer()
-        self.rebetTimer.timeout.connect(lambda: self.rebet())
+        self.rebetTimer.timeout.connect(lambda: self.rebet(all_ball_needToBetList, peilv_dict))
         self.rebetTimer.start(1000)
 
-    def rebet(self):
+    def rebet(self, all_ball_needToBetList, peilv_dict):
         if not self.loginSuccessData:
             logging.info(u"【重新下注线程】貌似还没登录，稍等5秒钟...")
             self.rebetTimer.setInterval(5 * 1000)
@@ -417,8 +439,17 @@ class MyConsole(QWidget):
                         logging.info(u"【重新下注线程】下注时间=%s,来不及了，本次下注失败，停止下注。" % self.timeclose)
                         self.rebetTimer.stop()
                     else:
-                        self.rebetThread = MyBetThread.MyBetDataThread(self)
-                        self.rebetThread.start(1000)
+                        if int(self.pauseBet_combobox.currentIndex()) == 1:
+                            logging.info(u"【重新下注线程】本期%s处于暂停下注模式！！不下注咯.." % self.timesnow)
+                            self.is_bet_success = False
+
+                            # UI跟上，填写：放弃投注...
+                            b = copy.deepcopy(all_ball_needToBetList)
+                            self.loadTableData3(b)
+                        else:
+                            logging.info(u"【重新下注线程】本期%s处于正常下注模式！下注咯.." % self.timesnow)
+                            self.rebetThread = MyBetThread.MyBetDataThread(self, all_ball_needToBetList, peilv_dict)
+                            self.rebetThread.start(1000)
 
     @pyqtSlot(int)
     def setSimulateMoney(self, money):

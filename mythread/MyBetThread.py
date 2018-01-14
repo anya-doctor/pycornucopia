@@ -1,4 +1,5 @@
 # coding=utf-8
+import copy
 import json
 import logging
 
@@ -11,34 +12,44 @@ from myutil.tool.MyTool import getCurrentTimestamp
 
 
 class MyBetDataThread(QtCore.QThread):
-    def __init__(self, console_instance):
+    def __init__(self, console_instance, all_ball_needToBetList, peilv_dict):
         super(MyBetDataThread, self).__init__()
         self.console_instance = console_instance
+        self.all_ball_needToBetList = all_ball_needToBetList
+        self.peilv_dict = peilv_dict
 
     def get_bet_str(self):
         try:
             if not self.console_instance.preBetDataDic:
                 logging.error(u"【下注线程】拿不到下注前数据！！！放弃此次下注！")
                 return ""
-            if not self.console_instance.preBetDataDic['data']['integrate']:
+            if not self.peilv_dict:
                 logging.error(u"【下注线程】如果拿不到赔率list！！！放弃此次下注！")
                 return ""
 
             version_number = self.console_instance.preBetDataDic['data']['version_number']
             # t=010|0|1.9829|2;000|1|9.9112|2;011|1|1.9829|3;&v=37
             bet_str = "t="
-            for item in self.console_instance.all_ball_needToBetList:
+            for item in self.all_ball_needToBetList:
                 '''
                 all_ball_needToBetList = [
                     [timestart, timesnow, betflag, [[point, ball],[point, ball],...]],
                     [],
                     ...
                 ]'''
+                logging.info("########%s " % item)
+                # item = [661626, 661626, 0, [1, '6'], 1, 0]
                 bet_money = self.console_instance.balls_bet_amount[item[2]]
                 for inner_item in item[3]:
+                    logging.info("#### %s" % inner_item)
+                    logging.info("#### %s" % common.pk_ball_dic)
                     a = common.pk_ball_dic[inner_item[0]]
-                    peilv = self.console_instance.preBetDataDic['data']['integrate'][a + str(inner_item[1])]
+                    peilv = self.peilv_dict[a + str(inner_item[1])]
+                    if self.console_instance.fake_mode_peilv:
+                        if int(inner_item[0]) == 1:
+                            peilv = 9.999
                     bet_str += '%s|%s|%s|%s;' % (a, int(inner_item[1]), peilv, bet_money)
+                self.console_instance.fake_mode_peilv = False
         except Exception, ex:
             logging.error(ex, exc_info=1)
             return ""
@@ -49,7 +60,7 @@ class MyBetDataThread(QtCore.QThread):
         return bet_str
 
     def bet(self):
-        if not self.console_instance.all_ball_needToBetList:
+        if not self.all_ball_needToBetList:
             logging.error(u"【下注线程】下注列表为空，啥都不干...")
             return {}
 
@@ -60,7 +71,7 @@ class MyBetDataThread(QtCore.QThread):
                 now) + "__ajax"
         logging.info(u"【下注线程】pk_post_bet_url=%s" % pk_post_bet_url)
 
-        bet_str = self.get_bet_str()
+        bet_str = self.get_bet_str()  # self.console_instance.preBetDataDic['data']['integrate'])
         if not bet_str:
             logging.error(u"【下注线程】生成下注str出错！")
             logging.error(u"【下注线程】再次拿预下注数据！")
@@ -94,7 +105,8 @@ class MyBetDataThread(QtCore.QThread):
         # logging.info(u"【下注线程】 json=%s" % t_json)
         return t_json
 
-    def bet_fake(self):
+    @staticmethod
+    def bet_fake():
         return {'state': 1}
 
     def run(self):
@@ -110,7 +122,9 @@ class MyBetDataThread(QtCore.QThread):
 
                 # 重新开始下注定时器...
                 logging.info(u"【下注线程】重新开始下注定时器rebetTimer！！！！")
-                QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn", Qt.QueuedConnection)
+                QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn", Qt.QueuedConnection,
+                                         Q_ARG(list, self.all_ball_needToBetList),
+                                         Q_ARG(dict, self.console_instance.preBetDataDic['data']['integrate']))
 
                 name = self.console_instance.nameEntry.text()
                 name += u"【未登录】"
@@ -133,7 +147,46 @@ class MyBetDataThread(QtCore.QThread):
                                     # 重新开始下注定时器...
                                     logging.info(u"【下注线程】重新开始下注定时器rebetTimer！！！！")
                                     QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn",
-                                                             Qt.QueuedConnection)
+                                                             Qt.QueuedConnection,
+                                                             Q_ARG(list, self.all_ball_needToBetList),
+                                                             Q_ARG(dict, self.console_instance.preBetDataDic['data'][
+                                                                 'integrate']))
+                    # 处理赔率更改
+                    elif int(ret_json['state']) == 2 and not ret_json["errors"]:
+                        logging.info(u"【下注线程】赔率更改...")
+                        fail_orders = ret_json['data']['user']['fail_orders'] if ('user' in ret_json[
+                            'data'] and 'fail_orders' in ret_json['data']['user']) else -1
+                        fail_orders = int(fail_orders)
+                        logging.info(u"【下注线程】赔率更改，失败订单数=%s" % fail_orders)
+                        '''
+                        "orders": {
+                            "0004": 9.911,
+                            "0005": 9.911,
+                            "0007": 9.911,
+                            "0002": 9.911,
+                            "0008": 9.911,
+                            "0009": 9.911
+                        }
+                      '''
+                        new_peilv_dic = ret_json['data']['user']['orders']
+                        logging.info(u"【下注线程】新赔率=%s" % new_peilv_dic)
+
+                        # 过滤出失败赔率的下注
+                        b = copy.deepcopy(self.all_ball_needToBetList)
+                        rebet_list = []
+                        for item in b:
+                            for inner_item in item[3]:
+                                a = common.pk_ball_dic[inner_item[0]]
+                                b = a + str(inner_item[1])
+                                if b in new_peilv_dic:
+                                    new_item = copy.deepcopy(item)
+                                    new_item[3] = [inner_item]
+                                    rebet_list.append(new_item)
+                        logging.info(u"【下注线程】重下注的list=%s" % rebet_list)
+                        QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn",
+                                                 Qt.QueuedConnection, Q_ARG(list, rebet_list),
+                                                 Q_ARG(dict, new_peilv_dic))
+
                     # 写到文件中。。。
                     with open('config/bet_error_%s.json' % self.console_instance.timesnow, 'w') as f:
                         f.write(json.dumps(ret_json))

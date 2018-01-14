@@ -44,25 +44,33 @@ class MyUpdatePreBetDataAction(object):
                 if 0 < int(timesnow):
                     # 更新期数
                     console_instance.timesnow = timesnow
+                # 在稳定且时间区间正确的情况下，解开开始按钮的封印
+                if 'win' in console_instance.preBetDataDic['data'] and int(timeclose) > 0 and int(timeopen) > 0:
+                    if console_instance.goBtn.isEnabled() == False:
+                        logging.info(u"【更新预下注数据】在稳定且时间区间正确的情况下-1，解开开始按钮的封印...")
+                        console_instance.goBtn.setEnabled(True)
+
             elif int(console_instance.timesnow) > 0 and not console_instance.history_data:
                 logging.error(u"【更新预下注数据】因为某种原因历史数据=NULL, 重启获取历史数据定时器..")
                 MyGetHistoryResultDataAction.run(console_instance)
             elif 'win' not in console_instance.preBetDataDic['data']:
                 logging.info(u"【更新预下注数据】還在結算階段，拿不到最新數據，等待之...")
-            elif console_instance.history_data and int(timesnow) - int(console_instance.history_data[0][0]) >= 2:
+            elif console_instance.history_data and int(timesnow) - int(console_instance.history_data[0][0]) >= 3:
                 # 假设现在 timesnow = console_instance.timesnow = 661167，此时历史数据最新 = 661166
                 # 在某个时刻，正在结算中，可能只要10秒吧，timesnow=661168，但是历史数据还是 661166
                 # 所以是存在int(timesnow) - int(console_instance.history_data[0][0]) >= 2
-                # 等结算完成，才能timesnow=661168, console_instance.timesnow = 661167， 历史数据最新 = 661167
-
-                # 但为什么我这里还是执意用>=2呢，因为真的有的时候断线1期，也是符合这个情况的，比如：
-                # timesnow=661168, console.timesnow=661167, 历史最新=661166，这个已经过了结算期间，稳定下来了...
-                # 所以此时网络故障卡了，那么就会 661168 - 661166 >= 2，断层
+                # 等结算完成，稳定在timesnow=661168, console_instance.timesnow = 661167， 历史数据最新 = 661166
                 logging.info(
-                        u"【更新预下注数据】断层-2，timesnow=%s, console_instance.timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
+                        u"【更新预下注数据】断层，timesnow=%s, console_instance.timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
                             timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
                 MyGetHistoryResultDataAction.run(console_instance)
             else:
+                # 在稳定且时间区间正确的情况下，解开开始按钮的封印
+                if 'win' in console_instance.preBetDataDic['data'] and int(timeclose) > 0 and int(timeopen) > 0:
+                    if console_instance.goBtn.isEnabled() == False:
+                        logging.info(u"【更新预下注数据】在稳定且时间区间正确的情况下-2，解开开始按钮的封印...")
+                        console_instance.goBtn.setEnabled(True)
+
                 # 进来这里都是稳定的数据了，不存在什么结算啊，之类的...
                 # 更新期数，顺便结算...
                 if int(console_instance.timesnow) == int(timesnow):
@@ -78,6 +86,8 @@ class MyUpdatePreBetDataAction(object):
                         logging.info(u"【更新预下注数据】历史最新=%s，console_instance.timesnow=%s, 更新历史数据发现有同一期但为空的数据，置换之..." % (
                             console_instance.history_data[0][0], console_instance.timesnow))
                         console_instance.history_data[0] = now_history_data
+                        logging.info(console_instance.history_data[0])
+                        logging.info(console_instance.history_data[1])
                         # 顺便要更新下UI结果面板...
                         b = copy.deepcopy(console_instance.history_data)
                         console_instance.parent.updateHistoryResultData(b)
@@ -85,6 +95,11 @@ class MyUpdatePreBetDataAction(object):
                         logging.info(u"【更新预下注数据】历史最新=%s，console_instance.timesnow=%s, 更新历史数据, 增加之..." % (
                             console_instance.history_data[0][0], console_instance.timesnow))
                         console_instance.history_data.insert(0, now_history_data)
+
+                        QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData",
+                                                 Qt.QueuedConnection,
+                                                 Q_ARG(str, str(timesnow)),
+                                                 Q_ARG(list, console_instance.open_balls))
                     else:
                         logging.error(
                                 u"【更新预下注数据】什么情况！！！timesnow=%s, console_instance.timesnow=%s,历史最新=%s，更新历史数据,遇到意外！！！" % (
@@ -96,11 +111,6 @@ class MyUpdatePreBetDataAction(object):
 
                     with open('config/history.json', 'wb') as f:
                         f.write(json.dumps(console_instance.history_data))
-
-                    QMetaObject.invokeMethod(console_instance.parent, "appendHistoryResultData",
-                                             Qt.QueuedConnection,
-                                             Q_ARG(str, str(timesnow)),
-                                             Q_ARG(list, console_instance.open_balls))
 
                     # 开始下一局 写数据到Table 通知控制台下注
                     if console_instance.all_ball_needToBetList:
@@ -156,7 +166,7 @@ class MyUpdatePreBetDataAction(object):
                             console_instance.is_bet_success = False  # 未下注成功的...
                         else:
                             logging.error(u"【更新预下注数据】阶段-2，触发下注...")
-                            console_instance.onRetBetHidenBtn()
+                            console_instance.onRetBetHidenBtn(console_instance.all_ball_needToBetList)
 
             if 'win' in console_instance.preBetDataDic['data']:
                 win = console_instance.preBetDataDic['data']['win']

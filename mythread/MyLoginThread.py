@@ -164,8 +164,7 @@ class MyLoginThread(QtCore.QThread):
 
     def run(self):
         try:
-            if False:
-                # if self.console_instance.fake_mode:
+            if self.console_instance.fake_mode_login:
                 cookies_jar = {'AC': 1}
             else:
                 cookies_jar = self.login()
