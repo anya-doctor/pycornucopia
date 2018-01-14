@@ -84,7 +84,6 @@ class MyConsole(QWidget):
         self.preBetDataDic = {}
         self.simulate_data = []  # 模拟用的历史数据
 
-        self.fake_mode_peilv = True
         self.fake_mode_bet = False
         self.fake_mode_login = False
         self.fake_mode_getPreBetData = False
@@ -447,7 +446,7 @@ class MyConsole(QWidget):
                             b = copy.deepcopy(all_ball_needToBetList)
                             self.loadTableData3(b)
                         else:
-                            logging.info(u"【重新下注线程】本期%s处于正常下注模式！下注咯.." % self.timesnow)
+                            logging.info(u"【重新下注线程】本期%s处于正常下注模式..." % self.timesnow)
                             self.rebetThread = MyBetThread.MyBetDataThread(self, all_ball_needToBetList, peilv_dict)
                             self.rebetThread.start(1000)
 

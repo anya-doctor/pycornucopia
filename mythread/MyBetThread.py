@@ -45,11 +45,7 @@ class MyBetDataThread(QtCore.QThread):
                     logging.info("#### %s" % common.pk_ball_dic)
                     a = common.pk_ball_dic[inner_item[0]]
                     peilv = self.peilv_dict[a + str(inner_item[1])]
-                    if self.console_instance.fake_mode_peilv:
-                        if int(inner_item[0]) == 1:
-                            peilv = 9.999
                     bet_str += '%s|%s|%s|%s;' % (a, int(inner_item[1]), peilv, bet_money)
-                self.console_instance.fake_mode_peilv = False
         except Exception, ex:
             logging.error(ex, exc_info=1)
             return ""
@@ -121,10 +117,10 @@ class MyBetDataThread(QtCore.QThread):
                 QMetaObject.invokeMethod(self.console_instance, "onLoginBtn", Qt.QueuedConnection)
 
                 # 重新开始下注定时器...
-                logging.info(u"【下注线程】重新开始下注定时器rebetTimer！！！！")
+                logging.info(u"【下注线程】普通情况-1，可能是登录超时验证，重新开始下注定时器rebetTimer！！！！")
                 QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn", Qt.QueuedConnection,
                                          Q_ARG(list, self.all_ball_needToBetList),
-                                         Q_ARG(dict, self.console_instance.preBetDataDic['data']['integrate']))
+                                         Q_ARG(dict, self.peilv_dict))
 
                 name = self.console_instance.nameEntry.text()
                 name += u"【未登录】"
@@ -133,7 +129,7 @@ class MyBetDataThread(QtCore.QThread):
                                          Q_ARG(str, name))
             else:
                 # 先判斷是否下注成功。。。
-                bet_success_flag = True
+                bet_success_flag = False
                 if int(ret_json['state']) == 1:
                     bet_success_flag = True
                 elif int(ret_json['state']) >= 2:
@@ -145,12 +141,11 @@ class MyBetDataThread(QtCore.QThread):
                                 logging.error(u"【下注线程】eid=%s，錯誤=%s" % (err['eid'], err['note']))
                                 if int(err['eid']) == 1111:  # 網絡繁忙，請稍後再試！
                                     # 重新开始下注定时器...
-                                    logging.info(u"【下注线程】重新开始下注定时器rebetTimer！！！！")
+                                    logging.info(u"【下注线程】普通情况-2，网络繁忙，重新开始下注定时器rebetTimer！！！！")
                                     QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn",
                                                              Qt.QueuedConnection,
                                                              Q_ARG(list, self.all_ball_needToBetList),
-                                                             Q_ARG(dict, self.console_instance.preBetDataDic['data'][
-                                                                 'integrate']))
+                                                             Q_ARG(dict, self.peilv_dict))
                     # 处理赔率更改
                     elif int(ret_json['state']) == 2 and not ret_json["errors"]:
                         logging.info(u"【下注线程】赔率更改...")
@@ -182,7 +177,7 @@ class MyBetDataThread(QtCore.QThread):
                                     new_item = copy.deepcopy(item)
                                     new_item[3] = [inner_item]
                                     rebet_list.append(new_item)
-                        logging.info(u"【下注线程】重下注的list=%s" % rebet_list)
+                        logging.info(u"【下注线程】普通情况-3，赔率更新，重下注的list=%s" % rebet_list)
                         QMetaObject.invokeMethod(self.console_instance, "onRetBetHidenBtn",
                                                  Qt.QueuedConnection, Q_ARG(list, rebet_list),
                                                  Q_ARG(dict, new_peilv_dic))

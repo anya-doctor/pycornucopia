@@ -166,7 +166,8 @@ class MyUpdatePreBetDataAction(object):
                             console_instance.is_bet_success = False  # 未下注成功的...
                         else:
                             logging.error(u"【更新预下注数据】阶段-2，触发下注...")
-                            console_instance.onRetBetHidenBtn(console_instance.all_ball_needToBetList)
+                            console_instance.onRetBetHidenBtn(console_instance.all_ball_needToBetList,
+                                                              console_instance.preBetDataDic['data']['integrate'])
 
             if 'win' in console_instance.preBetDataDic['data']:
                 win = console_instance.preBetDataDic['data']['win']
