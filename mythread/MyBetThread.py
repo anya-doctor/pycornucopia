@@ -30,6 +30,7 @@ class MyBetDataThread(QtCore.QThread):
             version_number = self.console_instance.preBetDataDic['data']['version_number']
             # t=010|0|1.9829|2;000|1|9.9112|2;011|1|1.9829|3;&v=37
             bet_str = "t="
+            t_str = ""
             for item in self.all_ball_needToBetList:
                 '''
                 all_ball_needToBetList = [
@@ -40,12 +41,19 @@ class MyBetDataThread(QtCore.QThread):
                 logging.info("########%s " % item)
                 # item = [661626, 661626, 0, [1, '6'], 1, 0]
                 bet_money = self.console_instance.balls_bet_amount[item[2]]
-                for inner_item in item[3]:
-                    logging.info("#### %s" % inner_item)
-                    logging.info("#### %s" % common.pk_ball_dic)
-                    a = common.pk_ball_dic[inner_item[0]]
-                    peilv = self.peilv_dict[a + str(inner_item[1])]
-                    bet_str += '%s|%s|%s|%s;' % (a, int(inner_item[1]), peilv, bet_money)
+                if int(bet_money) == 0:
+                    logging.info(u"【下注线程】item=%s, 金额为0，跳过！！！放弃此次下注！" % item)
+                else:
+                    for inner_item in item[3]:
+                        logging.info("#### %s" % inner_item)
+                        logging.info("#### %s" % common.pk_ball_dic)
+                        a = common.pk_ball_dic[inner_item[0]]
+                        peilv = self.peilv_dict[a + str(inner_item[1])]
+                        t_str += '%s|%s|%s|%s;' % (a, int(inner_item[1]), peilv, bet_money)
+            if not t_str:  # 那全是0了。。才会放弃下注..
+                bet_str += "NULL"
+            else:
+                bet_str += t_str
         except Exception, ex:
             logging.error(ex, exc_info=1)
             return ""
@@ -74,6 +82,11 @@ class MyBetDataThread(QtCore.QThread):
             return
 
         a = bet_str.split('&')
+
+        # 如果全是0，那么就放弃算了。。。
+        if a[0].split('=')[1] == 'NULL':
+            return {'state': 1}
+
         payload = {
             't': a[0].split('=')[1],
             'v': int(a[1].split('=')[1])
