@@ -26,6 +26,7 @@ class MyUpdateSimulateComboModeAction(object):
                 console_instance.history_data = []
                 console_instance.open_balls = []
                 console_instance.preBetDataDic = {}
+                console_instance.simulate_money = 0
 
                 # 在登录的前提下...开启相应的定时器
                 if console_instance.loginSuccessData:
