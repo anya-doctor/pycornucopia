@@ -73,6 +73,7 @@ class MyUIUtil(object):
         console_instance.pauseBet_combobox = QComboBox()
         console_instance.pauseBet_combobox.addItem(u'正常下注模式')
         console_instance.pauseBet_combobox.addItem(u'暂停下注模式')
+        console_instance.pauseBet_combobox.addItem(u'实时模拟下注模式')
         console_instance.connect(console_instance.pauseBet_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
                                  lambda: MyPauseBetAction.run(console_instance))
         console_instance.gridlayout.addWidget(console_instance.pauseBet_combobox, 0, 26, 1, 2)
@@ -121,7 +122,7 @@ class MyUIUtil(object):
         # 是否模拟模式
         console_instance.isSimulate_combobox = QComboBox()
         console_instance.isSimulate_combobox.addItem(u'正常模式')
-        console_instance.isSimulate_combobox.addItem(u'模拟模式')
+        console_instance.isSimulate_combobox.addItem(u'历史模拟模式')
         console_instance.gridlayout.addWidget(console_instance.isSimulate_combobox, 0, 29, 1, 2)
         console_instance.connect(console_instance.isSimulate_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
                                  lambda: MyUpdateSimulateComboModeAction.run(console_instance))

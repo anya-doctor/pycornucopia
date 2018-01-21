@@ -28,18 +28,32 @@ def verical_get_bet_list(console_instance, bet_index):
         line = lines[int(console_instance.first_n)]
         balls = line[2:12]
 
-        # 只下注冠军
-        if bet_index != 1:
-            return [], []
-        a = str(console_instance.ball2_10_Entry.text()).split('-')
-        b = str(console_instance.ball3_10_Entry.text()).split('-')
-        logging.info("### %s" % balls[9])
-        logging.info("### %s" % a)
-        logging.info("### %s" % b)
-        if str(balls[9]) in a:
-            bet_balls = a
-        else:
-            bet_balls = b
+        bet_dic = {
+            1: (str(console_instance.ball3_1_Entry.text()).split('-'),
+                str(console_instance.ball4_1_Entry.text()).split('-')),
+            2: (str(console_instance.ball3_2_Entry.text()).split('-'),
+                str(console_instance.ball4_2_Entry.text()).split('-')),
+            3: (str(console_instance.ball3_3_Entry.text()).split('-'),
+                str(console_instance.ball4_3_Entry.text()).split('-')),
+            4: (str(console_instance.ball3_4_Entry.text()).split('-'),
+                str(console_instance.ball4_4_Entry.text()).split('-')),
+            5: (str(console_instance.ball3_5_Entry.text()).split('-'),
+                str(console_instance.ball4_5_Entry.text()).split('-')),
+            6: (str(console_instance.ball3_6_Entry.text()).split('-'),
+                str(console_instance.ball4_6_Entry.text()).split('-')),
+            7: (str(console_instance.ball3_7_Entry.text()).split('-'),
+                str(console_instance.ball4_7_Entry.text()).split('-')),
+            8: (str(console_instance.ball3_8_Entry.text()).split('-'),
+                str(console_instance.ball4_8_Entry.text()).split('-')),
+            9: (str(console_instance.ball3_9_Entry.text()).split('-'),
+                str(console_instance.ball4_9_Entry.text()).split('-')),
+            10: (str(console_instance.ball3_10_Entry.text()).split('-'),
+                 str(console_instance.ball4_10_Entry.text()).split('-')),
+        }
+
+        bet_balls = bet_dic[balls[bet_index - 1]]
+        if len(bet_balls) > 1 and bet_balls[1] == ['']:
+            bet_balls = (bet_balls[0],)
 
         ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
         not_bet_balls = []

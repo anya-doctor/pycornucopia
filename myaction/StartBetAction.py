@@ -92,7 +92,11 @@ class MyStartBetAction(object):
                         logging.info(u"【下注中】计算下注列表...")
                         if not repair_mode:
                             # 先清算上局数据，如果有的话...
-                            MyStartBetAction.do_balance(console_instance)
+                            if int(console_instance.pauseBet_combobox.currentIndex()) == 2:
+                                MyStartBetAction.do_balance(console_instance, simulate_mode=True)
+                                console_instance.setSimulateMoney(console_instance.simulate_money)
+                            else:
+                                MyStartBetAction.do_balance(console_instance)
 
                             # 计算需要下注的..
                             MyStartBetAction.do_calculate(console_instance)
@@ -103,12 +107,19 @@ class MyStartBetAction(object):
 
                         logging.info(u"【下注中】开启下注线程...")
                         # 一旦开始了，就开始一次就行了
-                        if int(console_instance.pauseBet_combobox.currentIndex()) == 1:
+
+                        if int(console_instance.pauseBet_combobox.currentIndex()) == 2:
+                            logging.info(u"【下注中】本期%s处于模拟下注模式！！不下注咯.." % console_instance.timesnow)
+                            console_instance.is_bet_success = False
+                            # UI跟上，填写：放弃投注...
+                            b = copy.deepcopy(console_instance.all_ball_needToBetList)
+                            console_instance.loadTableData3(b, mode=2)
+                        elif int(console_instance.pauseBet_combobox.currentIndex()) == 1:
                             logging.info(u"【下注中】本期%s处于暂停下注模式！！不下注咯.." % console_instance.timesnow)
                             console_instance.is_bet_success = False
                             # UI跟上，填写：放弃投注...
                             b = copy.deepcopy(console_instance.all_ball_needToBetList)
-                            console_instance.loadTableData3(b)
+                            console_instance.loadTableData3(b, mode=1)
                         else:
                             logging.info(u"【下注中】本期%s处于正常下注模式！下注咯.." % console_instance.timesnow)
                             console_instance.betThread = MyBetThread.MyBetDataThread(console_instance,

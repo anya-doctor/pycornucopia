@@ -98,6 +98,8 @@ class MyConsole(QWidget):
 
         self.is_bet_success = False
 
+        self.simulate_money = 0  # 模拟下注金额
+
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)
 
@@ -279,7 +281,7 @@ class MyConsole(QWidget):
                 logging.info(i)
 
     @pyqtSlot(list)
-    def loadTableData3(self, all_ball_needToBetList):
+    def loadTableData3(self, all_ball_needToBetList, mode=1):
         try:
             b = all_ball_needToBetList
             row = self.viewEntry.rowCount()
@@ -287,7 +289,10 @@ class MyConsole(QWidget):
             cnt = 0
             row = self.viewEntry.rowCount()
             for item in self.all_ball_needToBetList:
-                newItem = QTableWidgetItem(u'放弃投注')
+                if mode == 1:
+                    newItem = QTableWidgetItem(u'放弃投注')
+                elif mode == 2:
+                    newItem = QTableWidgetItem(u'实时模拟投注')
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem((row - len(self.all_ball_needToBetList) + cnt), 5, newItem)
                 cnt += 1
