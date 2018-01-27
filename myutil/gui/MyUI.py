@@ -17,6 +17,8 @@ from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
 from myaction.StartBetAction import MyStartBetAction
 from myaction.StartSimulateBetAction import MyStartSimulateBetAction
+from myaction.UpdateLoseAppendAction import MyUpdateLoseAppendAction
+from myaction.UpdateNormalQiQiGunAction import MyUpdateNormalQiQiGunAction
 from myaction.UpdateSimulateComboModeAction import MyUpdateSimulateComboModeAction
 from myaction.UpdateSimulateLabelAction import MyUpdateSimulateLabelAction
 from myutil.db.MyDB import MyDBUtil
@@ -98,12 +100,16 @@ class MyUIUtil(object):
         console_instance.isQQG_combobox.addItem(u'期期滚')
         console_instance.isQQG_combobox.addItem(u'常规')
         console_instance.gridlayout.addWidget(console_instance.isQQG_combobox, 2, 8, 1, 2)
+        console_instance.connect(console_instance.isQQG_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
+                                 lambda: MyUpdateNormalQiQiGunAction.run(console_instance))
 
         # 是否赢追加还是输追加
         console_instance.isLoseAdd_combobox = QComboBox()
         console_instance.isLoseAdd_combobox.addItem(u'输追加')
         console_instance.isLoseAdd_combobox.addItem(u'赢追加')
         console_instance.gridlayout.addWidget(console_instance.isLoseAdd_combobox, 2, 10, 1, 2)
+        console_instance.connect(console_instance.isLoseAdd_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
+                                 lambda: MyUpdateLoseAppendAction.run(console_instance))
 
         console_instance.goBtn = QtGui.QPushButton(u"开始")
         console_instance.connect(console_instance.goBtn, QtCore.SIGNAL('clicked()'),

@@ -252,12 +252,21 @@ class MyConsole(QWidget):
             row = self.viewEntry.rowCount()
             for k in range(len(b)):
                 if b[k][2] == 0:
-                    newItem = QTableWidgetItem(u'中')
-                    newItem.setBackgroundColor(self.c)
-                    newItem.setTextColor(QColor(255, 0, 0, 127))
+                    if self.isLoseAdd:  # 输加注
+                        newItem = QTableWidgetItem(u'中')
+                        newItem.setBackgroundColor(self.c)
+                        newItem.setTextColor(QColor(255, 0, 0, 127))
+                    elif not self.isLoseAdd:  # 赢追加的时候，0表示输了。因为中了会+1>0
+                        newItem = QTableWidgetItem(u'不中')
+                        newItem.setBackgroundColor(self.c)
                 else:
-                    newItem = QTableWidgetItem(u'不中')
-                    newItem.setBackgroundColor(self.c)
+                    if self.isLoseAdd:  # 输加注
+                        newItem = QTableWidgetItem(u'不中')
+                        newItem.setBackgroundColor(self.c)
+                    elif not self.isLoseAdd:  # 赢追加的时候，0表示输了。因为中了会+1>0
+                        newItem = QTableWidgetItem(u'中')
+                        newItem.setBackgroundColor(self.c)
+                        newItem.setTextColor(QColor(255, 0, 0, 127))
                 self.viewEntry.setItem(row - len(b) + k, 6, newItem)
 
                 result_item = QTableWidgetItem(', '.join([str(v) for v in self.open_balls]))
