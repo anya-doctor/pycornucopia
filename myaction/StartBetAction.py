@@ -143,22 +143,22 @@ class MyStartBetAction(object):
         :param console_instance:
         :return:
         """
-        if console_instance.isSimulate_combobox.currentIndex() == 0:  # 正常模式才日志输出
-            logging.info(u"【下注中】当前模式，console_instance.isQQG=%s" % console_instance.isQQG)
-            logging.info(u"【下注中】当前模式，console_instance.isLoseAdd=%s" % console_instance.isLoseAdd)
+        logging.info(u"【下注中-结算】当前模式，console_instance.isQQG=%s" % console_instance.isQQG)
+        logging.info(u"【下注中-结算】当前模式，console_instance.isLoseAdd=%s" % console_instance.isLoseAdd)
 
         if not console_instance.all_ball_needToBetList:  # 说明上期有数据
-            logging.info(u"【下注中】結算發現無下注列表，跳過結算環節...")
+            logging.info(u"【下注中-结算】結算發現無下注列表，跳過結算環節...")
             return
 
         open_balls = console_instance.open_balls
-        win_flag = False
+
         logging.info("open_balls=%s" % open_balls)
         for item in console_instance.all_ball_needToBetList:
             logging.info("item=%s" % item)
+            win_flag = False
             for inner_item in item[3]:
                 if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
-                    logging.info(u"【下注中】结算对比位置%s开奖%s == 下注球%s 结算发现中！！！" % (
+                    logging.info(u"【下注中-结算】结算对比位置%s开奖%s == 下注球%s 结算发现中！！！" % (
                         inner_item[0], open_balls[inner_item[0] - 1], inner_item[1]))
                     win_flag = True
                     if simulate_mode:
@@ -168,24 +168,26 @@ class MyStartBetAction(object):
                 else:
                     if simulate_mode:
                         console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
-        logging.info(console_instance.isLoseAdd)
-        logging.info(type(console_instance.isLoseAdd))
-        if console_instance.isLoseAdd:  # 输加注
-            logging.info(u"【下注中】结算進入輸追加模式...")
-            if win_flag:
-                item[2] = 0
-            else:
-                item[2] += 1
-        elif not console_instance.isLoseAdd:
-            logging.info(u"【下注中】進入赢追加模式...")
-            if win_flag:
-                item[2] += 1
-            else:
-                item[2] = 0
+            if console_instance.isLoseAdd:  # 输加注
+                if win_flag:
+                    item[2] = 0
+                else:
+                    item[2] += 1
+            elif not console_instance.isLoseAdd:
+                if win_flag:
+                    item[2] += 1
+                else:
+                    item[2] = 0
+
+            # 补充record_list
+            x = copy.deepcopy(item[3])
+            x.append(win_flag)
+            item[6].append(x)
+
+            logging.info("item=%s" % item)
 
         # 通知控制台中或不中
-        if console_instance.isSimulate_combobox.currentIndex() == 0:  # 正常模式才日志输出
-            logging.info(u"【下注中】结算通知UI-2...")
+        logging.info(u"【下注中-结算-结算】结算通知UI-2...")
         b = copy.deepcopy(console_instance.all_ball_needToBetList)
         console_instance.loadTableData2(b)
 
@@ -223,15 +225,15 @@ class MyStartBetAction(object):
         """
         if bet_mode == BET_MODE_VERTICAL:
             # 如果下注列表為空則初始化
-            if console_instance.isSimulate_combobox.currentIndex() == 0:  # 正常模式才日志输出
-                logging.info(u"【下注中】下注列表為空，初始化...")
             if not console_instance.all_ball_needToBetList:
+                logging.info(u"【下注中】下注列表為空，初始化...")
                 for i in range(1, 11):
                     a, b = MyAlgorithm.verical_get_bet_list(console_instance, i)
                     if a:
                         # 如果a是tuple，说明a想要一个位置下注多条
                         if isinstance(a, tuple):
-                            # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index]
+                            # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
+                            # item[6] = record_list = [[1,1],[1,2],TRUE]  反正最后一个元素表示中不中。。。
                             for j in range(len(a)):
                                 # 如果多个孩子，有一个孩子是[] 或者['']，则放弃它
                                 if not a[j]:
@@ -241,24 +243,23 @@ class MyStartBetAction(object):
 
                                 c = [[i, v] for v in a[j]]
                                 console_instance.all_ball_needToBetList.append(
-                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
+                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, j,[]])
                         # 如果a是list，说明就下注这个list即可
                         elif isinstance(a, list):
                             c = [[i, v] for v in a]
                             console_instance.all_ball_needToBetList.append(
-                                    [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0])
+                                    [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0,[]])
             # 如果不為空
             else:
                 # 如果是期期滾
                 if console_instance.isQQG:
-                    if console_instance.isSimulate_combobox.currentIndex() == 0:  # 正常模式才日志输出
-                        logging.info(u"【下注中】下注列表不為空，進入期期滾模式...")
+                    logging.info(u"【下注中】下注列表不為空，進入期期滾模式...")
                     for i in range(1, 11):
                         a, b = MyAlgorithm.verical_get_bet_list(console_instance, i)
                         if a:
                             # 如果a是tuple，说明a想要一个位置下注多条
                             if isinstance(a, tuple):
-                                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index]
+                                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
                                 for j in range(len(a)):
                                     # 如果多个孩子，有一个孩子是[]，则放弃它
                                     if not a[j]:
@@ -267,16 +268,15 @@ class MyStartBetAction(object):
                                         continue
                                     c = [[i, v] for v in a[j]]
                                     console_instance.all_ball_needToBetList.append(
-                                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j])
+                                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j,[]])
                             # 如果a是list，说明就下注这个list即可
                             elif isinstance(a, list):
                                 c = [[i, v] for v in a]
                                 console_instance.all_ball_needToBetList.append(
-                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0])
+                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0,[]])
                 # 如果是常規模式
                 else:
-                    if console_instance.isSimulate_combobox.currentIndex() == 0:  # 正常模式才日志输出
-                        logging.info(u"【下注中】下注列表不為空，進入常規模式...")
+                    logging.info(u"【下注中】下注列表不為空，進入常規模式...")
 
                     # 更新期数...
                     for item in console_instance.all_ball_needToBetList:
@@ -287,7 +287,6 @@ class MyStartBetAction(object):
                             pass
                         else:
                             # 如果n期换配置起作用，但是还没到轮换点，则跳过
-                            logging.info("############## %s %s" % (item[2], console_instance.n_change))
                             if int(item[2]) == 0:  # 说明中了
                                 pass
                             elif int(item[2]) % console_instance.n_change != 0:
@@ -298,13 +297,12 @@ class MyStartBetAction(object):
                         if a:
                             # 如果a是tuple，说明a想要一个位置下注多条
                             if isinstance(a, tuple):
-                                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index]
+                                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
                                 mother_son_list = []
                                 for x_index, x in enumerate(console_instance.all_ball_needToBetList):
                                     if x[0] == item[0] and x[1] == item[1] and x[4] == item[4]:
                                         mother_son_list.append(x_index)
-                                if console_instance.isSimulate_combobox.currentIndex() == 0:  # 正常模式才日志输出
-                                    logging.info(u"【下注中】找到母子序列号：%s" % mother_son_list)
+                                logging.info(u"【下注中】找到母子序列号：%s" % mother_son_list)
 
                                 assert len(a) == len(mother_son_list)
 
