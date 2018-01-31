@@ -9,6 +9,7 @@ from PyQt4.QtCore import *
 
 from common import common
 from myutil.tool.MyTool import getCurrentTimestamp
+from common.common import req_session
 
 
 class MyBetDataThread(QtCore.QThread):
@@ -45,8 +46,6 @@ class MyBetDataThread(QtCore.QThread):
                     logging.info(u"【下注线程】item=%s, 金额为0，跳过！！！放弃此次下注！" % item)
                 else:
                     for inner_item in item[3]:
-                        logging.info("#### %s" % inner_item)
-                        logging.info("#### %s" % common.pk_ball_dic)
                         a = common.pk_ball_dic[inner_item[0]]
                         peilv = self.peilv_dict[a + str(inner_item[1])]
                         t_str += '%s|%s|%s|%s;' % (a, int(inner_item[1]), peilv, bet_money)
@@ -93,10 +92,23 @@ class MyBetDataThread(QtCore.QThread):
         }
         logging.info("payload=%s" % payload)
 
-        r = requests.post(pk_post_bet_url, params=payload,
-                          cookies=self.console_instance.loginSuccessData['cookies_jar'],
-                          headers=self.console_instance.loginSuccessData['headers'], timeout=15)
+        try:
+            """
+            如果有什么问题的话，直接让它重登算了...
+            15秒下个注应该够了，如果15秒都超时，真的不如重登算了...
+            """
+            r1 = requests.Request('POST', pk_post_bet_url, data=payload,
+                                  headers=self.console_instance.loginSuccessData['headers'],
+                                  cookies=self.console_instance.loginSuccessData['cookies_jar'])
+            prep1 = req_session.prepare_request(r1)
+            r = req_session.send(prep1, stream=False, timeout=15, allow_redirects=False)
+        except Exception, ex:
+            logging.error(ex, exc_info=1)
+            return None
+
         real_content = r.content.split('êêê')[0]
+        r.close()
+
         real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
 
         logging.info(u"【下注线程】 字符串=%s" % real_content)
