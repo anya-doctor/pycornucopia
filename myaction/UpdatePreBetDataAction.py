@@ -54,10 +54,8 @@ class MyUpdatePreBetDataAction(object):
                 MyGetHistoryResultDataAction.run(console_instance)
             elif 'win' not in console_instance.preBetDataDic['data']:
                 logging.info(u"【更新预下注数据】還在結算階段-1，拿不到最新數據，等待之...")
-            elif int(timesnow) - int(console_instance.timesnow) == 1 and \
-                            [int(v) for v in console_instance.open_balls] == console_instance.history_data[0][2:12]:
+            elif int(timeclose) >= 190:
                 logging.info(u"【更新预下注数据】還在結算階段-2，拿不到最新數據，等待之...")
-                logging.info(u"【更新预下注数据】不可能连续两期完全开奖相同的吧...")
             elif console_instance.history_data and int(timesnow) - int(console_instance.history_data[0][0]) >= 3:
                 # 假设现在 timesnow = console_instance.timesnow = 661167，此时历史数据最新 = 661166
                 # 在某个时刻，正在结算中，可能只要10秒吧，timesnow=661168，但是历史数据还是 661166
