@@ -223,11 +223,28 @@ class MyStartBetAction(object):
         :param bet_mode:
         :return:
         """
+        dic = {
+            1: int(console_instance.ball0_1_Entry.text()),
+            2: int(console_instance.ball0_2_Entry.text()),
+            3: int(console_instance.ball0_3_Entry.text()),
+            4: int(console_instance.ball0_4_Entry.text()),
+            5: int(console_instance.ball0_5_Entry.text()),
+            6: int(console_instance.ball0_6_Entry.text()),
+            7: int(console_instance.ball0_7_Entry.text()),
+            8: int(console_instance.ball0_8_Entry.text()),
+            9: int(console_instance.ball0_9_Entry.text()),
+            10: int(console_instance.ball0_10_Entry.text()),
+        }
+
         if bet_mode == BET_MODE_VERTICAL:
             # 如果下注列表為空則初始化
             if not console_instance.all_ball_needToBetList:
                 logging.info(u"【下注中】下注列表為空，初始化...")
                 for i in range(1, 11):
+                    # 那就是过滤掉了...
+                    if dic[i] == 0:
+                        continue
+
                     a, b = MyAlgorithm.verical_get_bet_list(console_instance, i)
                     if a:
                         # 如果a是tuple，说明a想要一个位置下注多条
@@ -243,18 +260,22 @@ class MyStartBetAction(object):
 
                                 c = [[i, v] for v in a[j]]
                                 console_instance.all_ball_needToBetList.append(
-                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, j,[]])
+                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, j, []])
                         # 如果a是list，说明就下注这个list即可
                         elif isinstance(a, list):
                             c = [[i, v] for v in a]
                             console_instance.all_ball_needToBetList.append(
-                                    [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0,[]])
+                                    [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0, []])
             # 如果不為空
             else:
                 # 如果是期期滾
                 if console_instance.isQQG:
                     logging.info(u"【下注中】下注列表不為空，進入期期滾模式...")
                     for i in range(1, 11):
+                        # 那就是过滤掉了...
+                        if dic[i] == 0:
+                            continue
+
                         a, b = MyAlgorithm.verical_get_bet_list(console_instance, i)
                         if a:
                             # 如果a是tuple，说明a想要一个位置下注多条
@@ -268,12 +289,12 @@ class MyStartBetAction(object):
                                         continue
                                     c = [[i, v] for v in a[j]]
                                     console_instance.all_ball_needToBetList.append(
-                                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j,[]])
+                                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j, []])
                             # 如果a是list，说明就下注这个list即可
                             elif isinstance(a, list):
                                 c = [[i, v] for v in a]
                                 console_instance.all_ball_needToBetList.append(
-                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0,[]])
+                                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0, []])
                 # 如果是常規模式
                 else:
                     logging.info(u"【下注中】下注列表不為空，進入常規模式...")
@@ -320,5 +341,60 @@ class MyStartBetAction(object):
                                 c = [[index, v] for v in a]
                                 item[3] = c
 
+                    # 动态处理增加或删除下注list，跟进第一列的0 1
+                    MyStartBetAction.dynamic_remove_or_add_betlist(console_instance)
+
         else:
             pass
+
+    @staticmethod
+    def dynamic_remove_or_add_betlist(console_instance):
+        """
+        动态处理增加或删除下注list，跟进第一列的0 1
+        :param console_instance:
+        :return:
+        """
+        dic = {
+            1: int(console_instance.ball0_1_Entry.text()),
+            2: int(console_instance.ball0_2_Entry.text()),
+            3: int(console_instance.ball0_3_Entry.text()),
+            4: int(console_instance.ball0_4_Entry.text()),
+            5: int(console_instance.ball0_5_Entry.text()),
+            6: int(console_instance.ball0_6_Entry.text()),
+            7: int(console_instance.ball0_7_Entry.text()),
+            8: int(console_instance.ball0_8_Entry.text()),
+            9: int(console_instance.ball0_9_Entry.text()),
+            10: int(console_instance.ball0_10_Entry.text()),
+        }
+        for key, value in dic.iteritems():
+            # 如果已经放弃了这一条，那么就从下注list中去除
+            if value == 0:
+                t = filter(lambda x: int(x[4]) == key, console_instance.all_ball_needToBetList)
+                if len(t) > 0:
+                    console_instance.all_ball_needToBetList = filter(lambda x: int(x[4]) != key,
+                                                                     console_instance.all_ball_needToBetList)
+            # 如果之前没有这一条，那么就加到下注list中
+            elif value == 1:
+                t = filter(lambda x: int(x[4]) == key, console_instance.all_ball_needToBetList)
+                if len(t) == 0:
+                    a, b = MyAlgorithm.verical_get_bet_list(console_instance, key)
+                    if a:
+                        # 如果a是tuple，说明a想要一个位置下注多条
+                        if isinstance(a, tuple):
+                            # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
+                            # item[6] = record_list = [[1,1],[1,2],TRUE]  反正最后一个元素表示中不中。。。
+                            for j in range(len(a)):
+                                # 如果多个孩子，有一个孩子是[] 或者['']，则放弃它
+                                if not a[j]:
+                                    continue
+                                if len(a[j]) == 1 and not a[j][0]:
+                                    continue
+
+                                c = [[key, v] for v in a[j]]
+                                console_instance.all_ball_needToBetList.append(
+                                        [console_instance.timesnow, console_instance.timesnow, 0, c, key, j, []])
+                        # 如果a是list，说明就下注这个list即可
+                        elif isinstance(a, list):
+                            c = [[key, v] for v in a]
+                            console_instance.all_ball_needToBetList.append(
+                                    [console_instance.timesnow, console_instance.timesnow, 0, c, key, 0, []])

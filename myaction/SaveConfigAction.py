@@ -73,12 +73,22 @@ class MySaveConfigAction(object):
                 ball9_6='" + console_instance.ball9_6_Entry.text() + "',ball9_7='" + console_instance.ball9_7_Entry.text() + "',ball9_8='" + console_instance.ball9_8_Entry.text() + "',ball9_9='" + console_instance.ball9_9_Entry.text() + "',ball9_10='" + console_instance.ball9_10_Entry.text() + "',\
                 ball10_1='" + console_instance.ball10_1_Entry.text() + "',ball10_2='" + console_instance.ball10_2_Entry.text() + "',ball10_3='" + console_instance.ball10_3_Entry.text() + "',ball10_4='" + console_instance.ball10_4_Entry.text() + "',ball10_5='" + console_instance.ball10_5_Entry.text() + "',\
                 ball10_6='" + console_instance.ball10_6_Entry.text() + "',ball10_7='" + console_instance.ball10_7_Entry.text() + "',ball10_8='" + console_instance.ball10_8_Entry.text() + "',ball10_9='" + console_instance.ball10_9_Entry.text() + "',ball10_10='" + console_instance.ball10_10_Entry.text() + "',\
+                ball0_1='" + console_instance.ball0_1_Entry.text() + "',ball0_2='" + console_instance.ball0_2_Entry.text() + "',ball0_3='" + console_instance.ball0_3_Entry.text() + "',ball0_4='" + console_instance.ball0_4_Entry.text() + "',ball0_5='" + console_instance.ball0_5_Entry.text() + "',\
+                ball0_6='" + console_instance.ball0_6_Entry.text() + "',ball0_7='" + console_instance.ball0_7_Entry.text() + "',ball0_8='" + console_instance.ball0_8_Entry.text() + "',ball0_9='" + console_instance.ball0_9_Entry.text() + "',ball0_10='" + console_instance.ball0_10_Entry.text() + "',\
                 isQQG = '" + ('0' if console_instance.isQQG else '1') + "',isLoseAdd = '" + (
                 '0' if console_instance.isLoseAdd else '1') + "',n_change='" + str(n_change) + "';"
 
             cqssc_db.execute(unicode(sql))
             cqssc_db.commit()
             cqssc_db.close()
+
+            console_instance.ball0 = [console_instance.ball0_1_Entry.text(), console_instance.ball0_2_Entry.text(),
+                          console_instance.ball0_3_Entry.text(),
+                          console_instance.ball0_4_Entry.text(), console_instance.ball0_5_Entry.text(),
+                          console_instance.ball0_6_Entry.text(),
+                          console_instance.ball0_7_Entry.text(), console_instance.ball0_8_Entry.text(),
+                          console_instance.ball0_9_Entry.text(),
+                          console_instance.ball0_10_Entry.text()]
 
             console_instance.ball1 = [console_instance.ball1_1_Entry.text(), console_instance.ball1_2_Entry.text(),
                                       console_instance.ball1_3_Entry.text(),

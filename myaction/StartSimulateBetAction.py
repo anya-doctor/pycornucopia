@@ -16,7 +16,7 @@ class MyStartSimulateBetAction(object):
         assert isinstance(console_instance.isSimulate_combobox, QComboBox)
         if not console_instance.isSimulate_combobox.currentIndex() == 1:  # 0正常，1模拟
             msgtitle = u"失败了"
-            msg = u"请切换到模拟模式"
+            msg = u"请切换到“模拟-开”模式"
             QMetaObject.invokeMethod(console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                      Q_ARG(str, msg))
         elif not console_instance.simulate_data:

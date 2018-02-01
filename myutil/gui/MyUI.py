@@ -70,17 +70,17 @@ class MyUIUtil(object):
         console_instance.gridlayout.addWidget(lb4, 1, 6)
         console_instance.gridlayout.addWidget(console_instance.earnMoneyAtEntry, 1, 7, 1, 2)
         console_instance.gridlayout.addWidget(console_instance.lostMoneyAtEntry, 1, 9, 1, 3)
-        console_instance.gridlayout.addWidget(console_instance.saveConfigBtn, 1, 26, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.saveConfigBtn, 1, 25, 1, 3)
 
         console_instance.pauseBet_combobox = QComboBox()
         console_instance.pauseBet_combobox.addItem(u'正常下注模式')
         console_instance.pauseBet_combobox.addItem(u'暂停下注模式')
-        console_instance.pauseBet_combobox.addItem(u'实时模拟下注模式')
+        console_instance.pauseBet_combobox.addItem(u'实时模拟模式')
         console_instance.connect(console_instance.pauseBet_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
                                  lambda: MyPauseBetAction.run(console_instance))
-        console_instance.gridlayout.addWidget(console_instance.pauseBet_combobox, 0, 26, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.pauseBet_combobox, 0, 25, 1, 3)
 
-        lb6 = QLabel(u'程序命名')
+        lb6 = QLabel(u'软件名')
         console_instance.nameEntry = QLineEdit()
         console_instance.registerBtn = QtGui.QPushButton(u"命名")
         console_instance.registerBtn.setFixedSize(40, 20)
@@ -114,12 +114,12 @@ class MyUIUtil(object):
         console_instance.goBtn = QtGui.QPushButton(u"开始")
         console_instance.connect(console_instance.goBtn, QtCore.SIGNAL('clicked()'),
                                  lambda: MyStartBetAction.run(console_instance))
-        console_instance.gridlayout.addWidget(console_instance.goBtn, 2, 26, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.goBtn, 2, 25, 1, 3)
 
         lb0 = QLabel(u'线路')
         console_instance.linesEntry = QTextEdit()
         console_instance.gridlayout.addWidget(lb0, 0, 12)
-        console_instance.gridlayout.addWidget(console_instance.linesEntry, 0, 13, 3, 12)
+        console_instance.gridlayout.addWidget(console_instance.linesEntry, 0, 13, 3, 11)
 
         # 加入模拟功能
         console_instance.simulate_qishu_lb = QLabel(u'选中期数：')
@@ -127,23 +127,23 @@ class MyUIUtil(object):
 
         # 是否模拟模式
         console_instance.isSimulate_combobox = QComboBox()
-        console_instance.isSimulate_combobox.addItem(u'正常模式')
-        console_instance.isSimulate_combobox.addItem(u'历史模拟模式')
-        console_instance.gridlayout.addWidget(console_instance.isSimulate_combobox, 0, 29, 1, 2)
+        console_instance.isSimulate_combobox.addItem(u'模拟-关')
+        console_instance.isSimulate_combobox.addItem(u'模拟-开')
+        console_instance.gridlayout.addWidget(console_instance.isSimulate_combobox, 0, 29, 1, 3)
         console_instance.connect(console_instance.isSimulate_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
                                  lambda: MyUpdateSimulateComboModeAction.run(console_instance))
 
         cal_from_lb = QLabel(u'开始')
         cal_to_lb = QLabel(u'结束')
-        console_instance.gridlayout.addWidget(cal_from_lb, 1, 29, 1, 1)
-        console_instance.gridlayout.addWidget(cal_to_lb, 2, 29, 1, 1)
+        console_instance.gridlayout.addWidget(cal_from_lb, 1, 28, 1, 1)
+        console_instance.gridlayout.addWidget(cal_to_lb, 2, 28, 1, 1)
         console_instance.cal_from = QDateEdit()
-        console_instance.gridlayout.addWidget(console_instance.cal_from, 1, 30, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.cal_from, 1, 29, 1, 3)
         now_day = time.strftime("%Y-%m-%d", time.localtime())
         console_instance.cal_from.setDate(QDate.fromString(now_day, 'yyyy-MM-dd'))
 
         console_instance.cal_to = QDateEdit()
-        console_instance.gridlayout.addWidget(console_instance.cal_to, 2, 30, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.cal_to, 2, 29, 1, 3)
         now_day = time.strftime("%Y-%m-%d", time.localtime())
         console_instance.cal_to.setDate(QDate.fromString(now_day, 'yyyy-MM-dd'))
 
@@ -174,6 +174,11 @@ class MyUIUtil(object):
         console_instance.connect(console_instance.simulateBtn, QtCore.SIGNAL('clicked()'),
                                  lambda: MyStartSimulateBetAction.run(console_instance))
         console_instance.gridlayout.addWidget(console_instance.simulateBtn, 1, 37, 1, 2)
+
+        # 0
+        console_instance.ball0_1_Entry, console_instance.ball0_2_Entry, console_instance.ball0_3_Entry, console_instance.ball0_4_Entry, console_instance.ball0_5_Entry, \
+        console_instance.ball0_6_Entry, console_instance.ball0_7_Entry, console_instance.ball0_8_Entry, console_instance.ball0_9_Entry, console_instance.ball0_10_Entry \
+            = QLineEdit(), QLineEdit(), QLineEdit(), QLineEdit(), QLineEdit(), QLineEdit(), QLineEdit(), QLineEdit(), QLineEdit(), QLineEdit()
 
         # 1
         console_instance.ball1_1_Entry, console_instance.ball2_1_Entry, console_instance.ball3_1_Entry, console_instance.ball4_1_Entry, console_instance.ball5_1_Entry, \
@@ -258,11 +263,20 @@ class MyUIUtil(object):
              console_instance.ball10_6_Entry, console_instance.ball10_7_Entry, console_instance.ball10_8_Entry,
              console_instance.ball10_9_Entry, console_instance.ball10_10_Entry]]
 
+        t = [console_instance.ball0_1_Entry, console_instance.ball0_2_Entry, console_instance.ball0_3_Entry,
+             console_instance.ball0_4_Entry, console_instance.ball0_5_Entry,
+             console_instance.ball0_6_Entry, console_instance.ball0_7_Entry, console_instance.ball0_8_Entry,
+             console_instance.ball0_9_Entry, console_instance.ball0_10_Entry]
+        for i in range(len(t)):
+            label = QLabel(u'开关')
+            console_instance.gridlayout.addWidget(label, 4,  0 + 4 * i,1,1)
+            console_instance.gridlayout.addWidget(t[i], 4, 1 + 4 * i, 1, 3)
+
         for i in range(len(tmp_entrys)):
             for j in range(len(tmp_entrys[i])):
                 label = QLabel(u'%d-%d' % (i + 1, j + 1))
-                console_instance.gridlayout.addWidget(label, 4 + j, 0 + 4 * i)
-                console_instance.gridlayout.addWidget(tmp_entrys[i][j], 4 + j, 1 + 4 * i, 1, 3)
+                console_instance.gridlayout.addWidget(label, 5 + j, 0 + 4 * i,1,1)
+                console_instance.gridlayout.addWidget(tmp_entrys[i][j], 5 + j, 1 + 4 * i, 1, 3)
 
         console_instance.qishu_label = QLabel(u'期数: ')
         console_instance.timeclose_label = QLabel(u'封盘: ')
@@ -270,19 +284,19 @@ class MyUIUtil(object):
         console_instance.win_label = QLabel(u'赢钱: ')
         console_instance.open_balls_label = QLabel(u'开奖: ')
         console_instance.now_bet_money_label = QLabel(u'本次下注金额: ')
-        console_instance.gridlayout.addWidget(console_instance.qishu_label, 14, 0, 1, 2)
-        console_instance.gridlayout.addWidget(console_instance.timeclose_label, 14, 2, 1, 2)
-        console_instance.gridlayout.addWidget(console_instance.timeopen_label, 14, 4, 1, 2)
-        console_instance.gridlayout.addWidget(console_instance.win_label, 14, 6, 1, 2)
-        console_instance.gridlayout.addWidget(console_instance.open_balls_label, 14, 8, 1, 6)
-        console_instance.gridlayout.addWidget(console_instance.now_bet_money_label, 14, 14, 1, 6)
+        console_instance.gridlayout.addWidget(console_instance.qishu_label, 15, 0, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.timeclose_label, 15, 2, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.timeopen_label, 15, 4, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.win_label, 15, 6, 1, 2)
+        console_instance.gridlayout.addWidget(console_instance.open_balls_label, 15, 8, 1, 6)
+        console_instance.gridlayout.addWidget(console_instance.now_bet_money_label, 15, 14, 1, 6)
 
         pa = QPalette()
         pa.setColor(QPalette.WindowText, Qt.red)
         console_instance.win_label.setPalette(pa)
 
         console_instance.viewEntry = QTableWidget(0, 8)
-        console_instance.gridlayout.addWidget(console_instance.viewEntry, 15, 0, 30, 36)
+        console_instance.gridlayout.addWidget(console_instance.viewEntry, 16, 0, 30, 36)
         console_instance.viewEntry.setHorizontalHeaderLabels(
                 [u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否', u'开奖号码'])
         a = console_instance.viewEntry.horizontalHeader()
@@ -301,7 +315,7 @@ class MyUIUtil(object):
         console_instance.clearKaijiangBtn = QtGui.QPushButton(u"清空开奖面板")
         console_instance.connect(console_instance.clearKaijiangBtn, QtCore.SIGNAL('clicked()'),
                                  lambda: MyClearKaijiangInfoAction.run(console_instance))
-        console_instance.gridlayout.addWidget(console_instance.clearKaijiangBtn, 15, 36, 1, 3)
+        console_instance.gridlayout.addWidget(console_instance.clearKaijiangBtn, 16, 36, 1, 3)
 
         console_instance.setLayout(console_instance.gridlayout)
 
@@ -495,6 +509,18 @@ class MyUIUtil(object):
             console_instance.ball10_9_Entry.setText(row[108])
             console_instance.ball10_10_Entry.setText(row[109])
 
+            # ball 0
+            console_instance.ball0_1_Entry.setText(row[113])
+            console_instance.ball0_2_Entry.setText(row[114])
+            console_instance.ball0_3_Entry.setText(row[115])
+            console_instance.ball0_4_Entry.setText(row[116])
+            console_instance.ball0_5_Entry.setText(row[117])
+            console_instance.ball0_6_Entry.setText(row[118])
+            console_instance.ball0_7_Entry.setText(row[119])
+            console_instance.ball0_8_Entry.setText(row[120])
+            console_instance.ball0_9_Entry.setText(row[121])
+            console_instance.ball0_10_Entry.setText(row[122])
+
             console_instance.ball1 = [row[10], row[11], row[12], row[13], row[14], row[15], row[16], row[17], row[18],
                                       row[19]]
             console_instance.ball2 = [row[20], row[21], row[22], row[23], row[24], row[25], row[26], row[27], row[28],
@@ -516,7 +542,10 @@ class MyUIUtil(object):
             console_instance.ball10 = [row[100], row[101], row[102], row[103], row[104], row[105], row[106], row[107],
                                        row[108],
                                        row[109]]
-            console_instance.balls = [console_instance.ball1, console_instance.ball2, console_instance.ball3,
+            console_instance.ball0 = [row[113], row[114], row[115], row[116], row[117], row[118], row[119], row[120],
+                                      row[121],
+                                      row[122]]
+            console_instance.balls = [console_instance.ball0, console_instance.ball1, console_instance.ball2, console_instance.ball3,
                                       console_instance.ball4, console_instance.ball5,
                                       console_instance.ball6, console_instance.ball7, console_instance.ball8,
                                       console_instance.ball9, console_instance.ball10]
