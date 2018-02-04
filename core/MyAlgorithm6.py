@@ -41,8 +41,8 @@ def verical_get_bet_list(console_instance, bet_index):
             e = [v[1] for v in d[0:-1]]
             logging.info("d=%s,e=%s" % (d, e))
 
-            # 如果历史记录只有1个元素，说明是aabb模式的第一个a
-            if len(record_list) % 4 == 1:
+            # 如果历史记录只有1个元素，说明是abb模式的a
+            if len(record_list) % 3 == 1:
                 # 如果中了，则进入重启abb
                 if d[-1] == True:
                     if str(balls[bet_index - 1]) in a:
@@ -50,30 +50,28 @@ def verical_get_bet_list(console_instance, bet_index):
                     else:
                         bet_balls = b
                     # 清空record_list
-                    logging.info("#############")
                     console_instance.all_ball_needToBetList[lala_index][6] = []
-                # 如果不中，则进入abb中的第二个a
+                # 如果不中，则进入abb中的第一个b
                 else:
-                    bet_balls = e
-            # 能走到这一步，说明abb模式的第2个a
-            elif len(record_list) % 4 == 2:
-                # 无论 输赢，都是->b
+                    if e == a:
+                        bet_balls = b
+                    else:
+                        bet_balls = a
+            # 能走到这一步，说明abb模式的第一个b
+            elif len(record_list) % 3 == 2:
+                # 无论 输赢，都是继续b
                 if e == a:
-                    bet_balls = b
-                else:
                     bet_balls = a
-            # 能走到第三步，说明是abb模式的第1个b
-            elif len(record_list) % 4 == 3:
-                # 这里无论输赢，都重启abb模式
-                bet_balls = e
-            elif len(record_list) % 4 == 0:
+                else:
+                    bet_balls = b
+            # 能走到第三步，说明是abb模式的第二个b
+            elif len(record_list) % 3 == 0:
                 # 这里无论输赢，都重启abb模式
                 if str(balls[bet_index - 1]) in a:
                     bet_balls = a
                 else:
                     bet_balls = b
-                # 清空record_list
-                console_instance.all_ball_needToBetList[lala_index][6] = []
+
         not_bet_balls = []
         ret = bet_balls, not_bet_balls
 
