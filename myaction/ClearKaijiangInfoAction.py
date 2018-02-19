@@ -28,6 +28,7 @@ class MyClearKaijiangInfoAction(object):
 
             logging.info(u"【控制台】清空本次下注金额...")
             console_instance.now_bet_money_label.setText(u'本次下注金额: 0')
+            console_instance.now_bet_qishu_label.setText(u'本次期数: 0')
 
         except Exception, ex:
             logging.error(ex)

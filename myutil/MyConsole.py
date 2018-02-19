@@ -183,6 +183,7 @@ class MyConsole(QWidget):
                 for j in i[3]:
                     now_bet_money += self.balls_bet_amount[i[2]]
             self.now_bet_money_label.setText(u"本次下注金额：%s" % now_bet_money)
+            self.now_bet_qishu_label.setText(u"本次期数：%s" % self.timesnow)
 
             self.colorflag += 1
             self.c = QColor("darkgray") if self.colorflag % 2 == 0 else QColor("gray")
