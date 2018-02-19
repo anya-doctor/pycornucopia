@@ -155,6 +155,10 @@ class MyStartBetAction(object):
         logging.info("open_balls=%s" % open_balls)
         for item in console_instance.all_ball_needToBetList:
             logging.info("item=%s" % item)
+            # 如果本item没有下注的list，则跳过
+            if not item[3]:
+                continue
+
             win_flag = False
             for inner_item in item[3]:
                 if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
@@ -313,9 +317,11 @@ class MyStartBetAction(object):
                             elif int(item[2]) % console_instance.n_change != 0:
                                 continue
                         # 替換新的下注列表
-                        index = item[3][0][0]
+                        index = item[4]
                         a, b = MyAlgorithm.verical_get_bet_list(console_instance, index)
-                        if a:
+                        if not a:
+                            item[3] = []
+                        else:
                             # 如果a是tuple，说明a想要一个位置下注多条
                             if isinstance(a, tuple):
                                 # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
@@ -348,7 +354,7 @@ class MyStartBetAction(object):
             pass
 
     @staticmethod
-    def dynamic_remove_or_add_betlist(console_instance):
+    def dynamic_remove_or_add_betlist(console_instance, bet_mode=BET_MODE_VERTICAL):
         """
         动态处理增加或删除下注list，跟进第一列的0 1
         :param console_instance:
@@ -400,4 +406,5 @@ class MyStartBetAction(object):
                                     [console_instance.timesnow, console_instance.timesnow, 0, c, key, 0, []])
 
         # 重新排个序吧少年
-        console_instance.all_ball_needToBetList.sort(key=lambda x:(x[0], x[1], x[3][0][0]))
+        if bet_mode == BET_MODE_VERTICAL:
+            console_instance.all_ball_needToBetList.sort(key=lambda x:(x[0], x[1], x[4]))

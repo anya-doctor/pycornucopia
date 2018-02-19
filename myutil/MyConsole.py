@@ -188,6 +188,10 @@ class MyConsole(QWidget):
             self.c = QColor("darkgray") if self.colorflag % 2 == 0 else QColor("gray")
 
             for index, item in enumerate(all_ball_needToBetList):
+                # 如果本item没有下注的list，则跳过
+                if not item[3]:
+                    continue
+
                 # 添加一行
                 row = self.viewEntry.rowCount()
                 self.viewEntry.insertRow(row)
@@ -251,6 +255,10 @@ class MyConsole(QWidget):
             b = all_ball_needToBetList
             row = self.viewEntry.rowCount()
             for k in range(len(b)):
+                # 如果本item没有下注的list，则跳过
+                if not b[k][3]:
+                    continue
+
                 if b[k][2] == 0:
                     if self.isLoseAdd:  # 输加注
                         newItem = QTableWidgetItem(u'中')
