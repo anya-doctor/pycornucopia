@@ -29,6 +29,7 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
             res = []
             date_list = MyDate.get_date_list(self.from_date, self.to_date)
             success_flag = True
+            fail_date = ""
             for _date in date_list:
                 date = _date.strftime("%Y-%m-%d")
                 day_data = xml_helper(date)
@@ -36,12 +37,13 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
                     res.extend(day_data)
                 else:
                     success_flag = False
+                    fail_date = str(date)
             if success_flag:
                 QMetaObject.invokeMethod(self.console, "onUpdateSimulateHistoryResultDataHideBtn", Qt.QueuedConnection,
                                          Q_ARG(list, res))
             else:
                 msgtitle = u"失败了"
-                msg = u"获取模拟用的历史数据失败，可能网络不好；\n可能今天暂无历史数据...\n请重试..."
+                msg = u"获取模拟用的历史数据失败，可能网络不好；\n可能今天暂无历史数据...\n日期：%s，数据无数据或出错\n请重试..." % fail_date
                 QMetaObject.invokeMethod(self.console, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                          Q_ARG(str, msg))
 
