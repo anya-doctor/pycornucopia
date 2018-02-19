@@ -398,3 +398,6 @@ class MyStartBetAction(object):
                             c = [[key, v] for v in a]
                             console_instance.all_ball_needToBetList.append(
                                     [console_instance.timesnow, console_instance.timesnow, 0, c, key, 0, []])
+
+        # 重新排个序吧少年
+        console_instance.all_ball_needToBetList.sort(key=lambda x:(x[0], x[1], x[3][0][0]))
