@@ -8,8 +8,8 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
 from common import common
-from myutil.tool.MyTool import getCurrentTimestamp
 from common.common import req_session
+from myutil.tool.MyTool import getCurrentTimestamp
 
 
 class MyBetDataThread(QtCore.QThread):

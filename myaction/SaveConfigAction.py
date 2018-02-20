@@ -83,12 +83,12 @@ class MySaveConfigAction(object):
             cqssc_db.close()
 
             console_instance.ball0 = [console_instance.ball0_1_Entry.text(), console_instance.ball0_2_Entry.text(),
-                          console_instance.ball0_3_Entry.text(),
-                          console_instance.ball0_4_Entry.text(), console_instance.ball0_5_Entry.text(),
-                          console_instance.ball0_6_Entry.text(),
-                          console_instance.ball0_7_Entry.text(), console_instance.ball0_8_Entry.text(),
-                          console_instance.ball0_9_Entry.text(),
-                          console_instance.ball0_10_Entry.text()]
+                                      console_instance.ball0_3_Entry.text(),
+                                      console_instance.ball0_4_Entry.text(), console_instance.ball0_5_Entry.text(),
+                                      console_instance.ball0_6_Entry.text(),
+                                      console_instance.ball0_7_Entry.text(), console_instance.ball0_8_Entry.text(),
+                                      console_instance.ball0_9_Entry.text(),
+                                      console_instance.ball0_10_Entry.text()]
 
             console_instance.ball1 = [console_instance.ball1_1_Entry.text(), console_instance.ball1_2_Entry.text(),
                                       console_instance.ball1_3_Entry.text(),

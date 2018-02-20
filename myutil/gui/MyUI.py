@@ -269,13 +269,13 @@ class MyUIUtil(object):
              console_instance.ball0_9_Entry, console_instance.ball0_10_Entry]
         for i in range(len(t)):
             label = QLabel(u'开关')
-            console_instance.gridlayout.addWidget(label, 4,  0 + 4 * i,1,1)
+            console_instance.gridlayout.addWidget(label, 4, 0 + 4 * i, 1, 1)
             console_instance.gridlayout.addWidget(t[i], 4, 1 + 4 * i, 1, 3)
 
         for i in range(len(tmp_entrys)):
             for j in range(len(tmp_entrys[i])):
                 label = QLabel(u'%d-%d' % (i + 1, j + 1))
-                console_instance.gridlayout.addWidget(label, 5 + j, 0 + 4 * i,1,1)
+                console_instance.gridlayout.addWidget(label, 5 + j, 0 + 4 * i, 1, 1)
                 console_instance.gridlayout.addWidget(tmp_entrys[i][j], 5 + j, 1 + 4 * i, 1, 3)
 
         console_instance.qishu_label = QLabel(u'期数: ')
@@ -547,7 +547,8 @@ class MyUIUtil(object):
             console_instance.ball0 = [row[113], row[114], row[115], row[116], row[117], row[118], row[119], row[120],
                                       row[121],
                                       row[122]]
-            console_instance.balls = [console_instance.ball0, console_instance.ball1, console_instance.ball2, console_instance.ball3,
+            console_instance.balls = [console_instance.ball0, console_instance.ball1, console_instance.ball2,
+                                      console_instance.ball3,
                                       console_instance.ball4, console_instance.ball5,
                                       console_instance.ball6, console_instance.ball7, console_instance.ball8,
                                       console_instance.ball9, console_instance.ball10]

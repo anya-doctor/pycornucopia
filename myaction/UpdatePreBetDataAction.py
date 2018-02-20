@@ -5,6 +5,7 @@ import logging
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import QPalette
+
 from myaction.GetHistoryResultDataAction import MyGetHistoryResultDataAction
 from myaction.StartBetAction import MyStartBetAction
 from myutil.tool import MyTool
@@ -30,7 +31,7 @@ class MyUpdatePreBetDataAction(object):
             logging.info(u"【更新预下注数据】win=%s" % (data_dict['data']['win'] if 'win' in data_dict['data'] else 'NULL'))
             logging.info(u"【更新预下注数据】历史最新一期=%s" % (
                 console_instance.history_data[0][0] if console_instance.history_data and len(
-                    console_instance.history_data) > 0 else 'NULL'))
+                        console_instance.history_data) > 0 else 'NULL'))
 
             # 稍微处理下开奖号码 "03" => "3"
             for index, ball in enumerate(console_instance.open_balls):
@@ -62,8 +63,8 @@ class MyUpdatePreBetDataAction(object):
                 # 所以是存在int(timesnow) - int(console_instance.history_data[0][0]) >= 2
                 # 等结算完成，稳定在timesnow=661168, console_instance.timesnow = 661167， 历史数据最新 = 661166
                 logging.info(
-                    u"【更新预下注数据】断层，timesnow=%s, console_instance.timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
-                        timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
+                        u"【更新预下注数据】断层，timesnow=%s, console_instance.timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
+                            timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
                 MyGetHistoryResultDataAction.run(console_instance)
             else:
                 # 在稳定且时间区间正确的情况下，解开开始按钮的封印
@@ -103,8 +104,8 @@ class MyUpdatePreBetDataAction(object):
                                                  Q_ARG(list, console_instance.open_balls))
                     else:
                         logging.error(
-                            u"【更新预下注数据】什么情况！！！timesnow=%s, console_instance.timesnow=%s,历史最新=%s，更新历史数据,遇到意外！！！" % (
-                                timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
+                                u"【更新预下注数据】什么情况！！！timesnow=%s, console_instance.timesnow=%s,历史最新=%s，更新历史数据,遇到意外！！！" % (
+                                    timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
                         raise Exception
 
                     # 更新期数
@@ -180,7 +181,7 @@ class MyUpdatePreBetDataAction(object):
             console_instance.timeopen_label.setText(u'下局：' + str(timeopen))
             console_instance.qishu_label.setText(u'期数：' + str(timesnow))
             console_instance.open_balls_label.setText(
-                u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
+                    u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
 
             pa = QPalette()
             pa.setColor(QPalette.WindowText, Qt.red)
