@@ -5,7 +5,7 @@ import logging
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 
-from bet import vertical_mode
+from bet import vertical_mode, horizontal_mode
 from core import MyAlgorithm
 from mythread import MyBetThread
 from myutil.tool.MyTool import beautiful_log
@@ -192,7 +192,7 @@ class MyStartBetAction(object):
             logging.info("item=%s" % item)
 
         # 通知控制台中或不中
-        logging.info(u"【下注中-结算-结算】结算通知UI-2...")
+        logging.info(u"【下注中-结算】结算通知UI-2...")
         b = copy.deepcopy(console_instance.all_ball_needToBetList)
         console_instance.loadTableData2(b)
 
@@ -222,4 +222,4 @@ class MyStartBetAction(object):
         if not hasattr(MyAlgorithm, "vertical_mode") or MyAlgorithm.vertical_mode:
             vertical_mode.run(console_instance)
         else:
-            vertical_mode.run(console_instance)
+            horizontal_mode.run(console_instance)

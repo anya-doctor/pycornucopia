@@ -44,7 +44,7 @@ def step_1_init_run(console_instance):
         if switch_dic[i] == 0:
             continue
 
-        a, b = MyAlgorithm.verical_get_bet_list(console_instance, i)
+        a, b = MyAlgorithm.get_bet_list(console_instance, i)
         if a:
             # 如果a是tuple，说明a想要一个位置下注多条
             if isinstance(a, tuple):
@@ -80,7 +80,7 @@ def step_2_qiqigun_run(console_instance):
         if switch_dic[i] == 0:
             continue
 
-        a, b = MyAlgorithm.verical_get_bet_list(console_instance, i)
+        a, b = MyAlgorithm.get_bet_list(console_instance, i)
         if a:
             # 如果a是tuple，说明a想要一个位置下注多条
             if isinstance(a, tuple):
@@ -123,7 +123,7 @@ def step_3_normal_run(console_instance):
                 continue
         # 替換新的下注列表
         index = item[4]
-        a, b = MyAlgorithm.verical_get_bet_list(console_instance, index)
+        a, b = MyAlgorithm.get_bet_list(console_instance, index)
         if not a:
             item[3] = []
         else:
@@ -203,7 +203,7 @@ def dynamic_remove_or_add_betlist(console_instance):
         elif value == 1:
             t = filter(lambda x: int(x[4]) == key, console_instance.all_ball_needToBetList)
             if len(t) == 0:
-                a, b = MyAlgorithm.verical_get_bet_list(console_instance, key)
+                a, b = MyAlgorithm.get_bet_list(console_instance, key)
                 if a:
                     # 如果a是tuple，说明a想要一个位置下注多条
                     if isinstance(a, tuple):
