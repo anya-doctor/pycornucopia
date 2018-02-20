@@ -1,6 +1,12 @@
 # coding=utf-8
 import logging
 
+# 控制赌法是垂直模式，还是水平模式！！！
+vertical_mode = True
+
+# 控制需不需要追踪下单的流水！
+record_list_mode = False
+
 
 def verical_get_bet_list(console_instance, bet_index):
     try:
@@ -18,7 +24,7 @@ def verical_get_bet_list(console_instance, bet_index):
         logging.info("range_num=%s, affect_num=%s" % (range_num, affect_num))
 
         ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-        
+
         dic = {
             '1': 0,
             '2': 0,
@@ -31,26 +37,26 @@ def verical_get_bet_list(console_instance, bet_index):
             '9': 0,
             '10': 0
         }
-        
+
         # 开始统计
-        for line in lines[console_instance.first_n: console_instance.first_n+range_num]:
+        for line in lines[console_instance.first_n: console_instance.first_n + range_num]:
             balls = line[2:12]
-            dic[str(balls[bet_index-1])] += 1
-        
+            dic[str(balls[bet_index - 1])] += 1
+
         # 找到冷码
         t_cnt = 0
         t_key = []
-        for key,value in dic.iteritems():
+        for key, value in dic.iteritems():
             if value == 0:
                 t_cnt += 1
                 t_key.append(key)
-                
+
         logging.info("t_cnt=%s, t_key=%s" % (t_cnt, t_key))
-        
+
         bet_balls = []
-        if t_cnt == affect_num:
+        if t_cnt >= affect_num:
             bet_balls = t_key
-      
+
         not_bet_balls = []
         ret = bet_balls, not_bet_balls
 
