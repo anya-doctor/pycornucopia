@@ -23,9 +23,20 @@ def get_bet_list(console_instance, bet_index):
         balls = line[2:12]
         ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
-        t = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2]
+        dic = {
+            1:  str(console_instance.ball1_1_Entry.text()).split('-'),
+            2:  str(console_instance.ball2_1_Entry.text()).split('-'),
+            3:  str(console_instance.ball3_1_Entry.text()).split('-'),
+            4:  str(console_instance.ball4_1_Entry.text()).split('-'),
+            5:  str(console_instance.ball5_1_Entry.text()).split('-'),
+            6:  str(console_instance.ball6_1_Entry.text()).split('-'),
+            7:  str(console_instance.ball7_1_Entry.text()).split('-'),
+            8:  str(console_instance.ball8_1_Entry.text()).split('-'),
+            9:  str(console_instance.ball9_1_Entry.text()).split('-'),
+            10:  str(console_instance.ball10_1_Entry.text()).split('-'),
+        }
         ball = balls[bet_index - 1]
-        bet_balls = [[v, ball] for v in t[bet_index: bet_index + 7]]
+        bet_balls = [[int(v), ball] for v in dic[bet_index]]
 
         not_bet_balls = []
         ret = bet_balls, not_bet_balls
