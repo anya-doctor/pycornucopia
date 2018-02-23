@@ -2,6 +2,12 @@
 import logging
 
 
+def getToday():
+    import datetime
+    today = datetime.datetime.today()
+    return today.strftime("%Y-%m-%d")
+
+
 def getCurrentTimestamp(bit_type=13):
     """
     :param bit_type: bit_type=10. 10位时间戳，bit_type=13，13位时间戳

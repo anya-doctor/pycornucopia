@@ -9,7 +9,7 @@ from PyQt4.QtCore import *
 from common.common import req_session
 from myutil.tool import MyDate
 from myutil.tool import MyTool
-from myutil.tool.MyTool import xml_helper
+from myutil.tool.MyTool import xml_helper, getToday
 
 
 class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
@@ -28,29 +28,33 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
             logging.info(u"【获取模拟用的历史数据线程】线程run()中...")
             res = []
             date_list = MyDate.get_date_list(self.from_date, self.to_date)
-            success_flag = True
-            fail_date = ""
+            fail_date = []
+
+            today = getToday()
             for _date in date_list:
                 date = _date.strftime("%Y-%m-%d")
-                day_data = xml_helper(date)
-                if day_data:
-                    res.extend(day_data)
-                else:
-                    success_flag = False
-                    fail_date = str(date)
-            if success_flag:
-                QMetaObject.invokeMethod(self.console, "onUpdateSimulateHistoryResultDataHideBtn", Qt.QueuedConnection,
-                                         Q_ARG(list, res))
-            else:
-                msgtitle = u"失败了"
+                try:
+                    day_data = xml_helper(date)
+                    if len(day_data) < 100 and date != today:
+                        logging.error(u"【获取模拟用的历史数据线程】date=%s，数据len<100并且不是今天！" % date)
+                        fail_date.append(date)
+                    else:
+                        res.extend(day_data)
+                except Exception, ex:
+                    logging.error(u"【获取模拟用的历史数据线程】date=%s，获取数据失败！" % date)
+                    fail_date.append(date)
+
+            if fail_date:
+                msgtitle = u"可能出了点无伤大雅的小差错，不影响使用..."
                 msg = u"获取模拟用的历史数据失败，可能网络不好；\n可能今天暂无历史数据...\n日期：%s，数据无数据或出错\n请重试..." % fail_date
                 QMetaObject.invokeMethod(self.console, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                          Q_ARG(str, msg))
-
+            QMetaObject.invokeMethod(self.console, "onUpdateSimulateHistoryResultDataHideBtn", Qt.QueuedConnection,
+                                         Q_ARG(list, res))
         except Exception, ex:
             logging.error(ex, exc_info=1)
             msgtitle = u"失败了"
-            msg = u"获取模拟用的历史数据失败，请重试..."
+            msg = u"获取模拟用的历史数据失败，可能网络不好；\n可能今天暂无历史数据...\n请重试..."
             QMetaObject.invokeMethod(self.console, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                      Q_ARG(str, msg))
 
