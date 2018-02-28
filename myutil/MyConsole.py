@@ -307,6 +307,10 @@ class MyConsole(QWidget):
             cnt = 0
             row = self.viewEntry.rowCount()
             for item in self.all_ball_needToBetList:
+                # 如果本item没有下注的list，则跳过
+                if not item[3]:
+                    continue
+
                 if mode == 1:
                     newItem = QTableWidgetItem(u'放弃投注')
                 elif mode == 2:
