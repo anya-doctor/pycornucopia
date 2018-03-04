@@ -16,7 +16,7 @@ def get_bet_list(console_instance, bet_index):
     try:
         from myutil.MyConsole import MyConsole
         assert isinstance(console_instance, MyConsole)
-        logging.info(u"【下注中-算出球】垂直模式：位置=%s" % bet_index)
+        logging.info(u"【下注中-算出球】垂直模式=%s：位置=%s" % (vertical_mode, bet_index))
 
         if bet_index > 1:
             logging.info(u"【下注中-算出球】因为算法特殊性，只要bet_index==1即可，跳过%s..." % bet_index)

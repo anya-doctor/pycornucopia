@@ -217,7 +217,7 @@ class MyStartBetAction(object):
         if console_instance.isQQG:
             # 期期滚- 过滤掉期期滚中了或者爆了的数据项
             console_instance.all_ball_needToBetList = filter(
-                    lambda x: x[2] != 0 and x[2] != len(console_instance.balls_bet_amount), b)
+                    lambda x: x[7] != u'中' and x[2] != len(console_instance.balls_bet_amount), b)
         else:
             # 常规 - 重置那些被爆了的
             for i in console_instance.all_ball_needToBetList:
