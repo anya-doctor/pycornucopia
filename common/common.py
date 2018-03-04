@@ -17,6 +17,14 @@ pk_ball_dic = {
     10: "009",
 }
 
+ssc_ball_dic = {
+    1: "000",
+    2: "001",
+    3: "002",
+    4: "003",
+    5: "004",
+}
+
 # 下注模式
 BET_MODE_VERTICAL = 1  # 垂直下注
 BET_MODE_HORIZONTAL = 2  # 水平下注

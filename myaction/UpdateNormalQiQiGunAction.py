@@ -31,7 +31,7 @@ class MyUpdateNormalQiQiGunAction(object):
 
             # 保存数据库...
             logging.info(u"【更换常规、期期滚模式ACTION】保存到数据库...")
-            if not os.path.exists('./config/cqssc.db'):
+            if not os.path.exists(MySettings.db_file_path):
                 QtGui.QMessageBox.about(console_instance, u'错误', u"数据库文件不存在...请重新打开软件.")
                 logging.error(u"数据库文件不存在...请重新打开软件.")
                 return

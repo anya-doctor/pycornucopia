@@ -176,10 +176,24 @@ class MyLoginThread(QtCore.QThread):
                                          Q_ARG(str, name))
 
                 now = getCurrentTimestamp()
-                self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[
-                                                   0] + 'pk/order/list?&_=%s__autorefresh' % now
-                self.pk_post_bet_url = self.origin_url.split("index.htm")[
-                                           0] + 'pk/order/leftInfo/?post_submit&&_=%s__ajax' % now
+                """
+                北京赛车：
+                http://pc10.sss44.us/scowa14889f_39473/pk/order/list/?&_=1520138330517__autorefresh
+                http://pc10.sss44.us/scowa14889f_39473/pk/order/leftInfo/?post_submit&&_=1520138670443__ajax
+                重庆时时彩：
+                http://pc10.sss44.us/scowa14889f_39473/ssc/order/list/?&_=1520138330517__autorefresh
+                http://pc10.sss44.us/scowa14889f_39473/ssc/order/leftInfo/?post_submit&&_=1520138670443__ajax
+               """
+                if self.console_instance.play_mode == 0:
+                    self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[
+                                                       0] + 'pk/order/list?&_=%s__autorefresh' % now
+                    self.pk_post_bet_url = self.origin_url.split("index.htm")[
+                                               0] + 'pk/order/leftInfo/?post_submit&&_=%s__ajax' % now
+                else:
+                    self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[
+                                                       0] + 'ssc/order/list?&_=%s__autorefresh' % now
+                    self.pk_post_bet_url = self.origin_url.split("index.htm")[
+                                               0] + 'ssc/order/leftInfo/?post_submit&&_=%s__ajax' % now
                 logging.info(">>>origin_url=%s" % self.origin_url)
                 logging.info(">>>pk_pre_bet_get_data_url=%s" % self.pk_pre_bet_get_data_url)
                 logging.info(">>>pk_post_bet_url=%s" % self.pk_post_bet_url)

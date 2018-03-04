@@ -36,7 +36,7 @@ class MyDBUtil(object):
                 ball10_6 text NULL,ball10_7 text NULL,ball10_8 text NULL,ball10_9 text NULL,ball10_10 text NULL\
                 ,isQQG text NULL,isLoseAdd text NULL, n_change text NULL," \
               "ball0_1 text NULL,ball0_2 text NULL,ball0_3 text NULL,ball0_4 text NULL,ball0_5 text NULL,\
-                ball0_6 text NULL,ball0_7 text NULL,ball0_8 text NULL,ball0_9 text NULL,ball0_10 text NULL);"
+                ball0_6 text NULL,ball0_7 text NULL,ball0_8 text NULL,ball0_9 text NULL,ball0_10 text NULL, play_mode text null);"
         mydb.execute(sql)
         mydb.commit()
 
@@ -52,7 +52,7 @@ class MyDBUtil(object):
                 ball9_1,ball9_2,ball9_3,ball9_4,ball9_5,ball9_6,ball9_7,ball9_8,ball9_9,ball9_10,\
                 ball10_1,ball10_2,ball10_3,ball10_4,ball10_5,ball10_6,ball10_7,ball10_8,ball10_9,ball10_10,\
                 ball0_1,ball0_2,ball0_3,ball0_4,ball0_5,ball0_6,ball0_7,ball0_8,ball0_9,ball0_10\
-                ,isQQG,isLoseAdd, n_change)"
+                ,isQQG,isLoseAdd, n_change,play_mode)"
         sql += " values('http://pc10.sss44.us/scowa14889f/user/login.html.auth http://pc10.sss22.us/scowa14889f/user/login.html.auth http://pc10.x.sss77.us/scowa14889f/user/login.html.auth','','','2-4-8-16-32-64-128','5000','-5000','请为软件命名','0','hehehe',date(),\
                 '','','','','','','','','','',\
                 '','','','','','','','','','',\
@@ -64,7 +64,7 @@ class MyDBUtil(object):
                 '','','','','','','','','','',\
                 '','','','','','','','','','',\
                 '','','','','','','','','','',\
-                '0','0','0','0','0','0','0','0','0','0','1','0','0');"
+                '0','0','0','0','0','0','0','0','0','0','1','0','0','0');"
         mydb.execute(sql)
         mydb.commit()
         mydb.close()

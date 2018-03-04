@@ -160,11 +160,13 @@ class MyStartBetAction(object):
                 continue
 
             win_flag = False
+            tmp_win_cnt = 0
             for inner_item in item[3]:
                 if int(open_balls[inner_item[0] - 1]) == int(inner_item[1]):
                     logging.info(u"【下注中-结算】结算对比位置%s开奖%s == 下注球%s 结算发现中！！！" % (
                         inner_item[0], open_balls[inner_item[0] - 1], inner_item[1]))
-                    win_flag = True
+                    tmp_win_cnt += 1
+
                     if simulate_mode:
                         console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
                         console_instance.simulate_money += int(
@@ -172,14 +174,26 @@ class MyStartBetAction(object):
                 else:
                     if simulate_mode:
                         console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
+
+            # 兼容老版本算法，如果没有win_cnt，默认是1，中一个算赢，就是不考虑组合赢
+            if hasattr(MyAlgorithm, "win_cnt"):
+                MyAlgorithm.win_cnt = 1
+            # 兼容老版本算法，如果没有ping_cnt，默认是-1，也就是没有平的可能性
+            if hasattr(MyAlgorithm, "ping_cnt"):
+                MyAlgorithm.win_cnt = -1
+
             if console_instance.isLoseAdd:  # 输加注
-                if win_flag:
+                if tmp_win_cnt >= MyAlgorithm.win_cnt:
                     item[2] = 0
+                elif tmp_win_cnt == MyAlgorithm.ping_cnt:
+                    pass
                 else:
                     item[2] += 1
             elif not console_instance.isLoseAdd:
-                if win_flag:
+                if tmp_win_cnt >= MyAlgorithm.win_cnt:
                     item[2] += 1
+                elif tmp_win_cnt == MyAlgorithm.ping_cnt:
+                    pass
                 else:
                     item[2] = 0
 

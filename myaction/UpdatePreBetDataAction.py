@@ -33,10 +33,11 @@ class MyUpdatePreBetDataAction(object):
                 console_instance.history_data[0][0] if console_instance.history_data and len(
                         console_instance.history_data) > 0 else 'NULL'))
 
-            # 稍微处理下开奖号码 "03" => "3"
-            for index, ball in enumerate(console_instance.open_balls):
-                if ball[0] == '0':
-                    console_instance.open_balls[index] = ball[1]
+            # 如果是北京赛车，稍微处理下开奖号码 "03" => "3"
+            if console_instance.play_mode == 0:
+                for index, ball in enumerate(console_instance.open_balls):
+                    if ball[0] == '0':
+                        console_instance.open_balls[index] = ball[1]
 
             # 历史数据很重要啊！！！
             if int(console_instance.timesnow) == 0:  # 如果发现更新了期数，则开始结算..

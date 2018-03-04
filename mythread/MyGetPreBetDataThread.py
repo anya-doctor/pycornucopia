@@ -21,11 +21,24 @@ class MyGetPreBetDataThread(QtCore.QThread):
         self.headers = headers
 
     def get_pre_bet_data(self):
+        """
+        要根据玩法去获取预下注数据！
+        self.console_instance.play_mode = 0 北京
+        self.console_instance.play_mode = 1 时时彩
+        :return:
+        """
         try:
             logging.info(u"【获取预下注数据线程】开始获取...")
             if not self.origin_url:
                 return -1
-            t = ['ballNO15', 'ballNO60']
+
+            # 北京赛车
+            if self.console_instance.play_mode == 0:
+                t = ['ballNO15', 'ballNO60']
+            # 重庆时时彩
+            else:
+                # 时时彩是不需要传任何参数的...
+                t = ['']
             res = []
             for i in t:
                 payload = {
@@ -76,23 +89,27 @@ class MyGetPreBetDataThread(QtCore.QThread):
                     logging.error(u"【获取预下注数据线程】版本号拿不到咯！！！！")
                     t_json = {}
                 res.append(t_json)
-            # 合并两个预下注数据
-            pk_15_predata_json = res[0]
-            pk_60_predata_json = res[1]
-            try:
-                if isinstance(pk_15_predata_json['data']['integrate'], dict) and isinstance(
-                        pk_60_predata_json['data']['integrate'], dict):
-                    for key, value in pk_15_predata_json['data']['integrate'].iteritems():
-                        pk_60_predata_json['data']['integrate'][key] = value
-                else:
-                    logging.info(">>>Have No integrate Data<<<")
-            except Exception, ex:
-                logging.error(ex, exc_info=1)
-                logging.error(pk_15_predata_json['data']['integrate'])
-                logging.error(type(pk_15_predata_json['data']['integrate']))
-                logging.error(pk_60_predata_json['data']['integrate'])
-                logging.error(type(pk_60_predata_json['data']['integrate']))
-            return pk_60_predata_json
+            if self.console_instance.play_mode == 0:
+                # 如果是北京合并两个预下注数据
+                pk_15_predata_json = res[0]
+                pk_60_predata_json = res[1]
+                try:
+                    if isinstance(pk_15_predata_json['data']['integrate'], dict) and isinstance(
+                            pk_60_predata_json['data']['integrate'], dict):
+                        for key, value in pk_15_predata_json['data']['integrate'].iteritems():
+                            pk_60_predata_json['data']['integrate'][key] = value
+                    else:
+                        logging.info(">>>Have No integrate Data<<<")
+                except Exception, ex:
+                    logging.error(ex, exc_info=1)
+                    logging.error(pk_15_predata_json['data']['integrate'])
+                    logging.error(type(pk_15_predata_json['data']['integrate']))
+                    logging.error(pk_60_predata_json['data']['integrate'])
+                    logging.error(type(pk_60_predata_json['data']['integrate']))
+                return pk_60_predata_json
+            else:
+                # 时时彩是不需要合并的..
+                return res[0]
         except ReadTimeout, ex:
             logging.error(u"【获取预下注数据线程】获取数据超时...")
             return "TIMEOUT"
@@ -101,7 +118,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
             return "RELOGIN"
         except Exception, ex:
             logging.error(u"【获取预下注数据线程】未知错误，返回NULL_DATA")
-            logging.error(str(ex))
+            logging.error(str(ex),exc_info=1)
             return "NULL_DATA"
 
     def get_pre_bet_date_fake(self):

@@ -207,22 +207,32 @@ class MyConsole(QWidget):
 
                 betstr = u""
                 for v in item[3]:
-                    if v[0] == 1:
-                        betstr += u"冠军%s, " % (v[1])
-                    elif v[0] == 2:
-                        betstr += u"亚军%s, " % (v[1])
+                    if self.play_mode == 0:
+                        if v[0] == 1:
+                            betstr += u"冠军%s, " % (v[1])
+                        elif v[0] == 2:
+                            betstr += u"亚军%s, " % (v[1])
+                        else:
+                            dic = {
+                                3: u'三',
+                                4: u'四',
+                                5: u'五',
+                                6: u'六',
+                                7: u'七',
+                                8: u'八',
+                                9: u'九',
+                                10: u'十',
+                            }
+                            betstr += u"第%s名%s, " % (dic[v[0]], v[1])
                     else:
                         dic = {
-                            3: u'三',
-                            4: u'四',
-                            5: u'五',
-                            6: u'六',
-                            7: u'七',
-                            8: u'八',
-                            9: u'九',
-                            10: u'十',
-                        }
-                        betstr += u"第%s名%s, " % (dic[v[0]], v[1])
+                                1: u'一',
+                                2: u'二',
+                                3: u'三',
+                                4: u'四',
+                                5: u'五',
+                            }
+                        betstr += u"第%s球%s, " % (dic[v[0]], v[1])
                 betstr = betstr[0:-2]  # 去掉最后一个，
                 newItem = QTableWidgetItem(betstr)
                 newItem.setBackgroundColor(self.c)

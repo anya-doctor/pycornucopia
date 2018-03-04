@@ -15,13 +15,13 @@ class MySaveConfigAction(object):
     @beautiful_log
     def run(console_instance):
         try:
+            # 获取UI上的值
             lines = console_instance.linesEntry.toPlainText()
             lines = lines.replace('\n', ' ')
             lines_list = []
             for i in lines.split(' '):
                 lines_list.append(str(i))
             lines = ' '.join(lines_list)
-
             username = console_instance.userEntry.text()
             password = console_instance.passEntry.text()
             betAmount = console_instance.betAmountEntry.text()
@@ -32,6 +32,7 @@ class MySaveConfigAction(object):
             n_change = console_instance.n_change_Entry.text()
             isQQG = True if int(console_instance.isQQG_combobox.currentIndex()) == 0 else False
             isLoseAdd = True if int(console_instance.isLoseAdd_combobox.currentIndex()) == 0 else False
+            play_mode = int(console_instance.playmode_combobox.currentIndex())
 
             # 实时更改
             console_instance.balls_bet_amount = betAmount.split('-')
@@ -45,8 +46,10 @@ class MySaveConfigAction(object):
             console_instance.lines = lines.split(' ')
             console_instance.isQQG = isQQG
             console_instance.isLoseAdd = isLoseAdd
+            console_instance.play_mode = play_mode
 
-            if not os.path.exists('./config/cqssc.db'):
+            # 健壮性判断
+            if not os.path.exists(MySettings.db_file_path):
                 QtGui.QMessageBox.about(console_instance, u'错误', u"数据库文件不存在...请重新打开软件.")
                 logging.info(u"数据库文件不存在...请重新打开软件.")
                 return
@@ -76,8 +79,8 @@ class MySaveConfigAction(object):
                 ball0_1='" + console_instance.ball0_1_Entry.text() + "',ball0_2='" + console_instance.ball0_2_Entry.text() + "',ball0_3='" + console_instance.ball0_3_Entry.text() + "',ball0_4='" + console_instance.ball0_4_Entry.text() + "',ball0_5='" + console_instance.ball0_5_Entry.text() + "',\
                 ball0_6='" + console_instance.ball0_6_Entry.text() + "',ball0_7='" + console_instance.ball0_7_Entry.text() + "',ball0_8='" + console_instance.ball0_8_Entry.text() + "',ball0_9='" + console_instance.ball0_9_Entry.text() + "',ball0_10='" + console_instance.ball0_10_Entry.text() + "',\
                 isQQG = '" + ('0' if console_instance.isQQG else '1') + "',isLoseAdd = '" + (
-                '0' if console_instance.isLoseAdd else '1') + "',n_change='" + str(n_change) + "';"
-
+                '0' if console_instance.isLoseAdd else '1') + "',n_change='" + str(n_change) + "',play_mode='" + str(
+                play_mode) + "';"
             cqssc_db.execute(unicode(sql))
             cqssc_db.commit()
             cqssc_db.close()

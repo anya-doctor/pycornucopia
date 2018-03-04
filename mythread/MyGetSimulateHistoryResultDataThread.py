@@ -16,7 +16,7 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
     def __init__(self, mainWindow, console, from_date, to_date):
         QtCore.QThread.__init__(self)
         self.mainWindow = mainWindow
-        self.console = console
+        self.console_instance = console
         self.from_date = str(from_date)
         self.to_date = str(to_date)
 
@@ -34,7 +34,7 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
             for _date in date_list:
                 date = _date.strftime("%Y-%m-%d")
                 try:
-                    day_data = xml_helper(date)
+                    day_data = xml_helper(date, self.console_instance.play_mode)
                     if len(day_data) < 100 and date != today:
                         logging.error(u"【获取模拟用的历史数据线程】date=%s，数据len<100并且不是今天！" % date)
                         fail_date.append(date)
@@ -47,15 +47,15 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
             if fail_date:
                 msgtitle = u"可能出了点无伤大雅的小差错，不影响使用..."
                 msg = u"获取模拟用的历史数据失败，可能网络不好；\n可能今天暂无历史数据...\n日期：%s，数据无数据或出错\n请重试..." % fail_date
-                QMetaObject.invokeMethod(self.console, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
+                QMetaObject.invokeMethod(self.console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                          Q_ARG(str, msg))
-            QMetaObject.invokeMethod(self.console, "onUpdateSimulateHistoryResultDataHideBtn", Qt.QueuedConnection,
+            QMetaObject.invokeMethod(self.console_instance, "onUpdateSimulateHistoryResultDataHideBtn", Qt.QueuedConnection,
                                          Q_ARG(list, res))
         except Exception, ex:
             logging.error(ex, exc_info=1)
             msgtitle = u"失败了"
             msg = u"获取模拟用的历史数据失败，可能网络不好；\n可能今天暂无历史数据...\n请重试..."
-            QMetaObject.invokeMethod(self.console, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
+            QMetaObject.invokeMethod(self.console_instance, "alert", Qt.QueuedConnection, Q_ARG(str, msgtitle),
                                      Q_ARG(str, msg))
 
     def self_helper(self, date):
@@ -64,13 +64,13 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
         :return:
         """
         now = MyTool.getCurrentTimestamp()
-        url = self.console.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now
+        url = self.console_instance.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now
 
         payload = {
             'date': date
         }
-        r1 = requests.Request('POST', url, data=payload, headers=self.console.loginSuccessData['headers'],
-                              cookies=self.console.loginSuccessData['cookies_jar'])
+        r1 = requests.Request('POST', url, data=payload, headers=self.console_instance.loginSuccessData['headers'],
+                              cookies=self.console_instance.loginSuccessData['cookies_jar'])
         prep1 = req_session.prepare_request(r1)
         rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
         real_content = rr1.content.split('êêê')[0]

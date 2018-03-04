@@ -45,8 +45,13 @@ class MyBetDataThread(QtCore.QThread):
                 if int(bet_money) == 0:
                     logging.info(u"【下注线程】item=%s, 金额为0，跳过！！！放弃此次下注！" % item)
                 else:
+                    logging.info("#####%s" % item[3])
                     for inner_item in item[3]:
-                        a = common.pk_ball_dic[inner_item[0]]
+                        if self.console_instance.play_mode == 0:
+                            a = common.pk_ball_dic[inner_item[0]]
+                        else:
+                            a = common.ssc_ball_dic[inner_item[0]]
+
                         peilv = self.peilv_dict[a + str(inner_item[1])]
                         t_str += '%s|%s|%s|%s;' % (a, int(inner_item[1]), peilv, bet_money)
             if not t_str:  # 那全是0了。。才会放弃下注..
@@ -196,7 +201,10 @@ class MyBetDataThread(QtCore.QThread):
                         rebet_list = []
                         for item in b:
                             for inner_item in item[3]:
-                                a = common.pk_ball_dic[inner_item[0]]
+                                if self.console_instance.play_mode == 0:
+                                    a = common.pk_ball_dic[inner_item[0]]
+                                else:
+                                    a = common.ssc_ball_dic[inner_item[0]]
                                 b = a + str(inner_item[1])
                                 if b in new_peilv_dic:
                                     new_item = copy.deepcopy(item)

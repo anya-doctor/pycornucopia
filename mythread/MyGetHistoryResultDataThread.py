@@ -21,7 +21,10 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
 
     def get_data(self):
         now = MyTool.getCurrentTimestamp()
-        url = self.console_instance.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now
+        if self.console_instance.play_mode == 0:
+            url = self.console_instance.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now
+        else:
+            url = self.console_instance.loginSuccessData['origin_url'] + "ssc/result/index?&_=%s__ajax" % now
 
         r1 = requests.Request('GET', url, headers=self.console_instance.loginSuccessData['headers'],
                               cookies=self.console_instance.loginSuccessData['cookies_jar'])
@@ -47,7 +50,7 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
                     today = datetime.datetime.today()
                     day = timedelta(days=1)
                     yesterday = today - day
-                    res = xml_helper(yesterday.strftime("%Y-%m-%d"))
+                    res = xml_helper(yesterday.strftime("%Y-%m-%d"), self.console_instance.play_mode)
                     json_data['data']['result'].extend(res)
                 return json_data
         return {}

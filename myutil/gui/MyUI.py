@@ -9,6 +9,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
 from common import MySettings
+from myaction.ChangePlayModeAction import MyChangePlayModeAction
 from myaction.ClearKaijiangInfoAction import MyClearKaijiangInfoAction
 from myaction.GetSimulateHistoryResultDataAction import MyGetSimulateHistoryResultDataAction
 from myaction.LoginAction import MyLoginAction
@@ -83,12 +84,20 @@ class MyUIUtil(object):
         lb6 = QLabel(u'软件名')
         console_instance.nameEntry = QLineEdit()
         console_instance.registerBtn = QtGui.QPushButton(u"命名")
-        console_instance.registerBtn.setFixedSize(40, 20)
+        console_instance.registerBtn.setFixedSize(30, 20)
         console_instance.connect(console_instance.registerBtn, QtCore.SIGNAL('clicked()'),
                                  lambda: MyReNameAction.run(console_instance))
         console_instance.gridlayout.addWidget(lb6, 2, 0)
         console_instance.gridlayout.addWidget(console_instance.nameEntry, 2, 1, 1, 3)
         console_instance.gridlayout.addWidget(console_instance.registerBtn, 2, 4, 1, 2)
+
+        # 加一个时时彩和北京的切换控件
+        console_instance.playmode_combobox = QComboBox()
+        console_instance.playmode_combobox.addItem(u'pk10')
+        console_instance.playmode_combobox.addItem(u'ssc')
+        console_instance.connect(console_instance.playmode_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
+                                 lambda: MyChangePlayModeAction.run(console_instance))
+        console_instance.gridlayout.addWidget(console_instance.playmode_combobox, 2, 5, 1, 1)
 
         lb7 = QLabel(u'舍N')
         console_instance.first_n_Entry = QLineEdit()
@@ -303,8 +312,8 @@ class MyUIUtil(object):
                 [u'开始期数', u'当前期数', u'投注号码', u'倍投', u'金额', u'下注否', u'中否', u'开奖号码'])
         a = console_instance.viewEntry.horizontalHeader()
         assert isinstance(a, QHeaderView)
-        a.resizeSection(0, 80)
-        a.resizeSection(1, 80)
+        a.resizeSection(0, 100)
+        a.resizeSection(1, 100)
         a.resizeSection(2, 600)
         a.resizeSection(3, 80)
         a.resizeSection(4, 80)
@@ -325,7 +334,7 @@ class MyUIUtil(object):
     @classmethod
     @beautiful_log
     def initConfig(cls, console_instance):
-        if not os.path.exists('./config/cqssc.db'):
+        if not os.path.exists(MySettings.db_file_path):
             MyDBUtil.create_db()
 
         cqssc_db = sqlite3.connect(MySettings.db_file_path)
@@ -555,6 +564,12 @@ class MyUIUtil(object):
             # 载入n期换
             console_instance.n_change_Entry.setText(row[112])  # 110 111 就是琪琪滚和输追加
             console_instance.n_change = int(row[112])
+
+            # 载入玩法
+            console_instance.play_mode = int(row[123])
+            console_instance.playmode_combobox.setCurrentIndex(int(console_instance.play_mode))
+            logging.info(u"【初始化界面】玩法北京赛车|时时彩, console_instance.play_mode=%s" % console_instance.play_mode)
+
         cursor.close()
         cqssc_db.commit()
         cqssc_db.close()
