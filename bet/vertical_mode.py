@@ -8,7 +8,7 @@ def run(console_instance):
     """
     目前只会垂直模式的下注，水平模式没灵感啊...
     all_ball_needToBetList = [
-        [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
+        [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list, win_flag]
         # item[6] = record_list = [[1,1],[1,2],TRUE]  反正最后一个元素表示中不中。。。
         ...
     ]
@@ -48,7 +48,7 @@ def step_1_init_run(console_instance):
         if a:
             # 如果a是tuple，说明a想要一个位置下注多条
             if isinstance(a, tuple):
-                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
+                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list, win_flag]
                 # item[6] = record_list = [[1,1],[1,2],TRUE]  反正最后一个元素表示中不中。。。
                 for j in range(len(a)):
                     # 如果多个孩子，有一个孩子是[] 或者['']，则放弃它
@@ -59,12 +59,12 @@ def step_1_init_run(console_instance):
 
                     c = [[i, v] for v in a[j]]
                     console_instance.all_ball_needToBetList.append(
-                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j, []])
+                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j, [], ''])
             # 如果a是list，说明就下注这个list即可
             elif isinstance(a, list):
                 c = [[i, v] for v in a]
                 console_instance.all_ball_needToBetList.append(
-                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0, []])
+                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0, [], ''])
 
 
 def step_2_qiqigun_run(console_instance):
@@ -84,7 +84,7 @@ def step_2_qiqigun_run(console_instance):
         if a:
             # 如果a是tuple，说明a想要一个位置下注多条
             if isinstance(a, tuple):
-                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
+                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list, win_flag]
                 for j in range(len(a)):
                     # 如果多个孩子，有一个孩子是[]，则放弃它
                     if not a[j]:
@@ -93,12 +93,12 @@ def step_2_qiqigun_run(console_instance):
                         continue
                     c = [[i, v] for v in a[j]]
                     console_instance.all_ball_needToBetList.append(
-                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j, []])
+                            [console_instance.timesnow, console_instance.timesnow, 0, c, i, j, [], ''])
             # 如果a是list，说明就下注这个list即可
             elif isinstance(a, list):
                 c = [[i, v] for v in a]
                 console_instance.all_ball_needToBetList.append(
-                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0, []])
+                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0, [], ''])
 
 
 def step_3_normal_run(console_instance):
@@ -129,7 +129,7 @@ def step_3_normal_run(console_instance):
         else:
             # 如果a是tuple，说明a想要一个位置下注多条
             if isinstance(a, tuple):
-                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
+                # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list, win_flag]
                 mother_son_list = []
                 for x_index, x in enumerate(console_instance.all_ball_needToBetList):
                     if x[0] == item[0] and x[1] == item[1] and x[4] == item[4]:
@@ -207,7 +207,7 @@ def dynamic_remove_or_add_betlist(console_instance):
                 if a:
                     # 如果a是tuple，说明a想要一个位置下注多条
                     if isinstance(a, tuple):
-                        # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
+                        # 组装  [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list, win_flag]
                         # item[6] = record_list = [[1,1],[1,2],TRUE]  反正最后一个元素表示中不中。。。
                         for j in range(len(a)):
                             # 如果多个孩子，有一个孩子是[] 或者['']，则放弃它
@@ -218,12 +218,12 @@ def dynamic_remove_or_add_betlist(console_instance):
 
                             c = [[key, v] for v in a[j]]
                             console_instance.all_ball_needToBetList.append(
-                                    [console_instance.timesnow, console_instance.timesnow, 0, c, key, j, []])
+                                    [console_instance.timesnow, console_instance.timesnow, 0, c, key, j, [], ''])
                     # 如果a是list，说明就下注这个list即可
                     elif isinstance(a, list):
                         c = [[key, v] for v in a]
                         console_instance.all_ball_needToBetList.append(
-                                [console_instance.timesnow, console_instance.timesnow, 0, c, key, 0, []])
+                                [console_instance.timesnow, console_instance.timesnow, 0, c, key, 0, [], ''])
 
     # 重新排个序吧少年
     console_instance.all_ball_needToBetList.sort(key=lambda x: (x[0], x[1], x[4]))

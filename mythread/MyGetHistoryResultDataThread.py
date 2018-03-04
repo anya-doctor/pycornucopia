@@ -8,6 +8,7 @@ import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
+from common import common
 from common.common import req_session
 from myutil.tool import MyTool
 from myutil.tool.MyTool import xml_helper
@@ -21,7 +22,7 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
 
     def get_data(self):
         now = MyTool.getCurrentTimestamp()
-        if self.console_instance.play_mode == 0:
+        if self.console_instance.play_mode == common.PLAYMODE_PK10:
             url = self.console_instance.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now
         else:
             url = self.console_instance.loginSuccessData['origin_url'] + "ssc/result/index?&_=%s__ajax" % now

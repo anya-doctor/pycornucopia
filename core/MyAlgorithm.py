@@ -17,6 +17,11 @@ def get_bet_list(console_instance, bet_index):
         from myutil.MyConsole import MyConsole
         assert isinstance(console_instance, MyConsole)
         logging.info(u"【下注中-算出球】垂直模式：位置=%s" % bet_index)
+
+        if bet_index > 1:
+            logging.info(u"【下注中-算出球】因为算法特殊性，只要bet_index==1即可，跳过%s..." % bet_index)
+            return [], []
+
         # 舍弃N期
         lines = console_instance.history_data
         line = lines[int(console_instance.first_n)]
@@ -28,33 +33,37 @@ def get_bet_list(console_instance, bet_index):
         logging.info("balls=%s" % balls)
         logging.info("balls2=%s" % balls2)
 
-        bet_balls = [[bet_index, v] for v in list(set(balls2)) if v not in balls]
+        t = [v for v in sorted(list(set(balls2))) if v not in balls]
+        bet_balls = []
+        for i in range(1, 6):
+            for j in t:
+                bet_balls.append([i, j])
         not_bet_balls = []
         ret = bet_balls, not_bet_balls
 
         # 5中3算赢，无平
         global win_cnt, ping_cnt
-        if len(bet_balls) == 5:
+        if len(t) == 5:
             win_cnt = 3
             ping_cnt = -1
 
         # 4中3算赢，中2算平
-        elif len(bet_balls) == 4:
+        elif len(t) == 4:
             win_cnt = 3
             ping_cnt = 2
 
         # 3中2算赢，中2算平
-        elif len(bet_balls) == 3:
+        elif len(t) == 3:
             win_cnt = 2
             ping_cnt = -1
 
         # 2中2算赢，中1算平
-        elif len(bet_balls) == 2:
+        elif len(t) == 2:
             win_cnt = 2
             ping_cnt = 1
 
         # 1中1算赢，无平
-        elif len(bet_balls) == 1:
+        elif len(t) == 1:
             win_cnt = 1
             ping_cnt = -1
 

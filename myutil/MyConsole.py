@@ -6,6 +6,7 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
+from common import common
 from myaction.GetHistoryResultDataAction import MyGetHistoryResultDataAction
 from myaction.GetPreBetDataAction import MyGetPreBetDataAction
 from myaction.LoginAction import MyLoginAction
@@ -207,7 +208,7 @@ class MyConsole(QWidget):
 
                 betstr = u""
                 for v in item[3]:
-                    if self.play_mode == 0:
+                    if self.play_mode == common.PLAYMODE_PK10:
                         if v[0] == 1:
                             betstr += u"冠军%s, " % (v[1])
                         elif v[0] == 2:
@@ -226,12 +227,12 @@ class MyConsole(QWidget):
                             betstr += u"第%s名%s, " % (dic[v[0]], v[1])
                     else:
                         dic = {
-                                1: u'一',
-                                2: u'二',
-                                3: u'三',
-                                4: u'四',
-                                5: u'五',
-                            }
+                            1: u'一',
+                            2: u'二',
+                            3: u'三',
+                            4: u'四',
+                            5: u'五',
+                        }
                         betstr += u"第%s球%s, " % (dic[v[0]], v[1])
                 betstr = betstr[0:-2]  # 去掉最后一个，
                 newItem = QTableWidgetItem(betstr)
@@ -270,22 +271,10 @@ class MyConsole(QWidget):
                 if not b[k][3]:
                     continue
 
-                if b[k][2] == 0:
-                    if self.isLoseAdd:  # 输加注
-                        newItem = QTableWidgetItem(u'中')
-                        newItem.setBackgroundColor(self.c)
-                        newItem.setTextColor(QColor(255, 0, 0, 127))
-                    elif not self.isLoseAdd:  # 赢追加的时候，0表示输了。因为中了会+1>0
-                        newItem = QTableWidgetItem(u'不中')
-                        newItem.setBackgroundColor(self.c)
-                else:
-                    if self.isLoseAdd:  # 输加注
-                        newItem = QTableWidgetItem(u'不中')
-                        newItem.setBackgroundColor(self.c)
-                    elif not self.isLoseAdd:  # 赢追加的时候，0表示输了。因为中了会+1>0
-                        newItem = QTableWidgetItem(u'中')
-                        newItem.setBackgroundColor(self.c)
-                        newItem.setTextColor(QColor(255, 0, 0, 127))
+                newItem = QTableWidgetItem(b[k][7])
+                newItem.setBackgroundColor(self.c)
+                if b[k][7] == u'中':
+                    newItem.setTextColor(QColor(255, 0, 0, 127))
                 self.viewEntry.setItem(row - len(b) + k, 6, newItem)
 
                 result_item = QTableWidgetItem(', '.join([str(v) for v in self.open_balls]))

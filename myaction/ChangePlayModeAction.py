@@ -3,6 +3,7 @@ import logging
 
 from PyQt4.QtCore import *
 
+from common import common
 from myutil.tool.MyTool import beautiful_log
 
 
@@ -21,9 +22,9 @@ class MyChangePlayModeAction(object):
             logging.info(u"【更换玩法ACTION】切换北京赛车\重庆时时彩")
             mode = int(console_instance.playmode_combobox.currentIndex())
             mode_str = ""
-            if mode == 0:
+            if mode == common.PLAYMODE_PK10:
                 mode_str = u"北京赛车"
-            elif mode == 1:
+            elif mode == common.PLAYMODE_CQSSC:
                 mode_str = u"重庆时时彩"
             logging.info(u"【更换玩法ACTION】切换北京赛车\重庆时时彩mode=%s..." % mode_str)
 

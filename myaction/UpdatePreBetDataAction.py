@@ -6,6 +6,7 @@ import logging
 from PyQt4.QtCore import *
 from PyQt4.QtGui import QPalette
 
+from common import common
 from myaction.GetHistoryResultDataAction import MyGetHistoryResultDataAction
 from myaction.StartBetAction import MyStartBetAction
 from myutil.tool import MyTool
@@ -34,7 +35,7 @@ class MyUpdatePreBetDataAction(object):
                         console_instance.history_data) > 0 else 'NULL'))
 
             # 如果是北京赛车，稍微处理下开奖号码 "03" => "3"
-            if console_instance.play_mode == 0:
+            if console_instance.play_mode == common.PLAYMODE_PK10:
                 for index, ball in enumerate(console_instance.open_balls):
                     if ball[0] == '0':
                         console_instance.open_balls[index] = ball[1]
@@ -56,8 +57,21 @@ class MyUpdatePreBetDataAction(object):
                 MyGetHistoryResultDataAction.run(console_instance)
             elif 'win' not in console_instance.preBetDataDic['data']:
                 logging.info(u"【更新预下注数据】還在結算階段-1，拿不到最新數據，等待之...")
-            elif int(timeclose) >= 190:
-                logging.info(u"【更新预下注数据】還在結算階段-2，拿不到最新數據，等待之...")
+            elif console_instance.play_mode == common.PLAYMODE_PK10 and int(timeclose) >= 190:
+                logging.info(u"【更新预下注数据】還在結算階段-2.1，拿不到最新數據，等待之...")
+            # <row expect="20180302096" opencode="9,3,1,8,4" opentime="2018-03-02 22:01:30"/>
+            # <row expect="20180302095" opencode="4,5,9,4,4" opentime="2018-03-02 21:51:06"/>
+            # <row expect="20180302024" opencode="0,3,6,5,1" opentime="2018-03-02 10:01:30"/>
+            # <row expect="20180302023" opencode="4,5,0,5,0" opentime="2018-03-02 01:56:30"/>
+            elif console_instance.play_mode == common.PLAYMODE_CQSSC and int(str(timesnow)[-3:]) >= 97 and int(
+                    timeclose) >= 190:
+                logging.info(u"【更新预下注数据】還在結算階段-2.2，拿不到最新數據，等待之...")
+            elif console_instance.play_mode == common.PLAYMODE_CQSSC and int(str(timesnow)[-3:]) <= 23 and int(
+                    timeclose) >= 190:
+                logging.info(u"【更新预下注数据】還在結算階段-2.3，拿不到最新數據，等待之...")
+            elif console_instance.play_mode == common.PLAYMODE_CQSSC and 24 <= int(str(timesnow)[-3:]) <= 96 and int(
+                    timeclose) >= 360:
+                logging.info(u"【更新预下注数据】還在結算階段-2.4，拿不到最新數據，等待之...")
             elif console_instance.history_data and int(timesnow) - int(console_instance.history_data[0][0]) >= 3:
                 # 假设现在 timesnow = console_instance.timesnow = 661167，此时历史数据最新 = 661166
                 # 在某个时刻，正在结算中，可能只要10秒吧，timesnow=661168，但是历史数据还是 661166

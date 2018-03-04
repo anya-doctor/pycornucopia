@@ -6,6 +6,7 @@ import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
+from common import common
 from common.common import req_session
 from myutil.tool.MyTool import getCurrentTimestamp
 
@@ -184,7 +185,7 @@ class MyLoginThread(QtCore.QThread):
                 http://pc10.sss44.us/scowa14889f_39473/ssc/order/list/?&_=1520138330517__autorefresh
                 http://pc10.sss44.us/scowa14889f_39473/ssc/order/leftInfo/?post_submit&&_=1520138670443__ajax
                """
-                if self.console_instance.play_mode == 0:
+                if self.console_instance.play_mode == common.PLAYMODE_PK10:
                     self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[
                                                        0] + 'pk/order/list?&_=%s__autorefresh' % now
                     self.pk_post_bet_url = self.origin_url.split("index.htm")[

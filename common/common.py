@@ -28,3 +28,7 @@ ssc_ball_dic = {
 # 下注模式
 BET_MODE_VERTICAL = 1  # 垂直下注
 BET_MODE_HORIZONTAL = 2  # 水平下注
+
+# 玩法
+PLAYMODE_PK10 = 0
+PLAYMODE_CQSSC = 1

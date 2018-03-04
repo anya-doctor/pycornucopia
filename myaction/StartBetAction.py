@@ -176,26 +176,30 @@ class MyStartBetAction(object):
                         console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
 
             # 兼容老版本算法，如果没有win_cnt，默认是1，中一个算赢，就是不考虑组合赢
-            if hasattr(MyAlgorithm, "win_cnt"):
+            if not hasattr(MyAlgorithm, "win_cnt"):
                 MyAlgorithm.win_cnt = 1
             # 兼容老版本算法，如果没有ping_cnt，默认是-1，也就是没有平的可能性
-            if hasattr(MyAlgorithm, "ping_cnt"):
-                MyAlgorithm.win_cnt = -1
+            if not hasattr(MyAlgorithm, "ping_cnt"):
+                MyAlgorithm.ping_cnt = -1
 
             if console_instance.isLoseAdd:  # 输加注
                 if tmp_win_cnt >= MyAlgorithm.win_cnt:
                     item[2] = 0
+                    item[7] = u'中'
                 elif tmp_win_cnt == MyAlgorithm.ping_cnt:
-                    pass
+                    item[7] = u'平'
                 else:
                     item[2] += 1
+                    item[7] = u'不中'
             elif not console_instance.isLoseAdd:
                 if tmp_win_cnt >= MyAlgorithm.win_cnt:
                     item[2] += 1
+                    item[7] = u'中'
                 elif tmp_win_cnt == MyAlgorithm.ping_cnt:
-                    pass
+                    item[7] = u'平'
                 else:
                     item[2] = 0
+                    item[7] = u'不中'
 
             # 补充record_list
             if hasattr(MyAlgorithm, "record_list_mode") and MyAlgorithm.record_list_mode:

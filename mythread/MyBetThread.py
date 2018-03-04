@@ -47,7 +47,7 @@ class MyBetDataThread(QtCore.QThread):
                 else:
                     logging.info("#####%s" % item[3])
                     for inner_item in item[3]:
-                        if self.console_instance.play_mode == 0:
+                        if self.console_instance.play_mode == common.PLAYMODE_PK10:
                             a = common.pk_ball_dic[inner_item[0]]
                         else:
                             a = common.ssc_ball_dic[inner_item[0]]
@@ -201,7 +201,7 @@ class MyBetDataThread(QtCore.QThread):
                         rebet_list = []
                         for item in b:
                             for inner_item in item[3]:
-                                if self.console_instance.play_mode == 0:
+                                if self.console_instance.play_mode == common.PLAYMODE_PK10:
                                     a = common.pk_ball_dic[inner_item[0]]
                                 else:
                                     a = common.ssc_ball_dic[inner_item[0]]

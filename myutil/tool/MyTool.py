@@ -1,6 +1,8 @@
 # coding=utf-8
 import logging
 
+from common import common
+
 
 def getToday():
     import datetime
@@ -45,13 +47,13 @@ def getCurrentTimeStr():
     return "%s-%s - %s:%s" % (times[1], times[2], times[3], times[4])
 
 
-def xml_helper(my_date, play_mode=0):
+def xml_helper(my_date, play_mode=common.PLAYMODE_PK10):
     import xml.dom.minidom
     import requests
     from common.common import req_session
 
     t_date = my_date.replace("-", "")
-    if play_mode == 0:
+    if play_mode == common.PLAYMODE_PK10:
         url = "http://kaijiang.500.com/static/info/kaijiang/xml/bjpkshi/%s.xml?_A=YFSAQORP1515509516031" % t_date
     else:
         url = "http://kaijiang.500.com/static/public/ssc/xml/qihaoxml/%s.xml?_A=YFSAQORP1515509516031" % t_date

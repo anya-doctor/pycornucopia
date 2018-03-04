@@ -7,6 +7,7 @@ from PyQt4 import QtCore
 from PyQt4.QtCore import *
 from requests.exceptions import ReadTimeout
 
+from common import common
 from common.common import req_session
 
 
@@ -23,8 +24,8 @@ class MyGetPreBetDataThread(QtCore.QThread):
     def get_pre_bet_data(self):
         """
         要根据玩法去获取预下注数据！
-        self.console_instance.play_mode = 0 北京
-        self.console_instance.play_mode = 1 时时彩
+        self.console_instance.play_mode = common.PLAYMODE_PK10 北京
+        self.console_instance.play_mode = common.PLAYMODE_CQSSC 时时彩
         :return:
         """
         try:
@@ -33,7 +34,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
                 return -1
 
             # 北京赛车
-            if self.console_instance.play_mode == 0:
+            if self.console_instance.play_mode == common.PLAYMODE_PK10:
                 t = ['ballNO15', 'ballNO60']
             # 重庆时时彩
             else:
@@ -89,8 +90,9 @@ class MyGetPreBetDataThread(QtCore.QThread):
                     logging.error(u"【获取预下注数据线程】版本号拿不到咯！！！！")
                     t_json = {}
                 res.append(t_json)
-            if self.console_instance.play_mode == 0:
-                # 如果是北京合并两个预下注数据
+
+            # 如果是北京赛车合并两个预下注数据
+            if self.console_instance.play_mode == common.PLAYMODE_PK10:
                 pk_15_predata_json = res[0]
                 pk_60_predata_json = res[1]
                 try:
@@ -118,7 +120,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
             return "RELOGIN"
         except Exception, ex:
             logging.error(u"【获取预下注数据线程】未知错误，返回NULL_DATA")
-            logging.error(str(ex),exc_info=1)
+            logging.error(str(ex), exc_info=1)
             return "NULL_DATA"
 
     def get_pre_bet_date_fake(self):

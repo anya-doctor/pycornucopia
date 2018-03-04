@@ -8,7 +8,7 @@ def run(console_instance):
     """
     水平模式...
     all_ball_needToBetList = [
-        [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list]
+        [timestart, timesnow, betflag, [[point, ball],[point, ball],...]], point, inner_index, record_list, win_flag]
         # item[6] = record_list = [[1,1],[1,2],TRUE]  反正最后一个元素表示中不中。。。
         ...
     ]
@@ -19,9 +19,9 @@ def run(console_instance):
     # 如果下注列表為空則初始化
     if not console_instance.all_ball_needToBetList:
         step_1_init_run(console_instance)
-    elif console_instance.isQQG: #期期滚模式
+    elif console_instance.isQQG:  # 期期滚模式
         step_2_qiqigun_run(console_instance)
-    else: # 常規模式
+    else:  # 常規模式
         step_3_normal_run(console_instance)
 
 
@@ -44,7 +44,7 @@ def step_1_init_run(console_instance):
             if isinstance(a, list):
                 c = a
                 console_instance.all_ball_needToBetList.append(
-                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0, []])
+                        [console_instance.timesnow, console_instance.timesnow, 0, c, i, 0, [], ""])
 
 
 def step_2_qiqigun_run(console_instance):
@@ -65,7 +65,8 @@ def step_2_qiqigun_run(console_instance):
             # 如果a是list，说明就下注这个list即可
             if isinstance(a, list):
                 console_instance.all_ball_needToBetList.append(
-                        [console_instance.timesnow, console_instance.timesnow, 0, a, i, 0, []])
+                        [console_instance.timesnow, console_instance.timesnow, 0, a, i, 0, [], ""])
+
 
 def step_3_normal_run(console_instance):
     """
