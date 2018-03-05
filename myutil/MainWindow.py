@@ -6,6 +6,7 @@ from PyQt4.QtCore import *
 from PyQt4.QtGui import QTableWidget, QTableWidgetItem
 
 from MyConsole import MyConsole
+from common import common
 from myutil.tool import MyTool
 
 
@@ -20,12 +21,12 @@ class MainWindow(QtGui.QMainWindow):
         tab2 = QtGui.QWidget()
         tab3 = QtGui.QWidget()
 
-        console = MyConsole(parent=self)
+        self.console = MyConsole(parent=self)
 
-        # tab2 - console
-        console.setMinimumSize(1500, 800)
+        # tab2 - self.console
+        self.console.setMinimumSize(1500, 800)
         scroll = QtGui.QScrollArea()
-        scroll.setWidget(console)
+        scroll.setWidget(self.console)
         scroll.setAutoFillBackground(True)
         scroll.setWidgetResizable(True)
         vbox = QtGui.QVBoxLayout()
@@ -109,10 +110,15 @@ class MainWindow(QtGui.QMainWindow):
             # 时间
             newItem = QTableWidgetItem(str(period[1]))
             self.viewEntry.setItem(row, 1, newItem)
+            if self.console.play_mode == common.PLAYMODE_PK10:
+                for i in range(10):
+                    newItem = QTableWidgetItem(str(period[2 + i]))
+                    self.viewEntry.setItem(row, 2 + i, newItem)
+            else:
+                for i in range(5):
+                    newItem = QTableWidgetItem(str(period[2 + i]))
+                    self.viewEntry.setItem(row, 2 + i, newItem)
 
-            for i in range(10):
-                newItem = QTableWidgetItem(str(period[2 + i]))
-                self.viewEntry.setItem(row, 2 + i, newItem)
         logging.info(u"【主窗口-历史数据展板-大更新】################END HistoryResultData################")
 
     def closeEvent(self, event):

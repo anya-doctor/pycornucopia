@@ -34,11 +34,17 @@ def get_bet_list(console_instance, bet_index):
         logging.info("balls2=%s" % balls2)
 
         t = [v for v in sorted(list(set(balls2))) if v not in balls]
+        # 如果只有1个，则跳过
+        if len(t) <= 1:
+            logging.info(u"【下注中-算出球】因为t=%s, len=1，所以跳过" % (t))
+            return [], []
+
         bet_balls = []
         for i in range(1, 6):
             for j in t:
                 bet_balls.append([i, j])
         not_bet_balls = []
+
         ret = bet_balls, not_bet_balls
 
         # 5中3算赢，无平
@@ -62,10 +68,10 @@ def get_bet_list(console_instance, bet_index):
             win_cnt = 2
             ping_cnt = 1
 
-        # 1中1算赢，无平
-        elif len(t) == 1:
-            win_cnt = 1
-            ping_cnt = -1
+        # # 1中1算赢，无平
+        # elif len(t) == 1:
+        #     win_cnt = 1
+        #     ping_cnt = -1
 
         logging.info(u"【下注中-算出球】win_cnt=%s, ping_cnt=%s" % (win_cnt, ping_cnt))
         if isinstance(bet_balls, tuple):
