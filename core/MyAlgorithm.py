@@ -8,8 +8,28 @@ vertical_mode = False
 record_list_mode = False
 
 # 控制单个中就算中，还是组合中！！！
-win_cnt = 1
-ping_cnt = -1
+win_ping_dic = {
+    1 * 5: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    2 * 5: {
+        'win_cnt': 2,
+        'ping_cnt': 1,
+    },
+    3 * 5: {
+        'win_cnt': 2,
+        'ping_cnt': -1,
+    },
+    4 * 5: {
+        'win_cnt': 3,
+        'ping_cnt': 2,
+    },
+    5 * 5: {
+        'win_cnt': 3,
+        'ping_cnt': -1,
+    },
+}
 
 
 def get_bet_list(console_instance, bet_index):
@@ -47,33 +67,8 @@ def get_bet_list(console_instance, bet_index):
 
         ret = bet_balls, not_bet_balls
 
-        # 5中3算赢，无平
-        global win_cnt, ping_cnt
-        if len(t) == 5:
-            win_cnt = 3
-            ping_cnt = -1
-
-        # 4中3算赢，中2算平
-        elif len(t) == 4:
-            win_cnt = 3
-            ping_cnt = 2
-
-        # 3中2算赢，中2算平
-        elif len(t) == 3:
-            win_cnt = 2
-            ping_cnt = -1
-
-        # 2中2算赢，中1算平
-        elif len(t) == 2:
-            win_cnt = 2
-            ping_cnt = 1
-
-        # # 1中1算赢，无平
-        # elif len(t) == 1:
-        #     win_cnt = 1
-        #     ping_cnt = -1
-
-        logging.info(u"【下注中-算出球】win_cnt=%s, ping_cnt=%s" % (win_cnt, ping_cnt))
+        logging.info(
+            u"【下注中-算出球】win_cnt=%s, ping_cnt=%s" % (win_ping_dic[len(bet_balls)]['win_cnt'], win_ping_dic[len(bet_balls)]['ping_cnt']))
         if isinstance(bet_balls, tuple):
             for i in range(len(bet_balls)):
                 logging.info(u"【下注中-算出球】下注=%s" % bet_balls[i])
