@@ -32,7 +32,7 @@ class MyUpdatePreBetDataAction(object):
             logging.info(u"【更新预下注数据】win=%s" % (data_dict['data']['win'] if 'win' in data_dict['data'] else 'NULL'))
             logging.info(u"【更新预下注数据】历史最新一期=%s" % (
                 console_instance.history_data[0][0] if console_instance.history_data and len(
-                        console_instance.history_data) > 0 else 'NULL'))
+                    console_instance.history_data) > 0 else 'NULL'))
 
             # 如果是北京赛车，稍微处理下开奖号码 "03" => "3"
             if console_instance.play_mode == common.PLAYMODE_PK10:
@@ -78,8 +78,8 @@ class MyUpdatePreBetDataAction(object):
                 # 所以是存在int(timesnow) - int(console_instance.history_data[0][0]) >= 2
                 # 等结算完成，稳定在timesnow=661168, console_instance.timesnow = 661167， 历史数据最新 = 661166
                 logging.info(
-                        u"【更新预下注数据】断层，timesnow=%s, console_instance.timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
-                            timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
+                    u"【更新预下注数据】断层，timesnow=%s, console_instance.timesnow=%s, 历史数据最新=%s断层了，重新获取一份..." % (
+                        timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
                 MyGetHistoryResultDataAction.run(console_instance)
             else:
                 # 在稳定且时间区间正确的情况下，解开开始按钮的封印
@@ -119,8 +119,8 @@ class MyUpdatePreBetDataAction(object):
                                                  Q_ARG(list, console_instance.open_balls))
                     else:
                         logging.error(
-                                u"【更新预下注数据】什么情况！！！timesnow=%s, console_instance.timesnow=%s,历史最新=%s，更新历史数据,遇到意外！！！" % (
-                                    timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
+                            u"【更新预下注数据】什么情况！！！timesnow=%s, console_instance.timesnow=%s,历史最新=%s，更新历史数据,遇到意外！！！" % (
+                                timesnow, console_instance.timesnow, console_instance.history_data[0][0]))
                         raise Exception
 
                     # 更新期数
@@ -131,7 +131,10 @@ class MyUpdatePreBetDataAction(object):
 
                     # 开始下一局 写数据到Table 通知控制台下注
                     if console_instance.all_ball_needToBetList:
+                        logging.info(u"【更新预下注数据】下注列表不为空，开始下一次的: MyStartBetAction.for_start()")
                         MyStartBetAction.for_start(console_instance)
+                    else:
+                        logging.error(u"【更新预下注数据】好可惜啊，为什么下注列表是空的！！！没办法开始下注了啊！！")
                 elif int(timesnow) - int(console_instance.timesnow) >= 2:  # 好的，说明中间有断层
                     """
                         一旦进来这里，就说明断层开始。
@@ -196,7 +199,7 @@ class MyUpdatePreBetDataAction(object):
             console_instance.timeopen_label.setText(u'下局：' + str(timeopen))
             console_instance.qishu_label.setText(u'期数：' + str(timesnow))
             console_instance.open_balls_label.setText(
-                    u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
+                u'开奖：' + str(" ".join([str(v) for v in console_instance.open_balls])))
 
             pa = QPalette()
             pa.setColor(QPalette.WindowText, Qt.red)
