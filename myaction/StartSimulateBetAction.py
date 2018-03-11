@@ -2,7 +2,7 @@
 import logging
 
 from PyQt4.QtCore import *
-from PyQt4.QtGui import QComboBox, QTableWidgetItem
+from PyQt4.QtGui import QComboBox
 
 from mythread.MySimulateBetThread import MySimulateBetThread
 from myutil.tool.MyTool import beautiful_log
@@ -36,17 +36,3 @@ class MyStartSimulateBetAction(object):
             console_instance.simulateBetThread.wait()
         console_instance.simulateBetThread = MySimulateBetThread(console_instance)
         console_instance.simulateBetThread.start()
-
-    @staticmethod
-    def simulate_bet(console_instance):
-        # 更新下注面板信息...
-        cnt = 0
-        logging.info(u"【模拟下注ACTION】bet_list=%s" % console_instance.all_ball_needToBetList)
-
-        for item in console_instance.all_ball_needToBetList:
-            row = console_instance.viewEntry.rowCount()
-            logging.info(u"【模拟下注ACTION】row_count=%s,cnt=%s" % (row, cnt))
-            newItem = QTableWidgetItem(u'已投注')
-            newItem.setBackgroundColor(console_instance.c)
-            console_instance.viewEntry.setItem((row - len(console_instance.all_ball_needToBetList) + cnt), 5, newItem)
-            cnt += 1

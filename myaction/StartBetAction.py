@@ -230,8 +230,8 @@ class MyStartBetAction(object):
         # 通知控制台中或不中
         logging.info(u"【下注中-结算】结算通知UI-2...")
         b = copy.deepcopy(console_instance.all_ball_needToBetList)
-        table_cnt = console_instance.viewEntry.rowCount()
-        console_instance.loadTableData2(b, table_cnt)
+        table_row_num = console_instance.viewEntry.rowCount()
+        console_instance.loadTableData2(b, table_row_num)
 
         if console_instance.isQQG:
             # 期期滚- 过滤掉期期滚中了或者爆了的数据项
