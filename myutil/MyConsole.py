@@ -262,27 +262,42 @@ class MyConsole(QWidget):
 
     # 更新Table数据-2-判断中否
     @pyqtSlot(list)
-    def loadTableData2(self, all_ball_needToBetList):
+    def loadTableData2(self, all_ball_needToBetList, table_row_num):
+        """
+        结算的时候，可能元素被其它线程更改，导致数据紊乱。
+        :param all_ball_needToBetList: 结算那一瞬间，下注列表
+        :param table_row_num: 结算的那一瞬间，整个table的行数
+        :return:
+        """
         try:
             b = all_ball_needToBetList
-            row = self.viewEntry.rowCount()
+            row = table_row_num
+            self.c = QColor("darkgray") if self.colorflag % 2 == 0 else QColor("gray")
+
+            logging.info(u"【控制台】UI界面-2更新，期数=%s, table总行数=%s, 下注列表长度=%s" % (self.timesnow, row, len(b)))
             for k in range(len(b)):
                 # 如果本item没有下注的list，则跳过
                 if not b[k][3]:
+                    logging.info(u"【控制台】UI界面-2更新，这个是空的！！ %s" % b[k])
                     continue
+                else:
+                    logging.info(u"【控制台】UI界面-2更新，结算=%s！" % b[k][7])
 
+                # 下注结果item： 中、平、不中
                 newItem = QTableWidgetItem(b[k][7])
                 newItem.setBackgroundColor(self.c)
                 if b[k][7] == u'中':
                     newItem.setTextColor(QColor(255, 0, 0, 127))
                 self.viewEntry.setItem(row - len(b) + k, 6, newItem)
 
+                # 开奖结果item：[3, 5, 6, 8, 0]
                 result_item = QTableWidgetItem(', '.join([str(v) for v in self.open_balls]))
                 result_item.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row - len(b) + k, 7, result_item)
 
-                a = self.viewEntry.item(row - len(b) + k, 5)
-                if not a:
+                # 投注结果item，如果没有这个item说明投注失败，补全一个
+                touzhu_item = self.viewEntry.item(row - len(b) + k, 5)
+                if not touzhu_item:
                     newItem = QTableWidgetItem(u'网差无投')
                     newItem.setBackgroundColor(self.c)
                     self.viewEntry.setItem(row - len(b) + k, 5, newItem)
@@ -293,6 +308,7 @@ class MyConsole(QWidget):
 
             logging.info(u"【控制台】UI界面-2更新，结算完毕...")
         except Exception, ex:
+            logging.error(u"【控制台】UI界面-2更新出错，错误如下：")
             logging.error(ex, exc_info=1)
             for i in self.all_ball_needToBetList:
                 logging.info(i)
@@ -300,8 +316,6 @@ class MyConsole(QWidget):
     @pyqtSlot(list)
     def loadTableData3(self, all_ball_needToBetList, mode=1):
         try:
-            b = all_ball_needToBetList
-            row = self.viewEntry.rowCount()
             # 更新下注面板信息...
             cnt = 0
             row = self.viewEntry.rowCount()

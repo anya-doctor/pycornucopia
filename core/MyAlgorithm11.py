@@ -8,28 +8,8 @@ vertical_mode = False
 record_list_mode = False
 
 # 控制单个中就算中，还是组合中！！！
-win_ping_dic = {
-    1 * 5: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    2 * 5: {
-        'win_cnt': 2,
-        'ping_cnt': 1,
-    },
-    3 * 5: {
-        'win_cnt': 2,
-        'ping_cnt': -1,
-    },
-    4 * 5: {
-        'win_cnt': 3,
-        'ping_cnt': 2,
-    },
-    5 * 5: {
-        'win_cnt': 3,
-        'ping_cnt': -1,
-    },
-}
+win_cnt = 1
+ping_cnt = -1
 
 
 def get_bet_list(console_instance, bet_index):
@@ -50,51 +30,50 @@ def get_bet_list(console_instance, bet_index):
         balls2 = line2[2:7]
         ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
-        # 确定范围
-        range_num = int(console_instance.ball1_1_Entry.text())
-        affect_num = int(console_instance.ball1_2_Entry.text())
-        logging.info("range_num=%s, affect_num=%s" % (range_num, affect_num))
+        logging.info("balls=%s" % balls)
+        logging.info("balls2=%s" % balls2)
 
-        ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-
-        dic = {
-            '1': 0,
-            '2': 0,
-            '3': 0,
-            '4': 0,
-            '5': 0,
-            '6': 0,
-            '7': 0,
-            '8': 0,
-            '9': 0,
-            '0': 0
-        }
-
-        # 开始统计
-        for line in lines[console_instance.first_n: console_instance.first_n + range_num]:
-            balls = line[2:7]
-            balls = list(set(balls))
-            for i in balls:
-                dic[str(i)] += 1
-
-        logging.info(dic)
-
-        # 找到热码
-        a = sorted([[v, k] for k, v in dic.items()])
-        b = [int(k) for v, k in a[-affect_num:]]
-        logging.info(b)
+        t = [v for v in sorted(list(set(balls2))) if v not in balls]
+        # 如果只有1个，则跳过
+        if len(t) <= 1:
+            logging.info(u"【下注中-算出球】因为t=%s, len=1，所以跳过" % (t))
+            return [], []
 
         bet_balls = []
         for i in range(1, 6):
-            for j in b:
+            for j in t:
                 bet_balls.append([i, j])
-
         not_bet_balls = []
+
         ret = bet_balls, not_bet_balls
 
-        logging.info(
-                u"【下注中-算出球】win_cnt=%s, ping_cnt=%s" % (
-                win_ping_dic[len(bet_balls)]['win_cnt'], win_ping_dic[len(bet_balls)]['ping_cnt']))
+        # 5中3算赢，无平
+        global win_cnt, ping_cnt
+        if len(t) == 5:
+            win_cnt = 3
+            ping_cnt = -1
+
+        # 4中3算赢，中2算平
+        elif len(t) == 4:
+            win_cnt = 3
+            ping_cnt = 2
+
+        # 3中2算赢，中2算平
+        elif len(t) == 3:
+            win_cnt = 2
+            ping_cnt = -1
+
+        # 2中2算赢，中1算平
+        elif len(t) == 2:
+            win_cnt = 2
+            ping_cnt = 1
+
+        # # 1中1算赢，无平
+        # elif len(t) == 1:
+        #     win_cnt = 1
+        #     ping_cnt = -1
+
+        logging.info(u"【下注中-算出球】win_cnt=%s, ping_cnt=%s" % (win_cnt, ping_cnt))
         if isinstance(bet_balls, tuple):
             for i in range(len(bet_balls)):
                 logging.info(u"【下注中-算出球】下注=%s" % bet_balls[i])

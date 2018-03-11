@@ -170,7 +170,7 @@ class MyStartBetAction(object):
                     if simulate_mode:
                         console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
                         console_instance.simulate_money += int(
-                            console_instance.balls_bet_amount[item[2]]) * 9.91
+                                console_instance.balls_bet_amount[item[2]]) * 9.91
                 else:
                     if simulate_mode:
                         console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
@@ -230,7 +230,8 @@ class MyStartBetAction(object):
         # 通知控制台中或不中
         logging.info(u"【下注中-结算】结算通知UI-2...")
         b = copy.deepcopy(console_instance.all_ball_needToBetList)
-        console_instance.loadTableData2(b)
+        table_cnt = console_instance.viewEntry.rowCount()
+        console_instance.loadTableData2(b, table_cnt)
 
         if console_instance.isQQG:
             # 期期滚- 过滤掉期期滚中了或者爆了的数据项

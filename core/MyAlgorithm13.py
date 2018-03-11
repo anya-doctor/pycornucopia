@@ -38,63 +38,35 @@ def get_bet_list(console_instance, bet_index):
         assert isinstance(console_instance, MyConsole)
         logging.info(u"【下注中-算出球】垂直模式=%s：位置=%s" % (vertical_mode, bet_index))
 
-        if bet_index > 1:
-            logging.info(u"【下注中-算出球】因为算法特殊性，只要bet_index==1即可，跳过%s..." % bet_index)
-            return [], []
-
         # 舍弃N期
         lines = console_instance.history_data
-        line = lines[int(console_instance.first_n)]
-        line2 = lines[int(console_instance.first_n) + 1]
-        balls = line[2:7]
-        balls2 = line2[2:7]
-        ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 
         # 确定范围
         range_num = int(console_instance.ball1_1_Entry.text())
-        affect_num = int(console_instance.ball1_2_Entry.text())
-        logging.info("range_num=%s, affect_num=%s" % (range_num, affect_num))
-
-        ten_balls = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
-
-        dic = {
-            '1': 0,
-            '2': 0,
-            '3': 0,
-            '4': 0,
-            '5': 0,
-            '6': 0,
-            '7': 0,
-            '8': 0,
-            '9': 0,
-            '0': 0
-        }
+        logging.info("range_num=%s" % (range_num))
 
         # 开始统计
+        left_cnt = 0
+        right_cnt = 0
         for line in lines[console_instance.first_n: console_instance.first_n + range_num]:
-            balls = line[2:7]
-            balls = list(set(balls))
-            for i in balls:
-                dic[str(i)] += 1
-
-        logging.info(dic)
-
-        # 找到热码
-        a = sorted([[v, k] for k, v in dic.items()])
-        b = [int(k) for v, k in a[-affect_num:]]
-        logging.info(b)
-
-        bet_balls = []
-        for i in range(1, 6):
-            for j in b:
-                bet_balls.append([i, j])
+            balls = line[2:12]
+            assert isinstance(balls, list)
+            if balls.index(bet_index) < 6:
+                left_cnt += 1
+            else:
+                right_cnt += 1
+        logging.info("left_cnt=%s, right_cnt=%s" % (left_cnt, right_cnt))
+        if left_cnt >= right_cnt:
+            bet_balls = [[i, bet_index] for i in range(1, 6)]
+        else:
+            bet_balls = [[i, bet_index] for i in range(6, 11)]
 
         not_bet_balls = []
         ret = bet_balls, not_bet_balls
 
         logging.info(
                 u"【下注中-算出球】win_cnt=%s, ping_cnt=%s" % (
-                win_ping_dic[len(bet_balls)]['win_cnt'], win_ping_dic[len(bet_balls)]['ping_cnt']))
+                    win_ping_dic[len(bet_balls)]['win_cnt'], win_ping_dic[len(bet_balls)]['ping_cnt']))
         if isinstance(bet_balls, tuple):
             for i in range(len(bet_balls)):
                 logging.info(u"【下注中-算出球】下注=%s" % bet_balls[i])

@@ -54,21 +54,21 @@ def xml_helper(my_date, play_mode=common.PLAYMODE_PK10):
 
     t_date = my_date.replace("-", "")
     if play_mode == common.PLAYMODE_PK10:
-        url = "http://kaijiang.500.com/static/info/kaijiang/xml/bjpkshi/%s.xml?_A=YFSAQORP1515509516031" % t_date
+        url = common.GETDATA_URL_PK10 % t_date
     else:
-        url = "http://kaijiang.500.com/static/public/ssc/xml/qihaoxml/%s.xml?_A=YFSAQORP1515509516031" % t_date
+        url = common.GETDATA_URL_SSC % t_date
     r = requests.Request('GET', url)
 
     prep = req_session.prepare_request(r)
     rr = req_session.send(prep, stream=False, timeout=10, allow_redirects=False)
-    with open('config/history.xml', 'w') as f:
+    with open(common.GETDATA_XML_PATH, 'w') as f:
         a = rr.content
         rr.close()
         dstr = a.decode('gb2312').encode('utf-8')
         dstr = dstr.replace('gb2312', 'utf-8')
         f.write(dstr)
 
-    dom = xml.dom.minidom.parse('config/history.xml')
+    dom = xml.dom.minidom.parse(common.GETDATA_XML_PATH)
     root = dom.documentElement
     rows = root.getElementsByTagName("row")
     res = []

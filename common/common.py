@@ -32,3 +32,8 @@ BET_MODE_HORIZONTAL = 2  # 水平下注
 # 玩法
 PLAYMODE_PK10 = 0
 PLAYMODE_CQSSC = 1
+
+# 获取历史结果数据
+GETDATA_URL_PK10 = "http://kaijiang.500.com/static/info/kaijiang/xml/bjpkshi/%s.xml?_A=YFSAQORP1515509516031"  # 获取数据的网址
+GETDATA_URL_SSC = "http://kaijiang.500.com/static/public/ssc/xml/qihaoxml/%s.xml?_A=YFSAQORP1515509516031"
+GETDATA_XML_PATH = "config/history.xml"  # 模拟获取历史数据的存放点
