@@ -1,6 +1,7 @@
 # #coding:utf-8
 import ctypes
 import logging
+import re
 
 import requests
 from PyQt4 import QtCore
@@ -34,6 +35,42 @@ class MyLoginThread(QtCore.QThread):
         logging.info(u"【登录线程】rootUrl=%s" % self.rootUrl)
         logging.info(u"【登录线程】path=%s" % self.path)
 
+    def getCidAndWebname(self):
+        """
+        获取cid和网站名字
+        :return:
+        """
+        r1 = requests.Request('GET', self.loginUrl)
+        prep1 = req_session.prepare_request(r1)
+        rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
+        data = rr1.content
+        rr1.close()
+        with open('config/login.html', 'w') as f:
+            f.write(data)
+        with open('config/login.html', 'r') as f:
+            lines = f.readlines()
+            """
+            <input type="hidden" name="cid" value="1050012" />
+            <input type="hidden" name="cname" value="盛泰" />
+            """
+            cid = cname = ""
+            for line in lines:
+                if 'name="cid"' in line:
+                    print line
+                    print re.findall(r'[\d]+', line)
+                    cid = int(re.findall(r'[\d]+', line)[0])
+
+                if 'name="cname"' in line:
+                    print line
+                    print re.findall(r'value=".*"', line)
+                    a = re.findall(r'value=".*"', line)[0]
+                    b = a.split('="')[-1]
+                    c = b.replace('"', '')
+                    cname = c.decode('utf-8')
+        logging.info(u"【登录线程】网站cid=%s" % cid)
+        logging.info(u"【登录线程】网站cname=%s" % cname)
+        return cid, cname
+
     # 从antivc获取验证码错误返回error
     def getCheckcode(self):
         dll = ctypes.windll.LoadLibrary('./config/AntiVC.dll')
@@ -58,6 +95,9 @@ class MyLoginThread(QtCore.QThread):
 
         :return:
         """
+
+        my_cid, my_cname = self.getCidAndWebname()
+
         get_code_url1 = self.rootUrl + "/getCodeInfo/.auth?u=0.7473080656164435&systemversion=4_6&.auth"
 
         r1 = requests.Request('GET', get_code_url1)
@@ -100,8 +140,8 @@ class MyLoginThread(QtCore.QThread):
             '__name': str(self.console_instance.userEntry.text()),
             'password': str(self.console_instance.passEntry.text()),
             'isSec': 0,
-            'cid': common.WEB_DIC[common.WEB]['cid'],
-            'cname': common.WEB_DIC[common.WEB]['name'],
+            'cid': my_cid,
+            'cname': my_cname,
             'systemversion': '4_6'
         }
 
