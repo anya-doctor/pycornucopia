@@ -37,3 +37,18 @@ PLAYMODE_CQSSC = 1
 GETDATA_URL_PK10 = "http://kaijiang.500.com/static/info/kaijiang/xml/bjpkshi/%s.xml?_A=YFSAQORP1515509516031"  # 获取数据的网址
 GETDATA_URL_SSC = "http://kaijiang.500.com/static/public/ssc/xml/qihaoxml/%s.xml?_A=YFSAQORP1515509516031"
 GETDATA_XML_PATH = "config/history.xml"  # 模拟获取历史数据的存放点
+
+# 网站名字
+WEB = 1
+WEB_DIC = {
+    1 :{
+        'name': "盛泰",
+        'cid': 1050012,
+        'owner': 'LM',
+    },
+    2 :{
+        'name': "星际",
+        'cid': 1229,
+        'owner': 'HZS',
+    }
+}

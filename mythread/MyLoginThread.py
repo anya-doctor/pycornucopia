@@ -47,6 +47,17 @@ class MyLoginThread(QtCore.QThread):
             return 'error'
 
     def login(self):
+        """
+        【登录线程】登录body=['/scowa14889f_40384/', 'http://host/scowa14889f/login/48b501bc42_rdsess/k', '']
+        【登录线程】登录header={'Content-Length': '70', 'Set-Cookie': 'sysinfo=0; expires=Thu, 08-Feb-18 04:47:52 GMT;path=/scowa14889f_40384/, PHPSESSID=48b501bc42_1229_40384; path=/scowa14889f_40384/, PHPSESSID=48b501bc42_1229_40384; path=/scowa14889f/, AC=91eccfc5480de38333f67cd47e652f24|1518068272; path=/', 'Connection': 'keep-alive', 'Date': 'Thu, 08 Feb 2018 05:37:52 GMT', 'X-Frame-Options': 'SAMEORIGIN', 'Content-Type': 'text/plain; charset=utf-8'}
+        【登录线程】cookies_jar=<<class 'requests.cookies.RequestsCookieJar'>[<Cookie AC=91eccfc5480de38333f67cd47e652f24|1518068272 for />, <Cookie PHPSESSID=48b501bc42_1229_40384 for /scowa14889f/>, <Cookie PHPSESSID=48b501bc42_1229_40384 for /scowa14889f_40384/>, <Cookie ysinfo=0 for Thu, 08-Feb-18 04:47:52 GMT>]>
+        【登录线程】再次校验URL=http://pc10.sss22.us/scowa14889f/login/48b501bc42_rdsess/k
+        origin_url=http://pc10.sss22.us/scowa14889f_40384/
+        pk_pre_bet_get_data_url=http://pc10.sss22.us/scowa14889f_40384/pk/order/list?&_=1518068272384__autorefresh
+        pk_post_bet_url=http://pc10.sss22.us/scowa14889f_40384/pk/order/leftInfo/?post_submit&&_=1518068272384__ajax
+
+        :return:
+        """
         get_code_url1 = self.rootUrl + "/getCodeInfo/.auth?u=0.7473080656164435&systemversion=4_6&.auth"
 
         r1 = requests.Request('GET', get_code_url1)
@@ -89,8 +100,8 @@ class MyLoginThread(QtCore.QThread):
             '__name': str(self.console_instance.userEntry.text()),
             'password': str(self.console_instance.passEntry.text()),
             'isSec': 0,
-            'cid': 1229,
-            'cname': '星际',
+            'cid': common.WEB_DIC[common.WEB]['cid'],
+            'cname': common.WEB_DIC[common.WEB]['name'],
             'systemversion': '4_6'
         }
 
@@ -144,12 +155,12 @@ class MyLoginThread(QtCore.QThread):
         logging.info(u"【登录线程】cookies_jar=%s" % cookies_jar)
 
         headers2 = {
-            'Host': 'pc10.sss66.us',
+            'Host': self.host,
             'Proxy-Connection': 'keep-alive',
             'Upgrade-Insecure-Requests': '1',
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
-            'Referer': 'http://pc10.sss66.us/scowa1414556f/.auth',
+            'Referer': '%s.auth' % self.origin_url,
             'Accept-Encoding': 'gzip, deflate',
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         }
