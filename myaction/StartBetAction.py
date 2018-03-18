@@ -6,6 +6,7 @@ from PyQt4 import QtGui
 from PyQt4.QtCore import *
 
 from bet import vertical_mode, horizontal_mode
+from common import common
 from core import MyAlgorithm
 from mythread import MyBetThread
 from myutil.tool.MyTool import beautiful_log
@@ -176,29 +177,10 @@ class MyStartBetAction(object):
                         console_instance.simulate_money -= int(console_instance.balls_bet_amount[item[2]])
 
             # 兼容老版本算法，如果没有win_ping_dic，默认是给一个大众标准，中一个算赢，就是不考虑组合赢
-            if not hasattr(MyAlgorithm, "win_ping_dic"):
-                MyAlgorithm.win_ping_dic = {
-                    1 * 5: {
-                        'win_cnt': 1,
-                        'ping_cnt': -1,
-                    },
-                    2 * 5: {
-                        'win_cnt': 2,
-                        'ping_cnt': 1,
-                    },
-                    3 * 5: {
-                        'win_cnt': 2,
-                        'ping_cnt': -1,
-                    },
-                    4 * 5: {
-                        'win_cnt': 3,
-                        'ping_cnt': 2,
-                    },
-                    5 * 5: {
-                        'win_cnt': 3,
-                        'ping_cnt': -1,
-                    },
-                }
+            if console_instance.play_mode == common.PLAYMODE_CQSSC and not hasattr(MyAlgorithm, "win_ping_dic"):
+                MyAlgorithm.win_ping_dic = common.win_ping_ssc_dic
+            elif console_instance.play_mode == common.PLAYMODE_PK10 and not hasattr(MyAlgorithm, "win_ping_dic"):
+                MyAlgorithm.win_ping_dic = common.win_ping_pk_dic
 
             if console_instance.isLoseAdd:  # 输加注
                 if tmp_win_cnt >= MyAlgorithm.win_ping_dic[len(item[3])]['win_cnt']:

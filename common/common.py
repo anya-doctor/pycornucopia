@@ -37,3 +37,72 @@ PLAYMODE_CQSSC = 1
 GETDATA_URL_PK10 = "http://kaijiang.500.com/static/info/kaijiang/xml/bjpkshi/%s.xml?_A=YFSAQORP1515509516031"  # 获取数据的网址
 GETDATA_URL_SSC = "http://kaijiang.500.com/static/public/ssc/xml/qihaoxml/%s.xml?_A=YFSAQORP1515509516031"
 GETDATA_XML_PATH = "config/history.xml"  # 模拟获取历史数据的存放点
+
+# 重庆时时彩的默认赢输平，我们默认，普通情况下，是不需要平的，来一个就算赢。
+win_ping_ssc_dic = {
+    1: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    2: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    3: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    4: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    5: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+
+}
+
+# 北京赛车的默认赢输平，我们默认，普通情况下，是不需要平的，来一个就算赢。
+win_ping_pk_dic = {
+    1: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    2: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    3: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    4: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    5: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    6: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    7: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    8: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    9: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    10: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    }
+}
