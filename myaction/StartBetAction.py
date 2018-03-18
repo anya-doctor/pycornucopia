@@ -217,19 +217,9 @@ class MyStartBetAction(object):
 
         if console_instance.isQQG:
             # 期期滚- 过滤掉期期滚中了或者爆了的数据项
-            for index, item in enumerate(console_instance.all_ball_needToBetList):
-                # 如果之前的item是空，则说明未参与下注，则跳过
-                if not item[3]:
-                    continue
-
-                # 如果中了，则去掉这一条
-                if item[7] == u'中':
-                    del console_instance.all_ball_needToBetList[index]
-
-                # 如果爆了，则去掉这一条
-                if item[2] == len(console_instance.balls_bet_amount):
-                    del console_instance.all_ball_needToBetList[index]
-
+            console_instance.all_ball_needToBetList = filter(
+                    lambda x: (x[7] != u'中') and (item[2] < len(console_instance.balls_bet_amount)),
+                    console_instance.all_ball_needToBetList)
         else:
             # 常规 - 重置那些被爆了的
             for i in console_instance.all_ball_needToBetList:
