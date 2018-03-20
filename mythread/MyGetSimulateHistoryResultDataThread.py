@@ -31,18 +31,19 @@ class MyGetSimulateHistoryResultDataThread(QtCore.QThread):
             for _date in date_list:
                 date = _date.strftime("%Y-%m-%d")
                 try:
+                    logging.info(u"【获取模拟用的历史数据线程】当前数据源=%s" % self.console_instance.kaijiang_data_source)
                     if self.console_instance.kaijiang_data_source == common.KAIJIANG_DATA_SOURCE_SELF:
                         day_data = kaijiang_self_helper(self.console_instance, date, self.console_instance.play_mode)
                     elif self.console_instance.kaijiang_data_source == common.KAIJIANG_DATA_SOURCE_500:
                         day_data = kaijiang_xml_helper_500caipiao(date, self.console_instance.play_mode)
-
+                    logging.info(day_data)
                     if len(day_data) < 100 and date != today:
                         logging.error(u"【获取模拟用的历史数据线程】date=%s，数据len<100并且不是今天！" % date)
                         fail_date.append(date)
                     else:
                         res.extend(day_data)
                 except Exception, ex:
-                    logging.error(u"【获取模拟用的历史数据线程】date=%s，获取数据失败！" % date)
+                    logging.error(u"【获取模拟用的历史数据线程】date=%s，获取数据失败！" % date, exc_info=1)
                     fail_date.append(date)
 
             if fail_date:

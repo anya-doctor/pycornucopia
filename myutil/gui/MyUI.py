@@ -18,6 +18,7 @@ from myaction.ReNameAction import MyReNameAction
 from myaction.SaveConfigAction import MySaveConfigAction
 from myaction.StartBetAction import MyStartBetAction
 from myaction.StartSimulateBetAction import MyStartSimulateBetAction
+from myaction.UpdateDataSourceAction import MyUpdateDataSourceAction
 from myaction.UpdateLoseAppendAction import MyUpdateLoseAppendAction
 from myaction.UpdateNormalQiQiGunAction import MyUpdateNormalQiQiGunAction
 from myaction.UpdateSimulateComboModeAction import MyUpdateSimulateComboModeAction
@@ -138,9 +139,17 @@ class MyUIUtil(object):
         console_instance.isSimulate_combobox = QComboBox()
         console_instance.isSimulate_combobox.addItem(u'模拟-关')
         console_instance.isSimulate_combobox.addItem(u'模拟-开')
-        console_instance.gridlayout.addWidget(console_instance.isSimulate_combobox, 0, 29, 1, 3)
+        console_instance.gridlayout.addWidget(console_instance.isSimulate_combobox, 0, 29, 1, 2)
         console_instance.connect(console_instance.isSimulate_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
                                  lambda: MyUpdateSimulateComboModeAction.run(console_instance))
+
+        # 数据来源
+        console_instance.data_source_combobox = QComboBox()
+        console_instance.data_source_combobox.addItem(u'500彩票')
+        console_instance.data_source_combobox.addItem(u'本站数据')
+        console_instance.gridlayout.addWidget(console_instance.data_source_combobox, 0, 31, 1, 1)
+        console_instance.connect(console_instance.data_source_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
+                                 lambda: MyUpdateDataSourceAction.run(console_instance))
 
         cal_from_lb = QLabel(u'开始')
         cal_to_lb = QLabel(u'结束')

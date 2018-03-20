@@ -70,7 +70,7 @@ class MyBetDataThread(QtCore.QThread):
     def bet(self):
         if not self.all_ball_needToBetList:
             logging.error(u"【下注线程】下注列表为空，啥都不干...")
-            return {}
+            return {-1}
 
         logging.info(u"【下注线程】组装下注URI..")
         # logging.info(self.console_instance.loginSuccessData)
@@ -142,7 +142,11 @@ class MyBetDataThread(QtCore.QThread):
             else:
                 ret_json = self.bet()
 
-            if not ret_json:
+            if ret_json == {-1}:
+                # 说明不需要下注...
+                logging.info(u"【下注线程】真是奇了怪了，竟然不需要下注？？！！！下注列表为空？？？")
+                pass
+            elif not ret_json:
                 logging.info(u"【下注线程】被挤下线，重新触发登录逻辑！")
                 QMetaObject.invokeMethod(self.console_instance, "onLoginBtn", Qt.QueuedConnection)
 
