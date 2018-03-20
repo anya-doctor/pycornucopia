@@ -101,6 +101,9 @@ class MyConsole(QWidget):
 
         self.simulate_money = 0  # 模拟下注金额
 
+        # 数据来源，可能是自己的网站，可能是500彩票网
+        self.kaijiang_data_source = 0
+
         MyUIUtil.initUI(self)
         MyUIUtil.initConfig(self)
 

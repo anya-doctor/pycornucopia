@@ -11,7 +11,7 @@ from PyQt4.QtCore import *
 from common import common
 from common.common import req_session
 from myutil.tool import MyTool
-from myutil.tool.MyTool import xml_helper
+from myutil.tool.MyTool import kaijiang_xml_helper_500caipiao, kaijiang_self_helper
 
 
 class MyGetHistoryResultDataThread(QtCore.QThread):
@@ -51,8 +51,14 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
                     today = datetime.datetime.today()
                     day = timedelta(days=1)
                     yesterday = today - day
-                    res = xml_helper(yesterday.strftime("%Y-%m-%d"), self.console_instance.play_mode)
-                    json_data['data']['result'].extend(res)
+                    if self.console_instance.kaijiang_data_source == common.KAIJIANG_DATA_SOURCE_500:
+                        res = kaijiang_xml_helper_500caipiao(yesterday.strftime("%Y-%m-%d"),
+                                                             self.console_instance.play_mode)
+                        json_data['data']['result'].extend(res)
+                    elif self.console_instance.kaijiang_data_source == common.KAIJIANG_DATA_SOURCE_SELF:
+                        res = kaijiang_self_helper(self.console_instance, yesterday.strftime("%Y-%m-%d"),
+                                                   self.console_instance.play_mode)
+                        json_data['data']['result'].extend(res)
                 return json_data
         return {}
 

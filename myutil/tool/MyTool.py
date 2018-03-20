@@ -1,7 +1,11 @@
 # coding=utf-8
+import json
 import logging
 
+import requests
+
 from common import common
+from common.common import req_session
 
 
 def getToday():
@@ -47,7 +51,14 @@ def getCurrentTimeStr():
     return "%s-%s - %s:%s" % (times[1], times[2], times[3], times[4])
 
 
-def xml_helper(my_date, play_mode=common.PLAYMODE_PK10):
+def kaijiang_xml_helper_500caipiao(my_date, play_mode=common.PLAYMODE_PK10):
+    """
+    500 彩票网获取开奖数据
+
+    :param my_date:
+    :param play_mode:
+    :return:
+    """
     import xml.dom.minidom
     import requests
     from common.common import req_session
@@ -85,3 +96,37 @@ def xml_helper(my_date, play_mode=common.PLAYMODE_PK10):
             t.append(int(t2))
         res.append(t)
     return res
+
+
+def kaijiang_self_helper(console_instance, date, play_mode):
+    """
+    但是这个必须登录！！！
+
+    自家网站的数据
+    :return:
+    """
+    now = getCurrentTimestamp()
+
+    if play_mode == common.PLAYMODE_PK10:
+        url = console_instance.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now % date
+    else:
+        url = console_instance.loginSuccessData['origin_url'] + "ssc/result/index?&_=%s__ajax" % now % date
+
+    payload = {
+        'date': date
+    }
+    r1 = requests.Request('POST', url, data=payload, headers=console_instance.loginSuccessData['headers'],
+                          cookies=console_instance.loginSuccessData['cookies_jar'])
+    prep1 = req_session.prepare_request(r1)
+    rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
+    real_content = rr1.content.split('êêê')[0]
+    rr1.close()
+
+    real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
+    json_data = json.loads(real_content)
+    if int(json_data['state']) != 1:
+        logging.error(u"【获取模拟用的历史数据线程】出错！")
+        logging.error(real_content)
+        return []
+    else:
+        return json_data['data']['result']

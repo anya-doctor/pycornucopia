@@ -106,3 +106,7 @@ win_ping_pk_dic = {
         'ping_cnt': -1,
     }
 }
+
+# 数据来源
+KAIJIANG_DATA_SOURCE_SELF = 1  # 自家网站
+KAIJIANG_DATA_SOURCE_500 = 2  # 500彩票网
