@@ -186,6 +186,7 @@ class MyStartBetAction(object):
                 if tmp_win_cnt >= MyAlgorithm.win_ping_dic[len(item[3])]['win_cnt']:
                     item[2] = 0
                     item[7] = u'中'
+                    win_flag = True
                 elif tmp_win_cnt == MyAlgorithm.win_ping_dic[len(item[3])]['ping_cnt']:
                     item[7] = u'平'
                 else:
@@ -195,6 +196,7 @@ class MyStartBetAction(object):
                 if tmp_win_cnt >= MyAlgorithm.win_ping_dic[len(item[3])]['win_cnt']:
                     item[2] += 1
                     item[7] = u'中'
+                    win_flag = True
                 elif tmp_win_cnt == MyAlgorithm.win_ping_dic[len(item[3])]['ping_cnt']:
                     item[7] = u'平'
                 else:

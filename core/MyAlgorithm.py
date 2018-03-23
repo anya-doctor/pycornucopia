@@ -8,7 +8,7 @@ import logging
 vertical_mode = False
 
 # 控制需不需要追踪下单的流水！
-record_list_mode = False
+record_list_mode = True
 
 # 控制单个中就算中，还是组合中！！！
 win_ping_dic = {
@@ -82,14 +82,42 @@ def get_bet_list(console_instance, bet_index):
 
         logging.info(dic)
 
-        # 找到热码
+        # 找到热、冷码
         a = sorted([[v, k] for k, v in dic.items()], reverse=True)
-        b = [int(k) for v, k in a[-affect_num:]]
-        logging.info(b)
+        cold = [int(k) for v, k in a[-affect_num:]]
+        hot = [int(k) for v, k in a[0:affect_num]]
+        logging.info("cold=%s" % cold)
+        logging.info("hot=%s" % hot)
 
+        # 如果是初始化状况
+        if len(console_instance.all_ball_needToBetList) < bet_index:
+            logging.info(u"初始化状况，位置=%s" % bet_index)
+            your_choice = hot
+        # 如果是常规进来
+        else:
+            logging.info(console_instance.all_ball_needToBetList[bet_index-1])
+            if console_instance.all_ball_needToBetList[bet_index-1][6][-1][-1] == True:
+                # 如果中了则清理数据
+                #[20180323099L, 20180323100L, 0, [[1, 9], [1, 6], [1, 3], [2, 9], [2, 6], [2, 3], [3, 9], [3, 6], [3, 3], [4, 9], [4, 6], [4, 3], [5, 9], [5, 6], [5, 3]], 1, 0, [[[1, 9], [1, 6], [1, 3], [2, 9], [2, 6], [2, 3], [3, 9], [3, 6], [3, 3], [4, 9], [4, 6], [4, 3], [5, 9], [5, 6], [5, 3], True]], u'\u4e2d']
+
+
+                logging.info(u"位置=%s, 常规进来，发现上一期是中的，直接热码，顺便清空历史list。。。" % bet_index)
+                console_instance.all_ball_needToBetList[bet_index-1][6] = []
+                your_choice = hot
+            else:
+                fail_cnt = len(console_instance.all_ball_needToBetList[bet_index-1][6])
+                logging.info(u"之前失败的次数=%s" % fail_cnt)
+                if fail_cnt % 2 == 1:
+                    logging.info(u"那么选择cold")
+                    your_choice = cold
+                else:
+                    logging.info(u"那么选择hot")
+                    your_choice = hot
+
+            # 中了或者一开始，
         bet_balls = []
         for i in range(1, 6):
-            for j in b:
+            for j in your_choice:
                 bet_balls.append([i, j])
 
         not_bet_balls = []
