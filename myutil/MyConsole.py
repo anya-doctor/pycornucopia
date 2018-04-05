@@ -25,6 +25,18 @@ class MyConsole(QWidget):
         """
         投注的倍数 self.balls_bet_amount
 
+        这里是总控台。
+
+        总结下登录到下注的流程：
+        用户按下登录按钮
+        -> 触发登录线程
+        -> 登录成功后触发MyConsole.onGetPreBetDataHideBtn
+        -> MyConsole.onGetPreBetDataHideBtn触发一个MyGetPreBetDataAction动作
+        -> 这个动作每10秒创建一个获取预下注数据的线程
+        -> 线程获取数据会触发MyConsole.onUpdatePreBetDataHideBtn
+        -> 触发一个MyUpdatePreBetDataAction动作
+        -> 该动作中不断更新UI和历史数据并判断数据是否符合新一期标准，若是则开始下注，触发MyStartBetAction.for_start()
+
         :param parent:
         :return:
         """
