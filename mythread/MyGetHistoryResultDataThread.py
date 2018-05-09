@@ -4,14 +4,10 @@ import json
 import logging
 from datetime import timedelta
 
-import requests
 from PyQt4 import QtCore
 from PyQt4.QtCore import *
 
-from common import common
-from common.common import req_session
-from myutil.tool import MyTool
-from myutil.tool.MyTool import kaijiang_xml_helper_500caipiao, kaijiang_self_helper
+from myutil.tool.MyTool import kaijiang_self_helper
 
 
 class MyGetHistoryResultDataThread(QtCore.QThread):
@@ -21,46 +17,26 @@ class MyGetHistoryResultDataThread(QtCore.QThread):
         self.console_instance = console_instance
 
     def get_data(self):
-        now = MyTool.getCurrentTimestamp()
-        if self.console_instance.play_mode == common.PLAYMODE_PK10:
-            url = self.console_instance.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now
-        else:
-            url = self.console_instance.loginSuccessData['origin_url'] + "ssc/result/index?&_=%s__ajax" % now
-
-        r1 = requests.Request('GET', url, headers=self.console_instance.loginSuccessData['headers'],
-                              cookies=self.console_instance.loginSuccessData['cookies_jar'])
-        prep1 = req_session.prepare_request(r1)
-        rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
-
-        real_content = rr1.content.split('êêê')[0]
-        rr1.close()
-
-        real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
+        # 这里就只考虑从本地网站拿数据好了。
+        # 因为只能登录 + 实时，才能到达此处...
+        json_data = {
+            'data': {
+                'result': []
+            }
+        }
+        today = datetime.datetime.today()
+        day = timedelta(days=1)
+        yesterday = today - day
+        date_list = [today, yesterday]
         try:
-            json_data = json.loads(real_content)
+            for _date in date_list:
+                res = kaijiang_self_helper(self.console_instance, _date.strftime("%Y-%m-%d"),
+                                           self.console_instance.play_mode)
+                json_data['data']['result'].extend(res)
+            return json_data
         except Exception, ex:
-            logging.error(ex)
-            logging.error(real_content)
-            json_data = {}
-        if json_data and isinstance(json_data, dict):
-            # 如果确切拿到了数据，那么就更新一次即可..
-            if 'result' in json_data['data']:
-                # 如果拿到的数据len <= 30，那么说明今天还早，那么就去拿昨天的数据吧。。。
-                if len(json_data['data']['result']) <= 30:
-                    logging.info(u"【获取历史数据线程】拿到的数据len <= 30，那么说明今天还早，拿昨天的数据...")
-                    today = datetime.datetime.today()
-                    day = timedelta(days=1)
-                    yesterday = today - day
-                    if self.console_instance.kaijiang_data_source == common.KAIJIANG_DATA_SOURCE_500:
-                        res = kaijiang_xml_helper_500caipiao(yesterday.strftime("%Y-%m-%d"),
-                                                             self.console_instance.play_mode)
-                        json_data['data']['result'].extend(res)
-                    elif self.console_instance.kaijiang_data_source == common.KAIJIANG_DATA_SOURCE_SELF:
-                        res = kaijiang_self_helper(self.console_instance, yesterday.strftime("%Y-%m-%d"),
-                                                   self.console_instance.play_mode)
-                        json_data['data']['result'].extend(res)
-                return json_data
-        return {}
+            logging.error(ex, exc_info=1)
+            return {}
 
     def run(self):
         try:

@@ -92,6 +92,7 @@ class MyStartBetAction(object):
                     else:
                         logging.info(u"【下注中】计算下注列表...")
                         if not repair_mode:
+                            logging.info(u"【下注中】修复模式=False，此时需要清算上局数据，如果有的话...")
                             # 先清算上局数据，如果有的话...
                             if int(console_instance.pauseBet_combobox.currentIndex()) == 2:
                                 MyStartBetAction.do_balance(console_instance, simulate_mode=True)
@@ -101,6 +102,8 @@ class MyStartBetAction(object):
 
                             # 计算需要下注的..
                             MyStartBetAction.do_calculate(console_instance)
+                        else:
+                            logging.info(u"【下注中】修复模式=True！")
 
                         # 先弄界面
                         b = copy.deepcopy(console_instance.all_ball_needToBetList)
@@ -219,9 +222,14 @@ class MyStartBetAction(object):
 
         if console_instance.isQQG:
             # 期期滚- 过滤掉期期滚中了或者爆了的数据项
+            logging.info(u"【下注中-结算】期期滚- 过滤掉期期滚中了或者爆了的数据项")
+            logging.info(u"【下注中-结算】期期滚- 过滤前len=%s" % len(console_instance.all_ball_needToBetList))
+            # [20180405115L, 20180405115L, 2, [[1, 8], [1, 3], [2, 8], [2, 3], [3, 8], [3, 3], [4, 8], [4, 3], [5, 8], [5, 3]], 1, 0, [], u'\u4e0d\u4e2d']
             console_instance.all_ball_needToBetList = filter(
-                    lambda x: (x[7] != u'中') and (item[2] < len(console_instance.balls_bet_amount)),
+                    lambda x: (x[7] != u'中') and (x[2] < len(console_instance.balls_bet_amount)),
                     console_instance.all_ball_needToBetList)
+
+            logging.info(u"【下注中-结算】期期滚- 过滤后len=%s" % len(console_instance.all_ball_needToBetList))
         else:
             # 常规 - 重置那些被爆了的
             for i in console_instance.all_ball_needToBetList:
