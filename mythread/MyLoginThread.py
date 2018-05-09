@@ -99,12 +99,22 @@ class MyLoginThread(QtCore.QThread):
 
         :return:
         """
-
+        # 获取cid 和 cname
         my_cid, my_cname = self.getCidAndWebname()
 
+        # 获取验证码的先决条件
         get_code_url1 = self.rootUrl + "/getCodeInfo/.auth?u=0.7473080656164435&systemversion=4_6&.auth"
 
-        r1 = requests.Request('GET', get_code_url1)
+        my_header = {
+            'Referer': self.loginUrl,
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            'Accept': '*/*',
+            'Connection': 'keep-alive',
+            'Host': self.host,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
+        }
+        r1 = requests.Request('GET', get_code_url1, headers=my_header)
         prep1 = req_session.prepare_request(r1)
         rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
         a = rr1.content
@@ -112,6 +122,7 @@ class MyLoginThread(QtCore.QThread):
         logging.info(u"获取验证码content=%s" % a)
         rr1.close()
 
+        # 获取验证码
         b = a.split('_')[0]
         __VerifyValue = a.split('_')[1]
         get_code_url2 = self.rootUrl + "/getVcode/.auth?t=%s&systemversion=4_6&.auth" % b

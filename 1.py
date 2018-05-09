@@ -1,9 +1,28 @@
 #coding=utf-8
+"""
+GET http://pc10.1ll11.com/getCodeInfo/.auth?u=0.9270315216745018&systemversion=4_6&.auth HTTP/1.1
+Host: pc10.1ll11.com
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36
+Accept: */*
+Referer: http://pc10.1ll11.com/scowa148054f/user/login.html.auth
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+"""
 
+my_header = {
+    'Referer': 'http://pc10.1ll11.com/scowa148054f/user/login.html.auth',
+    'Accept-Encoding': 'gzip, deflate',
+    'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+    'Accept': '*/*',
+    'Connection': 'keep-alive',
+    'Host': 'pc10.1ll11.com',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
+}
 
-url = "http://pc10.x.l11ll.ninja/getCodeInfo/.auth?u=0.7473080656164435&systemversion=4_6&.auth "
+url = "http://pc10.1ll11.com/getCodeInfo/.auth?u=0.9270315216745018&systemversion=4_6&.auth"
 import requests
-r = requests.get(url)
+r = requests.get(url, headers=my_header)
 print r.content
 with open('aaa.html', 'w') as f:
     print type(r)
