@@ -40,13 +40,17 @@ class MyLoginThread(QtCore.QThread):
         获取cid和网站名字
         :return:
         """
-        r1 = requests.Request('GET', self.loginUrl)
-        prep1 = req_session.prepare_request(r1)
-        rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
-        data = rr1.content
-        rr1.close()
+        # r1 = requests.Request('GET', self.loginUrl)
+        # prep1 = req_session.prepare_request(r1)
+        # rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
+        # data = rr1.content
+        # rr1.close()
+        from selenium import webdriver
+        driver = webdriver.PhantomJS(executable_path='config/phantomjs.exe')
+        driver.get(self.loginUrl)
         with open('config/login.html', 'w') as f:
-            f.write(data)
+            f.write(driver.page_source.encode("utf-8"))
+        logging.info("======download ok!!!!")
         with open('config/login.html', 'r') as f:
             lines = f.readlines()
             """
@@ -104,6 +108,8 @@ class MyLoginThread(QtCore.QThread):
         prep1 = req_session.prepare_request(r1)
         rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
         a = rr1.content
+        logging.info(u"获取验证码get_code_url1=%s" % get_code_url1)
+        logging.info(u"获取验证码content=%s" % a)
         rr1.close()
 
         b = a.split('_')[0]
@@ -132,6 +138,7 @@ class MyLoginThread(QtCore.QThread):
             'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
             'Origin': 'http://' + self.host,
             'Referer': self.loginUrl,
+            'Content-Type': 'application/x-www-form-urlencoded;'
         }
 
         payload = {
@@ -201,8 +208,8 @@ class MyLoginThread(QtCore.QThread):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.89 Safari/537.36',
             'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
             'Referer': '%s.auth' % self.origin_url,
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            'Accept-Encoding': 'gzip, deflate, sdch',
+            'Accept-Language': 'zh-CN,zh;q=0.8',
         }
         self.headers = headers2
         logging.info(u"【登录线程】再次校验URL=%s" % recheck_url)
