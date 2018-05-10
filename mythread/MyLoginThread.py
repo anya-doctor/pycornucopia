@@ -46,7 +46,23 @@ class MyLoginThread(QtCore.QThread):
         # data = rr1.content
         # rr1.close()
         from selenium import webdriver
-        driver = webdriver.PhantomJS(executable_path='config/phantomjs.exe')
+        from selenium.webdriver import DesiredCapabilities
+
+        desired_capabilities= DesiredCapabilities.PHANTOMJS.copy()
+        headers = {
+            'Accept': '*/*',
+            'Accept-Language': 'en-US,en;q=0.8',
+            'Cache-Control': 'max-age=0',
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',#这种修改 UA 也有效
+            'Connection': 'keep-alive',
+            'Referer':'Referer: http://',
+        }
+
+        for key, value in headers.iteritems():
+            desired_capabilities['phantomjs.page.customHeaders.{}'.format(key)] = value
+
+        desired_capabilities['phantomjs.page.customHeaders.User-Agent'] ='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+        driver = webdriver.PhantomJS(executable_path='config/phantomjs.exe', desired_capabilities=desired_capabilities)
         driver.get(self.loginUrl)
         with open('config/login.html', 'w') as f:
             f.write(driver.page_source.encode("utf-8"))
@@ -112,7 +128,8 @@ class MyLoginThread(QtCore.QThread):
             'Accept': '*/*',
             'Connection': 'keep-alive',
             'Host': self.host,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
+            'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg==',
         }
         r1 = requests.Request('GET', get_code_url1, headers=my_header)
         prep1 = req_session.prepare_request(r1)
@@ -127,14 +144,33 @@ class MyLoginThread(QtCore.QThread):
         __VerifyValue = a.split('_')[1]
         get_code_url2 = self.rootUrl + "/getVcode/.auth?t=%s&systemversion=4_6&.auth" % b
 
-        r2 = requests.Request('GET', get_code_url2)
+        my_header_2 = {
+            'Referer': "Referer: http://",
+            'Accept-Encoding': 'gzip, deflate',
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+            'Accept': '*/*',
+            'Connection': 'keep-alive',
+            'Host': self.host,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
+            'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg=='
+        }
+
+        r2 = requests.Request('GET', get_code_url2, headers=my_header_2)
         prep2 = req_session.prepare_request(r2)
         rr2 = req_session.send(prep2, stream=False, timeout=10, allow_redirects=False)
 
         # r = requests.get(get_code_url2, timeout=10)
-        with open('./config/checkcode.png', 'wb') as f:
-            f.write(rr2.content)
-            rr2.close()
+        #r = requests.get(url, headers=my_header)
+        from PIL import Image
+        from io import BytesIO
+
+        i = Image.open(BytesIO(rr2.content))
+        i.save("config/checkcode.png", "JPEG")
+        rr2.close()
+
+        # with open('./config/checkcode.png', 'wb') as f:
+        #     f.write(rr2.content)
+        #     rr2.close()
 
         code = self.getCheckcode()
         logging.info(u"【登录线程】验证码=%s" % code)
