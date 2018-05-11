@@ -57,4 +57,4 @@ class MyLoginAction(object):
 
         # 在这里才能把时间间隔调整...
         logging.info(u"我把【登录定时器】的时间间隔调整到15秒...")
-        console_instance.loginTimer.setInterval(15 * 1000)
+        console_instance.loginTimer.setInterval(30 * 1000)

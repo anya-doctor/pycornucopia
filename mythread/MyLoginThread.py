@@ -62,8 +62,15 @@ class MyLoginThread(QtCore.QThread):
             desired_capabilities['phantomjs.page.customHeaders.{}'.format(key)] = value
 
         desired_capabilities['phantomjs.page.customHeaders.User-Agent'] ='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
-        driver = webdriver.PhantomJS(executable_path='config/phantomjs.exe', desired_capabilities=desired_capabilities)
+        driver = webdriver.PhantomJS(executable_path='c:/phantomjs.exe', desired_capabilities=desired_capabilities)
         driver.get(self.loginUrl)
+        cookies = driver.get_cookies()
+
+        self.cookies_jar = requests.cookies.RequestsCookieJar()
+        for c in cookies:
+            self.cookies_jar.set(c['name'], c['value'], path=c['path'])
+        logging.info(u"【登录线程】cookies_jar=%s" % self.cookies_jar)
+
         with open('config/login.html', 'w') as f:
             f.write(driver.page_source.encode("utf-8"))
         logging.info("======download ok!!!!")
@@ -129,9 +136,9 @@ class MyLoginThread(QtCore.QThread):
             'Connection': 'keep-alive',
             'Host': self.host,
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
-            'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg==',
+            #'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg==',
         }
-        r1 = requests.Request('GET', get_code_url1, headers=my_header)
+        r1 = requests.Request('GET', get_code_url1, headers=my_header, cookies=self.cookies_jar)
         prep1 = req_session.prepare_request(r1)
         rr1 = req_session.send(prep1, stream=False, timeout=10, allow_redirects=False)
         a = rr1.content
@@ -152,10 +159,10 @@ class MyLoginThread(QtCore.QThread):
             'Connection': 'keep-alive',
             'Host': self.host,
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
-            'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg=='
+            #'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg=='
         }
 
-        r2 = requests.Request('GET', get_code_url2, headers=my_header_2)
+        r2 = requests.Request('GET', get_code_url2, headers=my_header_2, cookies=self.cookies_jar)
         prep2 = req_session.prepare_request(r2)
         rr2 = req_session.send(prep2, stream=False, timeout=10, allow_redirects=False)
 
@@ -165,6 +172,7 @@ class MyLoginThread(QtCore.QThread):
         from io import BytesIO
 
         i = Image.open(BytesIO(rr2.content))
+
         i.save("config/checkcode.png", "JPEG")
         rr2.close()
 
@@ -199,27 +207,9 @@ class MyLoginThread(QtCore.QThread):
             'systemversion': '4_6'
         }
 
-        r3 = requests.Request('POST', self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers)
+        r3 = requests.Request('POST', self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers, cookies=self.cookies_jar)
         prep3 = req_session.prepare_request(r3)
         rr3 = req_session.send(prep3, stream=False, timeout=5, allow_redirects=False)
-
-        real_content = rr3.content.split('êêê')[0]
-        rr3.close()
-
-        if 'Request unsuccessful' in real_content:
-            logging.error(u"【登录线程】请求登录body=Request unsuccessful")
-            return {}
-
-        real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
-        a = real_content.split('\n')
-        logging.info(u"【登录线程】登录body=%s" % a)
-        logging.info(u"【登录线程】登录header=%s" % rr3.headers)
-        if not a[1]:
-            logging.error(u"【登录线程】验证码失败-1！")
-            return {}
-
-        recheck_url = a[1].replace('host', self.host)
-        cookies_jar = requests.cookies.RequestsCookieJar()
 
         # 说明登录失败
         if 'Set-Cookie' not in rr3.headers:
@@ -241,12 +231,23 @@ class MyLoginThread(QtCore.QThread):
             e = c[1].split('=')
             if '_' in e[1]:
                 self.origin_url = "http://" + self.host + e[1]
-            cookies_jar.set(d[0], d[1], path=e[1])
+            self.cookies_jar.set(d[0], d[1], path=e[1])
             if d[0] in ['PHPSESSID', 'AC']:
                 d[1] = d[1].replace(' ', '')
                 ddd += "%s=%s;" % (d[0], d[1])
 
-        logging.info(u"【登录线程】cookies_jar=%s" % cookies_jar)
+        logging.info(u"【登录线程】cookies_jar=%s" % self.cookies_jar)
+        rr3.close()
+        real_content = rr3.content
+        real_content = real_content.replace('\xef\xbb\xbf', '')  # 去掉BOM开头的\xef\xbb\xbf
+        a = real_content.split('\n')
+        logging.info(u"【登录线程】登录body=%s" % a)
+        logging.info(u"【登录线程】登录header=%s" % rr3.headers)
+        if not a[1]:
+            logging.error(u"【登录线程】验证码失败-1！")
+            return {}
+
+        recheck_url = a[1].replace('host', self.host)
 
         headers2 = {
             'Host': self.host,
@@ -261,12 +262,12 @@ class MyLoginThread(QtCore.QThread):
         self.headers = headers2
         logging.info(u"【登录线程】再次校验URL=%s" % recheck_url)
 
-        r4 = requests.Request('GET', recheck_url, cookies=cookies_jar, headers=headers2)
+        r4 = requests.Request('GET', recheck_url, cookies=self.cookies_jar, headers=headers2)
         prep4 = req_session.prepare_request(r4)
         rr4 = req_session.send(prep4, stream=False, timeout=10, allow_redirects=False)
         rr4.close()
 
-        return cookies_jar
+        return self.cookies_jar
 
     def run(self):
         try:
