@@ -1,16 +1,10 @@
 # coding=utf-8
 import logging
 
-from common import common
-
 """
-2018年3月31日 星期六：
-这个只适应重庆走位置。。。
+2018年07月17日 星期二
 
-console_instance.ball1_1_Entry.text() 填： 20期内
-console_instance.ball1_2_Entry.text() 填： 2-3-4，表示第2，3，4热
-console_instance.ball1_3_Entry.text() 填： 1-2-3-4，表示第1，2，3冷
-console_instance.ball1_4_Entry.text() 填： 1-2-3-4-5-6-7-8，表示要下的位置
+冠军开什么，就下什么对应的什么！
 """
 
 # 控制赌法是垂直模式，还是水平模式！！！
@@ -18,57 +12,6 @@ vertical_mode = True
 
 # 控制需不需要追踪下单的流水！
 record_list_mode = False
-
-win_ping_dic = {
-    1: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    2: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    3: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    4: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    5: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    6: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    7: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    8: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    9: {
-        'win_cnt': 1,
-        'ping_cnt': -1,
-    },
-    10: {
-        'win_cnt': 2,
-        'ping_cnt': -1,
-    },
-    15: {
-        'win_cnt': 2,
-        'ping_cnt': -1,
-    },
-    20: {
-        'win_cnt': 3,
-        'ping_cnt': 2,
-    }
-}
 
 
 def get_bet_list(console_instance, bet_index):
@@ -80,60 +23,147 @@ def get_bet_list(console_instance, bet_index):
         else:
             logging.info(u"【下注中-算出球】水平模式：位置=%s" % bet_index)
 
+        dic = {
+            1: {
+                1: str(console_instance.ball1_1_Entry.text()).split("-"),
+                2: str(console_instance.ball1_2_Entry.text()).split("-"),
+                3: str(console_instance.ball1_3_Entry.text()).split("-"),
+                4: str(console_instance.ball1_4_Entry.text()).split("-"),
+                5: str(console_instance.ball1_5_Entry.text()).split("-"),
+                6: str(console_instance.ball1_6_Entry.text()).split("-"),
+                7: str(console_instance.ball1_7_Entry.text()).split("-"),
+                8: str(console_instance.ball1_8_Entry.text()).split("-"),
+                9: str(console_instance.ball1_9_Entry.text()).split("-"),
+                10: str(console_instance.ball1_10_Entry.text()).split("-"),
+            },
+            2: {
+                1: str(console_instance.ball2_1_Entry.text()).split("-"),
+                2: str(console_instance.ball2_2_Entry.text()).split("-"),
+                3: str(console_instance.ball2_3_Entry.text()).split("-"),
+                4: str(console_instance.ball2_4_Entry.text()).split("-"),
+                5: str(console_instance.ball2_5_Entry.text()).split("-"),
+                6: str(console_instance.ball2_6_Entry.text()).split("-"),
+                7: str(console_instance.ball2_7_Entry.text()).split("-"),
+                8: str(console_instance.ball2_8_Entry.text()).split("-"),
+                9: str(console_instance.ball2_9_Entry.text()).split("-"),
+                10: str(console_instance.ball2_10_Entry.text()).split("-"),
+            },
+            3: {
+                1: str(console_instance.ball3_1_Entry.text()).split("-"),
+                2: str(console_instance.ball3_2_Entry.text()).split("-"),
+                3: str(console_instance.ball3_3_Entry.text()).split("-"),
+                4: str(console_instance.ball3_4_Entry.text()).split("-"),
+                5: str(console_instance.ball3_5_Entry.text()).split("-"),
+                6: str(console_instance.ball3_6_Entry.text()).split("-"),
+                7: str(console_instance.ball3_7_Entry.text()).split("-"),
+                8: str(console_instance.ball3_8_Entry.text()).split("-"),
+                9: str(console_instance.ball3_9_Entry.text()).split("-"),
+                10: str(console_instance.ball3_10_Entry.text()).split("-"),
+            },
+            4: {
+                1: str(console_instance.ball4_1_Entry.text()).split("-"),
+                2: str(console_instance.ball4_2_Entry.text()).split("-"),
+                3: str(console_instance.ball4_3_Entry.text()).split("-"),
+                4: str(console_instance.ball4_4_Entry.text()).split("-"),
+                5: str(console_instance.ball4_5_Entry.text()).split("-"),
+                6: str(console_instance.ball4_6_Entry.text()).split("-"),
+                7: str(console_instance.ball4_7_Entry.text()).split("-"),
+                8: str(console_instance.ball4_8_Entry.text()).split("-"),
+                9: str(console_instance.ball4_9_Entry.text()).split("-"),
+                10: str(console_instance.ball4_10_Entry.text()).split("-"),
+            },
+            5: {
+                1: str(console_instance.ball5_1_Entry.text()).split("-"),
+                2: str(console_instance.ball5_2_Entry.text()).split("-"),
+                3: str(console_instance.ball5_3_Entry.text()).split("-"),
+                4: str(console_instance.ball5_4_Entry.text()).split("-"),
+                5: str(console_instance.ball5_5_Entry.text()).split("-"),
+                6: str(console_instance.ball5_6_Entry.text()).split("-"),
+                7: str(console_instance.ball5_7_Entry.text()).split("-"),
+                8: str(console_instance.ball5_8_Entry.text()).split("-"),
+                9: str(console_instance.ball5_9_Entry.text()).split("-"),
+                10: str(console_instance.ball5_10_Entry.text()).split("-"),
+            },
+            6: {
+                1: str(console_instance.ball6_1_Entry.text()).split("-"),
+                2: str(console_instance.ball6_2_Entry.text()).split("-"),
+                3: str(console_instance.ball6_3_Entry.text()).split("-"),
+                4: str(console_instance.ball6_4_Entry.text()).split("-"),
+                5: str(console_instance.ball6_5_Entry.text()).split("-"),
+                6: str(console_instance.ball6_6_Entry.text()).split("-"),
+                7: str(console_instance.ball6_7_Entry.text()).split("-"),
+                8: str(console_instance.ball6_8_Entry.text()).split("-"),
+                9: str(console_instance.ball6_9_Entry.text()).split("-"),
+                10: str(console_instance.ball6_10_Entry.text()).split("-"),
+            },
+            7: {
+                1: str(console_instance.ball7_1_Entry.text()).split("-"),
+                2: str(console_instance.ball7_2_Entry.text()).split("-"),
+                3: str(console_instance.ball7_3_Entry.text()).split("-"),
+                4: str(console_instance.ball7_4_Entry.text()).split("-"),
+                5: str(console_instance.ball7_5_Entry.text()).split("-"),
+                6: str(console_instance.ball7_6_Entry.text()).split("-"),
+                7: str(console_instance.ball7_7_Entry.text()).split("-"),
+                8: str(console_instance.ball7_8_Entry.text()).split("-"),
+                9: str(console_instance.ball7_9_Entry.text()).split("-"),
+                10: str(console_instance.ball7_10_Entry.text()).split("-"),
+            },
+            8: {
+                1: str(console_instance.ball8_1_Entry.text()).split("-"),
+                2: str(console_instance.ball8_2_Entry.text()).split("-"),
+                3: str(console_instance.ball8_3_Entry.text()).split("-"),
+                4: str(console_instance.ball8_4_Entry.text()).split("-"),
+                5: str(console_instance.ball8_5_Entry.text()).split("-"),
+                6: str(console_instance.ball8_6_Entry.text()).split("-"),
+                7: str(console_instance.ball8_7_Entry.text()).split("-"),
+                8: str(console_instance.ball8_8_Entry.text()).split("-"),
+                9: str(console_instance.ball8_9_Entry.text()).split("-"),
+                10: str(console_instance.ball8_10_Entry.text()).split("-"),
+            },
+            9: {
+                1: str(console_instance.ball9_1_Entry.text()).split("-"),
+                2: str(console_instance.ball9_2_Entry.text()).split("-"),
+                3: str(console_instance.ball9_3_Entry.text()).split("-"),
+                4: str(console_instance.ball9_4_Entry.text()).split("-"),
+                5: str(console_instance.ball9_5_Entry.text()).split("-"),
+                6: str(console_instance.ball9_6_Entry.text()).split("-"),
+                7: str(console_instance.ball9_7_Entry.text()).split("-"),
+                8: str(console_instance.ball9_8_Entry.text()).split("-"),
+                9: str(console_instance.ball9_9_Entry.text()).split("-"),
+                10: str(console_instance.ball9_10_Entry.text()).split("-"),
+            },
+
+            10: {
+                1: str(console_instance.ball10_1_Entry.text()).split("-"),
+                2: str(console_instance.ball10_2_Entry.text()).split("-"),
+                3: str(console_instance.ball10_3_Entry.text()).split("-"),
+                4: str(console_instance.ball10_4_Entry.text()).split("-"),
+                5: str(console_instance.ball10_5_Entry.text()).split("-"),
+                6: str(console_instance.ball10_6_Entry.text()).split("-"),
+                7: str(console_instance.ball10_7_Entry.text()).split("-"),
+                8: str(console_instance.ball10_8_Entry.text()).split("-"),
+                9: str(console_instance.ball10_9_Entry.text()).split("-"),
+                10: str(console_instance.ball10_10_Entry.text()).split("-"),
+            },
+
+        }
         # 舍弃N期
         n = int(console_instance.ball1_1_Entry.text())
         m = int(console_instance.ball1_2_Entry.text())
         logging.info(u"【下注中-算出球】n=%s, m=%s" % (n, m))
         lines = console_instance.history_data
 
-        # 0 = 次數， 1000 = 距離
-        if console_instance.play_mode == common.PLAYMODE_PK10:
-            dic = {
-                '1': [0, 1000],
-                '2': [0, 1000],
-                '3': [0, 1000],
-                '4': [0, 1000],
-                '5': [0, 1000],
-                '6': [0, 1000],
-                '7': [0, 1000],
-                '8': [0, 1000],
-                '9': [0, 1000],
-                '10': [0, 1000],
-            }
-        else:
-            dic = {
-                '1': [0, 1000],
-                '2': [0, 1000],
-                '3': [0, 1000],
-                '4': [0, 1000],
-                '5': [0, 1000],
-                '6': [0, 1000],
-                '7': [0, 1000],
-                '8': [0, 1000],
-                '9': [0, 1000],
-                '0': [0, 1000],
-            }
+        line_a = lines[console_instance.first_n][2:12]
+        line_b = lines[console_instance.first_n + 1][2:12]
+        line_c = lines[console_instance.first_n + 2][2:12]
 
-        for i, line in enumerate(lines[int(console_instance.first_n): int(console_instance.first_n) + n]):
-            if console_instance.play_mode == common.PLAYMODE_PK10:
-                balls = line[2:12]
-            else:
-                balls = line[2:7]
-            ball = balls[bet_index - 1]
-            dic[str(ball)][0] += 1
-            if i < dic[str(ball)][1]:
-                dic[str(ball)][1] = i
-        logging.info(dic)
-        # 找到热码
-        a = [[v[0], v[1], k] for k, v in dic.items()]
-        a.sort(cmp=lambda x, y: cmp(y[0], x[0]) or cmp(x[1], y[1]))
-        logging.info(u"热码排序=%s" % a)
-        bet_balls_hot = []
-        # 先把毫無爭議的球拿下來
-        for hot_index in range(m):
-            bet_balls_hot.append(a[hot_index][2])
+        c_index = line_c.index(bet_index)
+        b_index = line_b.index(bet_index)
 
-        bet_balls = bet_balls_hot
+        b_ball = line_b[c_index]
+        c_balls = dic[bet_index][b_ball]
+        bet_balls = [[b_index, v] for v in c_balls]
+
         logging.info("bet_balls=%s" % bet_balls)
 
         not_bet_balls = []
