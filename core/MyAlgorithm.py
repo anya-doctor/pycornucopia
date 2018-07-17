@@ -8,7 +8,7 @@ import logging
 """
 
 # 控制赌法是垂直模式，还是水平模式！！！
-vertical_mode = True
+vertical_mode = False
 
 # 控制需不需要追踪下单的流水！
 record_list_mode = False
@@ -148,21 +148,17 @@ def get_bet_list(console_instance, bet_index):
 
         }
         # 舍弃N期
-        n = int(console_instance.ball1_1_Entry.text())
-        m = int(console_instance.ball1_2_Entry.text())
-        logging.info(u"【下注中-算出球】n=%s, m=%s" % (n, m))
         lines = console_instance.history_data
 
         line_a = lines[console_instance.first_n][2:12]
         line_b = lines[console_instance.first_n + 1][2:12]
-        line_c = lines[console_instance.first_n + 2][2:12]
 
-        c_index = line_c.index(bet_index)
         b_index = line_b.index(bet_index)
+        a_ball = line_b[b_index]
+        _bet_balls = dic[bet_index][a_ball]
 
-        b_ball = line_b[c_index]
-        c_balls = dic[bet_index][b_ball]
-        bet_balls = [[b_index, v] for v in c_balls]
+        a_index = line_a.index(bet_index)
+        bet_balls = [[a_index+1, v] for v in _bet_balls]
 
         logging.info("bet_balls=%s" % bet_balls)
 

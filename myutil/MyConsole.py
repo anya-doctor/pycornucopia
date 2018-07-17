@@ -231,7 +231,8 @@ class MyConsole(QWidget):
                 newItem.setBackgroundColor(self.c)
                 self.viewEntry.setItem(row, 1, newItem)
 
-                betstr = u""
+                betstr = u"%s号车: " % (index+1)
+
                 for v in item[3]:
                     if self.play_mode == common.PLAYMODE_PK10:
                         if v[0] == 1:
