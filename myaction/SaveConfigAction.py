@@ -33,6 +33,7 @@ class MySaveConfigAction(object):
             isQQG = True if int(console_instance.isQQG_combobox.currentIndex()) == 0 else False
             isLoseAdd = True if int(console_instance.isLoseAdd_combobox.currentIndex()) == 0 else False
             play_mode = int(console_instance.playmode_combobox.currentIndex())
+            refer_link = console_instance.referEntry.text()
 
             # 实时更改
             console_instance.balls_bet_amount = betAmount.split('-')
@@ -47,6 +48,7 @@ class MySaveConfigAction(object):
             console_instance.isQQG = isQQG
             console_instance.isLoseAdd = isLoseAdd
             console_instance.play_mode = play_mode
+            console_instance.refer_link = refer_link
 
             # 健壮性判断
             if not os.path.exists(MySettings.db_file_path):
@@ -80,7 +82,7 @@ class MySaveConfigAction(object):
                 ball0_6='" + console_instance.ball0_6_Entry.text() + "',ball0_7='" + console_instance.ball0_7_Entry.text() + "',ball0_8='" + console_instance.ball0_8_Entry.text() + "',ball0_9='" + console_instance.ball0_9_Entry.text() + "',ball0_10='" + console_instance.ball0_10_Entry.text() + "',\
                 isQQG = '" + ('0' if console_instance.isQQG else '1') + "',isLoseAdd = '" + (
                 '0' if console_instance.isLoseAdd else '1') + "',n_change='" + str(n_change) + "',play_mode='" + str(
-                play_mode) + "';"
+                play_mode) + "', refer_link='"+ refer_link +"';"
             cqssc_db.execute(unicode(sql))
             cqssc_db.commit()
             cqssc_db.close()

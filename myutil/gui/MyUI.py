@@ -129,7 +129,12 @@ class MyUIUtil(object):
         lb0 = QLabel(u'线路')
         console_instance.linesEntry = QTextEdit()
         console_instance.gridlayout.addWidget(lb0, 0, 12)
-        console_instance.gridlayout.addWidget(console_instance.linesEntry, 0, 13, 3, 11)
+        console_instance.gridlayout.addWidget(console_instance.linesEntry, 0, 13, 2, 11)
+
+        lb01 = QLabel(u'跳转页')
+        console_instance.referEntry = QLineEdit()
+        console_instance.gridlayout.addWidget(lb01, 2, 12)
+        console_instance.gridlayout.addWidget(console_instance.referEntry, 2, 13, 1, 11)
 
         # 加入模拟功能
         console_instance.simulate_qishu_lb = QLabel(u'选中期数：')
@@ -578,6 +583,9 @@ class MyUIUtil(object):
             console_instance.play_mode = int(row[123])
             console_instance.playmode_combobox.setCurrentIndex(int(console_instance.play_mode))
             logging.info(u"【初始化界面】玩法北京赛车|时时彩, console_instance.play_mode=%s" % console_instance.play_mode)
+
+            # 载入跳转页
+            console_instance.referEntry.setText(row[124])  # 搜索码跳转页
 
         cursor.close()
         cqssc_db.commit()

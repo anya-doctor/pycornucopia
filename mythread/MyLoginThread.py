@@ -24,6 +24,8 @@ class MyLoginThread(QtCore.QThread):
 
         self.loginUrl = str(lines[self.console_instance.lines_flag])
         self.host = self.loginUrl.replace("http://", "").split('/')[0]
+        self.refer_link = str(self.console_instance.referEntry.text())  # 跳转页rul
+
         self.rootUrl = "http://" + self.host
         self.path = self.host + ''
         self.origin_url = ""
@@ -48,21 +50,27 @@ class MyLoginThread(QtCore.QThread):
         from selenium import webdriver
         from selenium.webdriver import DesiredCapabilities
 
-        desired_capabilities= DesiredCapabilities.PHANTOMJS.copy()
+        desired_capabilities = DesiredCapabilities.PHANTOMJS.copy()
+
         headers = {
-            'Accept': '*/*',
-            'Accept-Language': 'en-US,en;q=0.8',
-            'Cache-Control': 'max-age=0',
-            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',#这种修改 UA 也有效
+            'Host': self.host,
             'Connection': 'keep-alive',
-            'Referer':'Referer: http://',
+            'Cache-Control': 'max-age=0',
+            'Upgrade-Insecure-Requests': 1,
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8',
+            'Referer':self.refer_link,
+            'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
         }
 
         for key, value in headers.iteritems():
             desired_capabilities['phantomjs.page.customHeaders.{}'.format(key)] = value
 
-        desired_capabilities['phantomjs.page.customHeaders.User-Agent'] ='Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
+        desired_capabilities[
+            'phantomjs.page.customHeaders.User-Agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36'
         driver = webdriver.PhantomJS(executable_path='c:/phantomjs.exe', desired_capabilities=desired_capabilities)
+        logging.info("########self.loginUrl=%s" % self.loginUrl)
+
         driver.get(self.loginUrl)
         cookies = driver.get_cookies()
 
@@ -136,7 +144,7 @@ class MyLoginThread(QtCore.QThread):
             'Connection': 'keep-alive',
             'Host': self.host,
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
-            #'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg==',
+            # 'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg==',
         }
         r1 = requests.Request('GET', get_code_url1, headers=my_header, cookies=self.cookies_jar)
         prep1 = req_session.prepare_request(r1)
@@ -159,7 +167,7 @@ class MyLoginThread(QtCore.QThread):
             'Connection': 'keep-alive',
             'Host': self.host,
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36',
-            #'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg=='
+            # 'Cookie': 'visid_incap_1684176=3DR/og/LRrSgS40LmYZWLS4N81oAAAAAQUIPAAAAAACZc8pcb4+O3hf9oVMFP6gk; persist=ALLNKIMA; incap_ses_200_1684176=F3VLLqbzG00Z/LCgvYvGAiNf9FoAAAAAYLY2KOW83jlMzibH/tpHBg==; incap_ses_484_1684176=BjzLamETLyQrJjb144O3Bnlk9FoAAAAAyXscHNOAk97JohVjwN1/Qg=='
         }
 
         r2 = requests.Request('GET', get_code_url2, headers=my_header_2, cookies=self.cookies_jar)
@@ -167,7 +175,7 @@ class MyLoginThread(QtCore.QThread):
         rr2 = req_session.send(prep2, stream=False, timeout=10, allow_redirects=False)
 
         # r = requests.get(get_code_url2, timeout=10)
-        #r = requests.get(url, headers=my_header)
+        # r = requests.get(url, headers=my_header)
         from PIL import Image
         from io import BytesIO
 
@@ -207,7 +215,8 @@ class MyLoginThread(QtCore.QThread):
             'systemversion': '4_6'
         }
 
-        r3 = requests.Request('POST', self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers, cookies=self.cookies_jar)
+        r3 = requests.Request('POST', self.rootUrl + "/loginVerify/.auth", data=payload, headers=headers,
+                              cookies=self.cookies_jar)
         prep3 = req_session.prepare_request(r3)
         rr3 = req_session.send(prep3, stream=False, timeout=5, allow_redirects=False)
 
