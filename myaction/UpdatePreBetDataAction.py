@@ -52,6 +52,49 @@ class MyUpdatePreBetDataAction(object):
                         logging.info(u"【更新预下注数据】在稳定且时间区间正确的情况下-1，解开开始按钮的封印...")
                         console_instance.goBtn.setEnabled(True)
 
+                if console_instance.play_mode == common.PLAYMODE_XYFT:
+                    if not console_instance.history_data:
+                        # 更新历史数据
+                        now_history_data = [int(v) for v in console_instance.open_balls]
+                        now_history_data.insert(0, MyTool.getCurrentTimeStr())
+                        now_history_data.insert(0, str(int(console_instance.timesnow)))
+
+                        # 因为幸运飞艇过了0点10分的数据非常诡异，是下一天的180期往后推，180-33期都是空数据，要了又用，干脆过滤
+                        console_instance.history_data = [now_history_data]
+                        # 模拟历史数据板块，大更新所需要的数据结构
+                        data_dict = {
+                            "data": {
+                                "result": console_instance.history_data
+                            }
+                        }
+                        QMetaObject.invokeMethod(console_instance, "onUpdateHistoryResultDataHideBtn",
+                                                 Qt.QueuedConnection,
+                                                 Q_ARG(dict, data_dict))
+
+                    elif console_instance.history_data and (int(console_instance.history_data[0][0]) % 1000) == 180:
+                        logging.info(
+                            u"【更新预下注数据】历史最新=%s，console_instance.timesnow=%s, 幸运飞艇-1，奇怪的套路，每天下午1点到凌晨4点， 更新历史数据, 增加之..." % (
+                                console_instance.history_data[0][0], console_instance.timesnow))
+                        # 更新历史数据
+                        now_history_data = [int(v) for v in console_instance.open_balls]
+                        now_history_data.insert(0, MyTool.getCurrentTimeStr())
+                        now_history_data.insert(0, str(int(console_instance.timesnow)))
+
+                        # 因为幸运飞艇过了0点10分的数据非常诡异，是下一天的180期往后推，180-33期都是空数据，要了又用，干脆过滤
+                        console_instance.history_data.insert(0, now_history_data)
+                        console_instance.history_data = sorted(console_instance.history_data, key=lambda x: -int(x[0]))
+                        console_instance.history_data = filter(lambda x: x[2] != '', console_instance.history_data)
+
+                        # 模拟历史数据板块，大更新所需要的数据结构
+                        data_dict = {
+                            "data": {
+                                "result": console_instance.history_data
+                            }
+                        }
+                        QMetaObject.invokeMethod(console_instance, "onUpdateHistoryResultDataHideBtn",
+                                                 Qt.QueuedConnection,
+                                                 Q_ARG(dict, data_dict))
+
             elif int(console_instance.timesnow) > 0 and not console_instance.history_data:
                 logging.error(u"【更新预下注数据】因为某种原因历史数据=NULL, 重启获取历史数据定时器..")
                 MyGetHistoryResultDataAction.run(console_instance)
@@ -92,6 +135,51 @@ class MyUpdatePreBetDataAction(object):
                 # 更新期数，顺便结算...
                 if int(console_instance.timesnow) == int(timesnow):
                     pass
+
+                # 幸运飞艇，奇怪的套路，每天下午1点到凌晨4点
+                elif console_instance.play_mode == common.PLAYMODE_XYFT and not console_instance.history_data:
+                    # 更新历史数据
+                    now_history_data = [int(v) for v in console_instance.open_balls]
+                    now_history_data.insert(0, MyTool.getCurrentTimeStr())
+                    now_history_data.insert(0, str(int(console_instance.timesnow)))
+
+                    # 因为幸运飞艇过了0点10分的数据非常诡异，是下一天的180期往后推，180-33期都是空数据，要了又用，干脆过滤
+                    console_instance.history_data = [now_history_data]
+                    # 模拟历史数据板块，大更新所需要的数据结构
+                    data_dict = {
+                        "data": {
+                            "result": console_instance.history_data
+                        }
+                    }
+                    QMetaObject.invokeMethod(console_instance, "onUpdateHistoryResultDataHideBtn",
+                                             Qt.QueuedConnection,
+                                             Q_ARG(dict, data_dict))
+
+                elif console_instance.play_mode == common.PLAYMODE_XYFT and console_instance.history_data and (
+                        int(console_instance.history_data[0][0]) % 1000) == 180:
+                    logging.info(
+                        u"【更新预下注数据】历史最新=%s，console_instance.timesnow=%s, 幸运飞艇-2，奇怪的套路，每天下午1点到凌晨4点， 更新历史数据, 增加之..." % (
+                            console_instance.history_data[0][0], console_instance.timesnow))
+                    # 更新历史数据
+                    now_history_data = [int(v) for v in console_instance.open_balls]
+                    now_history_data.insert(0, MyTool.getCurrentTimeStr())
+                    now_history_data.insert(0, str(int(console_instance.timesnow)))
+
+                    # 因为幸运飞艇过了0点10分的数据非常诡异，是下一天的180期往后推，180-33期都是空数据，要了又用，干脆过滤
+                    console_instance.history_data.insert(0, now_history_data)
+                    console_instance.history_data = sorted(console_instance.history_data, key=lambda x: -int(x[0]))
+                    console_instance.history_data = filter(lambda x: x[2] != '', console_instance.history_data)
+
+                    # 模拟历史数据板块，大更新所需要的数据结构
+                    data_dict = {
+                        "data": {
+                            "result": console_instance.history_data
+                        }
+                    }
+                    QMetaObject.invokeMethod(console_instance, "onUpdateHistoryResultDataHideBtn",
+                                             Qt.QueuedConnection,
+                                             Q_ARG(dict, data_dict))
+
                 elif int(timesnow) - int(console_instance.timesnow) == 1:  # 好的最新一期的更新
                     logging.info(u"【更新预下注数据】稳定的数据，走正常流程...")
 
