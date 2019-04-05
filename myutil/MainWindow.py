@@ -110,7 +110,7 @@ class MainWindow(QtGui.QMainWindow):
             # 时间
             newItem = QTableWidgetItem(str(period[1]))
             self.viewEntry.setItem(row, 1, newItem)
-            if self.console.play_mode == common.PLAYMODE_PK10:
+            if self.console.play_mode in [common.PLAYMODE_PK10, common.PLAYMODE_XYFT]:
                 for i in range(10):
                     newItem = QTableWidgetItem(str(period[2 + i]))
                     self.viewEntry.setItem(row, 2 + i, newItem)

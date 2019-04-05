@@ -305,6 +305,11 @@ class MyLoginThread(QtCore.QThread):
                                                        0] + 'pk/order/list?&_=%s__autorefresh' % now
                     self.pk_post_bet_url = self.origin_url.split("index.htm")[
                                                0] + 'pk/order/leftInfo/?post_submit&&_=%s__ajax' % now
+                elif self.console_instance.play_mode == common.PLAYMODE_XYFT:
+                    self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[
+                                                       0] + 'xyft/order/list?&_=%s__autorefresh' % now
+                    self.pk_post_bet_url = self.origin_url.split("index.htm")[
+                                               0] + 'xyft/order/leftInfo/?post_submit&&_=%s__ajax' % now
                 else:
                     self.pk_pre_bet_get_data_url = self.origin_url.split("index.htm")[
                                                        0] + 'ssc/order/list?&_=%s__autorefresh' % now

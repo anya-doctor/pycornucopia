@@ -34,8 +34,8 @@ class MyUpdatePreBetDataAction(object):
                 console_instance.history_data[0][0] if console_instance.history_data and len(
                     console_instance.history_data) > 0 else 'NULL'))
 
-            # 如果是北京赛车，稍微处理下开奖号码 "03" => "3"
-            if console_instance.play_mode == common.PLAYMODE_PK10:
+            # 如果是北京赛车或者幸运飞艇，稍微处理下开奖号码 "03" => "3"
+            if console_instance.play_mode in [common.PLAYMODE_PK10, common.PLAYMODE_XYFT]:
                 for index, ball in enumerate(console_instance.open_balls):
                     if ball[0] == '0':
                         console_instance.open_balls[index] = ball[1]
@@ -57,7 +57,7 @@ class MyUpdatePreBetDataAction(object):
                 MyGetHistoryResultDataAction.run(console_instance)
             elif 'win' not in console_instance.preBetDataDic['data']:
                 logging.info(u"【更新预下注数据】還在結算階段-1，拿不到最新數據，等待之...")
-            elif console_instance.play_mode == common.PLAYMODE_PK10 and int(timeclose) >= 190:
+            elif console_instance.play_mode in [common.PLAYMODE_PK10, common.PLAYMODE_XYFT] and int(timeclose) >= 190:
                 logging.info(u"【更新预下注数据】還在結算階段-2.1，拿不到最新數據，等待之...")
             # <row expect="20180302096" opencode="9,3,1,8,4" opentime="2018-03-02 22:01:30"/>
             # <row expect="20180302095" opencode="4,5,9,4,4" opentime="2018-03-02 21:51:06"/>

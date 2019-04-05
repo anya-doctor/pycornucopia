@@ -26,6 +26,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
         要根据玩法去获取预下注数据！
         self.console_instance.play_mode = common.PLAYMODE_PK10 北京
         self.console_instance.play_mode = common.PLAYMODE_CQSSC 时时彩
+        self.console_instance.play_mode = common.PLAYMODE_XYFT 幸运飞艇
         :return:
         """
         try:
@@ -34,7 +35,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
                 return -1
 
             # 北京赛车
-            if self.console_instance.play_mode == common.PLAYMODE_PK10:
+            if self.console_instance.play_mode in [common.PLAYMODE_PK10, common.PLAYMODE_XYFT]:
                 t = ['ballNO15', 'ballNO60']
             # 重庆时时彩
             else:
@@ -92,7 +93,7 @@ class MyGetPreBetDataThread(QtCore.QThread):
                 res.append(t_json)
 
             # 如果是北京赛车合并两个预下注数据
-            if self.console_instance.play_mode == common.PLAYMODE_PK10:
+            if self.console_instance.play_mode in [common.PLAYMODE_PK10, common.PLAYMODE_XYFT]:
                 pk_15_predata_json = res[0]
                 pk_60_predata_json = res[1]
                 try:

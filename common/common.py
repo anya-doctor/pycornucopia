@@ -32,6 +32,7 @@ BET_MODE_HORIZONTAL = 2  # 水平下注
 # 玩法
 PLAYMODE_PK10 = 0
 PLAYMODE_CQSSC = 1
+PLAYMODE_XYFT = 2
 
 # 获取历史结果数据
 GETDATA_URL_PK10 = "http://kaijiang.500.com/static/info/kaijiang/xml/bjpkshi/%s.xml?_A=YFSAQORP1515509516031"  # 获取数据的网址
@@ -107,7 +108,50 @@ win_ping_pk_dic = {
     }
 }
 
+# 幸运飞艇的默认赢输平，我们默认，普通情况下，是不需要平的，来一个就算赢。
+win_ping_xyft_dic = {
+    1: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    2: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    3: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    4: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    5: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    6: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    7: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    8: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    9: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    },
+    10: {
+        'win_cnt': 1,
+        'ping_cnt': -1,
+    }
+}
+
 # 数据来源
 KAIJIANG_DATA_SOURCE_500 = 0  # 500彩票网
 KAIJIANG_DATA_SOURCE_SELF = 1  # 自家网站
-

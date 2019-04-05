@@ -234,7 +234,7 @@ class MyConsole(QWidget):
                 betstr = u"%s号车: " % (index+1)
 
                 for v in item[3]:
-                    if self.play_mode == common.PLAYMODE_PK10:
+                    if self.play_mode in [common.PLAYMODE_PK10, common.PLAYMODE_XYFT]:
                         if v[0] == 1:
                             betstr += u"冠军%s, " % (v[1])
                         elif v[0] == 2:

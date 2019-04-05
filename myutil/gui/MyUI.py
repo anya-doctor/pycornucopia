@@ -96,6 +96,7 @@ class MyUIUtil(object):
         console_instance.playmode_combobox = QComboBox()
         console_instance.playmode_combobox.addItem(u'pk10')
         console_instance.playmode_combobox.addItem(u'ssc')
+        console_instance.playmode_combobox.addItem(u'xyfk')
         console_instance.connect(console_instance.playmode_combobox, QtCore.SIGNAL("currentIndexChanged(int)"),
                                  lambda: MyChangePlayModeAction.run(console_instance))
         console_instance.gridlayout.addWidget(console_instance.playmode_combobox, 2, 5, 1, 1)

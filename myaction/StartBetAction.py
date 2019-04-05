@@ -184,6 +184,8 @@ class MyStartBetAction(object):
                 MyAlgorithm.win_ping_dic = common.win_ping_ssc_dic
             elif console_instance.play_mode == common.PLAYMODE_PK10 and not hasattr(MyAlgorithm, "win_ping_dic"):
                 MyAlgorithm.win_ping_dic = common.win_ping_pk_dic
+            elif console_instance.play_mode == common.PLAYMODE_XYFT and not hasattr(MyAlgorithm, "win_ping_dic"):
+                MyAlgorithm.win_ping_dic = common.win_ping_xyft_dic
 
             if console_instance.isLoseAdd:  # 输加注
                 if tmp_win_cnt >= MyAlgorithm.win_ping_dic[len(item[3])]['win_cnt']:

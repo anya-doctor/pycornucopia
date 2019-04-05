@@ -109,6 +109,8 @@ def kaijiang_self_helper(console_instance, date, play_mode):
 
     if play_mode == common.PLAYMODE_PK10:
         url = console_instance.loginSuccessData['origin_url'] + "pk/result/index?&_=%s__ajax" % now
+    elif play_mode == common.PLAYMODE_XYFT:
+        url = console_instance.loginSuccessData['origin_url'] + "xyft/result/index?&_=%s__ajax" % now
     else:
         url = console_instance.loginSuccessData['origin_url'] + "ssc/result/index?&_=%s__ajax" % now
     logging.info(u"获取自家网站数据，url=%s" % url)

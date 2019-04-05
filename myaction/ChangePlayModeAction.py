@@ -19,14 +19,16 @@ class MyChangePlayModeAction(object):
     @pyqtSlot(dict)
     def run(console_instance):
         try:
-            logging.info(u"【更换玩法ACTION】切换北京赛车\重庆时时彩")
+            logging.info(u"【更换玩法ACTION】切换北京赛车\重庆时时彩\幸运飞艇")
             mode = int(console_instance.playmode_combobox.currentIndex())
             mode_str = ""
             if mode == common.PLAYMODE_PK10:
                 mode_str = u"北京赛车"
             elif mode == common.PLAYMODE_CQSSC:
                 mode_str = u"重庆时时彩"
-            logging.info(u"【更换玩法ACTION】切换北京赛车\重庆时时彩mode=%s..." % mode_str)
+            elif mode == common.PLAYMODE_XYFT:
+                mode_str = u"幸运飞艇"
+            logging.info(u"【更换玩法ACTION】切换北京赛车\重庆时时彩\幸运飞艇mode=%s..." % mode_str)
 
             if mode == 0:
                 # 如果切换到正常下注，那么先把timesnow归零。
